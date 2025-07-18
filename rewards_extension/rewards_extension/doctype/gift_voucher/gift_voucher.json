@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "field:voucher_id",
+ "autoname": "hash",
  "creation": "2025-07-18 21:51:28.359369",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -8,6 +8,7 @@
   "section_break_5xtl",
   "amended_from",
   "voucher_id",
+  "secret_code",
   "campaign",
   "batch_id",
   "voucher_base_amount",
@@ -19,6 +20,7 @@
   "activated_on",
   "blocked_date",
   "voucher_status",
+  "voucher_type",
   "voucher_retries",
   "section_break_vvfb",
   "retailer_profile",
@@ -50,7 +52,7 @@
    "fieldtype": "Link",
    "label": "Amended From",
    "no_copy": 1,
-   "options": "Cash Voucher",
+   "options": "Gift Voucher",
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
@@ -84,7 +86,7 @@
    "fieldtype": "Link",
    "in_standard_filter": 1,
    "label": "Campaign",
-   "options": "Cashback Campaign",
+   "options": "Voucher Campaign",
    "reqd": 1
   },
   {
@@ -195,7 +197,7 @@
    "allow_on_submit": 1,
    "fieldname": "held_noted",
    "fieldtype": "Long Text",
-   "label": "Held Noted"
+   "label": "Held Notes"
   },
   {
    "allow_on_submit": 1,
@@ -249,17 +251,39 @@
    "fieldtype": "Link",
    "label": "Distributor Profile",
    "options": "Distributor Profile"
+  },
+  {
+   "fieldname": "secret_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Secret Code",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "description": "Merchant Coupons are Coupons that can be redeemed against other Merchants",
+   "fieldname": "voucher_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Voucher Type",
+   "options": "Cash\nMerchandise\nMerchant Coupon\nGift Pass",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [],
- "modified": "2025-07-18 22:36:45.651168",
+ "links": [
+  {
+   "link_doctype": "Quiz Transcript",
+   "link_fieldname": "gift_voucher_link"
+  }
+ ],
+ "modified": "2025-07-19 04:42:19.749957",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
- "name": "Cash Voucher",
- "naming_rule": "By fieldname",
+ "name": "Gift Voucher",
+ "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [
   {

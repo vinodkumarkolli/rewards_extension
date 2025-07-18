@@ -9,6 +9,7 @@
   "amended_from",
   "campaign_name",
   "website_route",
+  "website_slug",
   "campaign_status",
   "base_voucher_price",
   "campaign_budget",
@@ -32,8 +33,11 @@
   "column_break_jfbw",
   "target_uniqueness",
   "printing_template_section",
-  "html",
-  "vouchers_tab"
+  "interface",
+  "vouchers_tab",
+  "voucher_batch",
+  "quiz_tab",
+  "quiz"
  ],
  "fields": [
   {
@@ -45,7 +49,7 @@
    "fieldtype": "Link",
    "label": "Amended From",
    "no_copy": 1,
-   "options": "Cashback Campaign",
+   "options": "Voucher Campaign",
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
@@ -94,12 +98,7 @@
   {
    "fieldname": "printing_template_section",
    "fieldtype": "Section Break",
-   "label": "Printing Template"
-  },
-  {
-   "fieldname": "html",
-   "fieldtype": "HTML Editor",
-   "label": "HTML"
+   "label": "Interface"
   },
   {
    "fieldname": "global_settings_section",
@@ -231,16 +230,53 @@
    "fieldname": "vouchers_tab",
    "fieldtype": "Tab Break",
    "label": "Vouchers"
+  },
+  {
+   "fieldname": "website_slug",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Website Slug",
+   "reqd": 1
+  },
+  {
+   "fieldname": "quiz_tab",
+   "fieldtype": "Tab Break",
+   "label": "Quiz"
+  },
+  {
+   "fieldname": "quiz",
+   "fieldtype": "Table",
+   "label": "Quiz",
+   "options": "Quiz Question"
+  },
+  {
+   "fieldname": "voucher_batch",
+   "fieldtype": "Table",
+   "label": "Voucher Batch",
+   "options": "Voucher Batch"
+  },
+  {
+   "description": "Microsoft Word (.doc,.docx)",
+   "fieldname": "interface",
+   "fieldtype": "Table",
+   "label": "Interface Steps",
+   "options": "Campaign Interface Steps",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
- "links": [],
- "modified": "2025-07-18 21:50:16.176146",
+ "links": [
+  {
+   "link_doctype": "Gift Voucher",
+   "link_fieldname": "campaign"
+  }
+ ],
+ "modified": "2025-07-19 04:44:39.619670",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
- "name": "Cashback Campaign",
+ "name": "Voucher Campaign",
  "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [

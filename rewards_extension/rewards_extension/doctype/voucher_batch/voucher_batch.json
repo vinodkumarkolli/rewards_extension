@@ -1,0 +1,101 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "autoname": "format:VB-{YYMM}-{###}",
+ "creation": "2025-07-19 04:10:20.075474",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "voucher_count",
+  "print_template",
+  "frozen",
+  "column_break_vdby",
+  "created_on",
+  "activated_on",
+  "redeemed_voucher_count",
+  "unused_voucher_count",
+  "blockedheld_voucher_count",
+  "settled_amount"
+ ],
+ "fields": [
+  {
+   "fieldname": "voucher_count",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Voucher Count",
+   "reqd": 1
+  },
+  {
+   "description": "Microsoft Word (.doc,.docx)",
+   "fieldname": "print_template",
+   "fieldtype": "Attach",
+   "label": "Print Template"
+  },
+  {
+   "default": "0",
+   "fieldname": "frozen",
+   "fieldtype": "Check",
+   "label": "Frozen"
+  },
+  {
+   "fieldname": "column_break_vdby",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "created_on",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Created On",
+   "reqd": 1
+  },
+  {
+   "fieldname": "activated_on",
+   "fieldtype": "Date",
+   "label": "Activated On"
+  },
+  {
+   "fieldname": "redeemed_voucher_count",
+   "fieldtype": "Int",
+   "is_virtual": 1,
+   "label": "Redeemed Voucher Count",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "unused_voucher_count",
+   "fieldtype": "Int",
+   "is_virtual": 1,
+   "label": "Unused Voucher Count",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "blockedheld_voucher_count",
+   "fieldtype": "Int",
+   "is_virtual": 1,
+   "label": "Blocked/Held Voucher Count",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "settled_amount",
+   "fieldtype": "Float",
+   "is_virtual": 1,
+   "label": "Settled Amount",
+   "non_negative": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-07-19 04:26:43.749092",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Voucher Batch",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

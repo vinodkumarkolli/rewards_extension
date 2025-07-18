@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class CashbackCampaign(Document):
+class VoucherBatch(Document):
 	pass

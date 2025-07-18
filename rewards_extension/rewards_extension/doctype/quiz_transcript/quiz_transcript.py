@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class CashVoucher(Document):
+class QuizTranscript(Document):
 	pass

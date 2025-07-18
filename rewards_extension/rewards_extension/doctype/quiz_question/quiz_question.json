@@ -1,0 +1,150 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-19 03:49:36.425778",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "settings_section",
+  "warm_question_req",
+  "followup_question_req",
+  "column_break_jkhh",
+  "mandatory_answer",
+  "questions_section",
+  "warming_column",
+  "warm_question_type",
+  "question",
+  "options",
+  "column_break_kobq",
+  "main_question_type",
+  "main_question",
+  "main_question_options",
+  "column_break_zhxg",
+  "followup_question_type",
+  "followup_question",
+  "followup_question_options"
+ ],
+ "fields": [
+  {
+   "fieldname": "settings_section",
+   "fieldtype": "Section Break",
+   "label": "Settings"
+  },
+  {
+   "fieldname": "followup_question",
+   "fieldtype": "Data",
+   "label": "Followup Question"
+  },
+  {
+   "fieldname": "questions_section",
+   "fieldtype": "Section Break",
+   "label": "Questions"
+  },
+  {
+   "depends_on": "eval: doc.warm_question_req",
+   "fieldname": "warm_question_type",
+   "fieldtype": "Select",
+   "label": "Warm Question Type",
+   "mandatory_depends_on": "eval: doc.warm_question_req",
+   "options": "Select\nData\nInt\nMobile"
+  },
+  {
+   "depends_on": "eval: doc.warm_question_req",
+   "fieldname": "question",
+   "fieldtype": "Data",
+   "label": "Warm Question",
+   "mandatory_depends_on": "eval: doc.warm_question_req"
+  },
+  {
+   "fieldname": "options",
+   "fieldtype": "Long Text",
+   "label": "Warm Question Options"
+  },
+  {
+   "fieldname": "column_break_jkhh",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "mandatory_answer",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Mandatory Answer"
+  },
+  {
+   "depends_on": "eval: doc.warm_question_req",
+   "fieldname": "warming_column",
+   "fieldtype": "Column Break",
+   "label": "Warming"
+  },
+  {
+   "fieldname": "column_break_kobq",
+   "fieldtype": "Column Break",
+   "label": "Main"
+  },
+  {
+   "fieldname": "main_question_type",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Main Question Type",
+   "options": "Select\nData\nInt\nMobile",
+   "reqd": 1
+  },
+  {
+   "fieldname": "main_question",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Main Question",
+   "reqd": 1
+  },
+  {
+   "fieldname": "main_question_options",
+   "fieldtype": "Long Text",
+   "label": "Main Question Options"
+  },
+  {
+   "fieldname": "column_break_zhxg",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "followup_question_type",
+   "fieldtype": "Select",
+   "label": "Followup Question Type",
+   "options": "Select\nData\nInt\nMobile"
+  },
+  {
+   "fieldname": "followup_question_options",
+   "fieldtype": "Long Text",
+   "label": "Followup Question Options"
+  },
+  {
+   "default": "0",
+   "fieldname": "warm_question_req",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Warm Question"
+  },
+  {
+   "default": "0",
+   "fieldname": "followup_question_req",
+   "fieldtype": "Check",
+   "in_list_view": 1,
+   "label": "Followup Question"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-07-19 04:08:59.803413",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Quiz Question",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

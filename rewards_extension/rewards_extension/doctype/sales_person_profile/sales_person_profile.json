@@ -6,7 +6,12 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "sales_person_name"
+  "sales_person_name",
+  "sales_drive_score",
+  "retailer_profile_drive_score",
+  "quiz_score",
+  "column_break_bnzv",
+  "distributor"
  ],
  "fields": [
   {
@@ -16,12 +21,43 @@
    "label": "Sales Person Name",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "column_break_bnzv",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "distributor",
+   "fieldtype": "Link",
+   "label": "Distributor",
+   "options": "Distributor Profile",
+   "reqd": 1
+  },
+  {
+   "fieldname": "sales_drive_score",
+   "fieldtype": "Float",
+   "label": "Sales Drive Score"
+  },
+  {
+   "fieldname": "retailer_profile_drive_score",
+   "fieldtype": "Float",
+   "label": "Retailer Profile Drive Score"
+  },
+  {
+   "fieldname": "quiz_score",
+   "fieldtype": "Float",
+   "label": "Quiz Score"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2025-07-18 22:31:06.725703",
+ "links": [
+  {
+   "link_doctype": "Quiz Transcript",
+   "link_fieldname": "sales_person_link"
+  }
+ ],
+ "modified": "2025-07-19 04:37:52.167112",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Sales Person Profile",

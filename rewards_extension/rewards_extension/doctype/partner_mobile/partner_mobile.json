@@ -8,9 +8,13 @@
  "engine": "InnoDB",
  "field_order": [
   "mobile_number",
+  "first_name",
+  "middle_name",
+  "column_break_nosa",
   "whatsapp",
   "gpay",
-  "subscribed"
+  "subscribed",
+  "owners_number"
  ],
  "fields": [
   {
@@ -41,13 +45,39 @@
    "fieldtype": "Check",
    "in_list_view": 1,
    "label": "Notifications Subscribed"
+  },
+  {
+   "fieldname": "first_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "First Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "middle_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Middle Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "column_break_nosa",
+   "fieldtype": "Column Break"
+  },
+  {
+   "default": "0",
+   "fieldname": "owners_number",
+   "fieldtype": "Check",
+   "label": "Owners Number"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-07-18 22:44:08.891004",
+ "modified": "2025-07-19 03:35:24.287266",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Partner Mobile",
