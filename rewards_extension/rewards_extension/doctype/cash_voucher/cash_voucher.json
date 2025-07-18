@@ -1,0 +1,283 @@
+{
+ "actions": [],
+ "autoname": "field:voucher_id",
+ "creation": "2025-07-18 21:51:28.359369",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_5xtl",
+  "amended_from",
+  "voucher_id",
+  "campaign",
+  "batch_id",
+  "voucher_base_amount",
+  "settlement_amount",
+  "settled_amount",
+  "column_break_cokc",
+  "created_on",
+  "valid_till",
+  "activated_on",
+  "blocked_date",
+  "voucher_status",
+  "voucher_retries",
+  "section_break_vvfb",
+  "retailer_profile",
+  "distributor_profile",
+  "sales_person_profile",
+  "redeem_info_tab",
+  "redeem_gpay_mobile",
+  "redeem_customer_name",
+  "fraud_score",
+  "payout_method",
+  "redeemed_date",
+  "payment_held_date",
+  "column_break_seqz",
+  "held_noted",
+  "redeem_notes",
+  "extra_info_section",
+  "invoice_number",
+  "column_break_tqdd",
+  "distributor_name"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_5xtl",
+   "fieldtype": "Section Break",
+   "label": "Control Panel"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Cash Voucher",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "voucher_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Voucher ID",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "created_on",
+   "fieldtype": "Date",
+   "label": "Created On",
+   "reqd": 1
+  },
+  {
+   "fieldname": "valid_till",
+   "fieldtype": "Date",
+   "label": "Valid Till",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_cokc",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "campaign",
+   "fieldtype": "Link",
+   "in_standard_filter": 1,
+   "label": "Campaign",
+   "options": "Cashback Campaign",
+   "reqd": 1
+  },
+  {
+   "fieldname": "batch_id",
+   "fieldtype": "Data",
+   "in_standard_filter": 1,
+   "label": "Batch ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "voucher_base_amount",
+   "fieldtype": "Float",
+   "label": "Voucher Base Amount",
+   "non_negative": 1,
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "description": "Amount that \"Company\" is liable to Pay",
+   "fieldname": "settlement_amount",
+   "fieldtype": "Float",
+   "label": "Settlement Amount",
+   "non_negative": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "settled_amount",
+   "fieldtype": "Float",
+   "label": "Settled Amount"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "activated_on",
+   "fieldtype": "Date",
+   "in_standard_filter": 1,
+   "label": "Activated on"
+  },
+  {
+   "fieldname": "voucher_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Voucher Status",
+   "options": "Generated\nActive\nBlocked\nRedemption Raised\nDenied Payment\nRedeemed",
+   "reqd": 1
+  },
+  {
+   "default": "0",
+   "fieldname": "voucher_retries",
+   "fieldtype": "Int",
+   "label": "Voucher Retries",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "redeemed_date",
+   "fieldtype": "Date",
+   "label": "Redeemed Date"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "blocked_date",
+   "fieldtype": "Date",
+   "label": "Blocked Date"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "payment_held_date",
+   "fieldtype": "Date",
+   "label": "Payment Held Date"
+  },
+  {
+   "fieldname": "redeem_info_tab",
+   "fieldtype": "Tab Break",
+   "label": "Redeem Info"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "redeem_gpay_mobile",
+   "fieldtype": "Data",
+   "label": "Redeem Gpay Mobile"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "redeem_customer_name",
+   "fieldtype": "Data",
+   "label": "Redeem Beneficiary Name"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "fraud_score",
+   "fieldtype": "Float",
+   "label": "Fraud Score"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "payout_method",
+   "fieldtype": "Select",
+   "label": "Payout Method",
+   "options": "GPAY"
+  },
+  {
+   "fieldname": "column_break_seqz",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "held_noted",
+   "fieldtype": "Long Text",
+   "label": "Held Noted"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "redeem_notes",
+   "fieldtype": "Long Text",
+   "label": "Redeem Notes"
+  },
+  {
+   "fieldname": "extra_info_section",
+   "fieldtype": "Section Break",
+   "label": "Extra Info"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "invoice_number",
+   "fieldtype": "Data",
+   "label": "Invoice Number"
+  },
+  {
+   "fieldname": "column_break_tqdd",
+   "fieldtype": "Column Break"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "distributor_name",
+   "fieldtype": "Data",
+   "label": "Distributor Name"
+  },
+  {
+   "fieldname": "section_break_vvfb",
+   "fieldtype": "Section Break",
+   "label": "Profile"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "retailer_profile",
+   "fieldtype": "Link",
+   "label": "Retailer Profile",
+   "options": "Retailer Profile"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "sales_person_profile",
+   "fieldtype": "Link",
+   "label": "Sales Person Profile",
+   "options": "Sales Person Profile"
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "distributor_profile",
+   "fieldtype": "Link",
+   "label": "Distributor Profile",
+   "options": "Distributor Profile"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-07-18 22:36:45.651168",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Cash Voucher",
+ "naming_rule": "By fieldname",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

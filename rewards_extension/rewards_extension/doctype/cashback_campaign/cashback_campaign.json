@@ -1,0 +1,265 @@
+{
+ "actions": [],
+ "autoname": "format: CASHBACK-{YY}-{MM}-{###}",
+ "creation": "2025-07-18 20:15:26.989755",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_sgf5",
+  "amended_from",
+  "campaign_name",
+  "website_route",
+  "campaign_status",
+  "base_voucher_price",
+  "campaign_budget",
+  "redeemed_amount",
+  "column_break_dqhm",
+  "start_date",
+  "end_date",
+  "campaign_target",
+  "voucher_count",
+  "calculated_campaign_budget",
+  "budget_variance",
+  "gamification_settings_section",
+  "gamification",
+  "gamification_type",
+  "gamification_steps",
+  "column_break_yowx",
+  "gamification_logic",
+  "global_settings_section",
+  "voucher_retries",
+  "unique_audience_redeem_limit",
+  "column_break_jfbw",
+  "target_uniqueness",
+  "printing_template_section",
+  "html",
+  "vouchers_tab"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_sgf5",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Cashback Campaign",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "allow_in_quick_entry": 1,
+   "fieldname": "campaign_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Campaign Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "website_route",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Website Route",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_dqhm",
+   "fieldtype": "Column Break",
+   "is_virtual": 1
+  },
+  {
+   "fieldname": "start_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Start Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "end_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "End Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "campaign_target",
+   "fieldtype": "Select",
+   "label": "Campaign Target",
+   "options": "Consumers\nRetailers\nWholesalers\nDistributors\nSales Persons",
+   "reqd": 1
+  },
+  {
+   "fieldname": "printing_template_section",
+   "fieldtype": "Section Break",
+   "label": "Printing Template"
+  },
+  {
+   "fieldname": "html",
+   "fieldtype": "HTML Editor",
+   "label": "HTML"
+  },
+  {
+   "fieldname": "global_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Global Settings"
+  },
+  {
+   "default": "1",
+   "fieldname": "voucher_retries",
+   "fieldtype": "Int",
+   "label": "Voucher Retries",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_jfbw",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "target_uniqueness",
+   "fieldtype": "Select",
+   "label": "Target Audience Uniqueness",
+   "options": "Mobile\nProfile",
+   "reqd": 1
+  },
+  {
+   "default": "1",
+   "description": "How many times a unique customer can redeem different vouchers issued with the Current Campaign in Campaign Period",
+   "fieldname": "unique_audience_redeem_limit",
+   "fieldtype": "Int",
+   "label": "Unique Audience Redeem Limit",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "default": "Active",
+   "fieldname": "campaign_status",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Campaign Status",
+   "options": "Active\nHeld\nExpired",
+   "reqd": 1
+  },
+  {
+   "fieldname": "base_voucher_price",
+   "fieldtype": "Float",
+   "label": "Base Voucher Price",
+   "non_negative": 1,
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "default": "doc.base_voucher_price * doc.voucher_count",
+   "fieldname": "campaign_budget",
+   "fieldtype": "Float",
+   "in_standard_filter": 1,
+   "is_virtual": 1,
+   "label": "Campaign Budget",
+   "non_negative": 1
+  },
+  {
+   "description": "No of vouchers planned to be printed and distributed in the campaign period",
+   "fieldname": "voucher_count",
+   "fieldtype": "Int",
+   "in_list_view": 1,
+   "label": "Voucher Count",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "calculated_campaign_budget",
+   "fieldtype": "Float",
+   "label": "Calculated Campaign Budget"
+  },
+  {
+   "depends_on": "eval: doc.gamification == 1",
+   "fieldname": "gamification_type",
+   "fieldtype": "Select",
+   "label": "Gamification Type",
+   "mandatory_depends_on": "eval: doc.gamification == 1",
+   "options": "\nSpin to Win\nProgress based Rewards\nLoyalty Rewards\nPuzzle Rewards"
+  },
+  {
+   "fieldname": "gamification_settings_section",
+   "fieldtype": "Section Break",
+   "label": "Gamification Settings"
+  },
+  {
+   "default": "0",
+   "fieldname": "gamification",
+   "fieldtype": "Check",
+   "label": "Gamification ?"
+  },
+  {
+   "fieldname": "budget_variance",
+   "fieldtype": "Float",
+   "is_virtual": 1,
+   "label": "Budget Variance",
+   "non_negative": 1
+  },
+  {
+   "description": "Amount redeemed by Target Audience till now",
+   "fieldname": "redeemed_amount",
+   "fieldtype": "Float",
+   "is_virtual": 1,
+   "label": "Redeemed Amount",
+   "precision": "2"
+  },
+  {
+   "fieldname": "column_break_yowx",
+   "fieldtype": "Column Break"
+  },
+  {
+   "depends_on": "eval: doc.gamification_type == 'Loyalty Rewards' || doc.gamification_type == 'Progress based Rewards'",
+   "fieldname": "gamification_logic",
+   "fieldtype": "Long Text",
+   "label": "Gamification Logic",
+   "mandatory_depends_on": "eval: doc.gamification_type == 'Loyalty Rewards' || doc.gamification_type == 'Progress based Rewards'"
+  },
+  {
+   "depends_on": "eval: doc.gamification_type == 'Puzzle Rewards' || doc.gamification_type == 'Spin to Win'",
+   "fieldname": "gamification_steps",
+   "fieldtype": "Table",
+   "label": "Gamification Steps",
+   "mandatory_depends_on": "eval: doc.gamification_type == 'Puzzle Rewards' || doc.gamification_type == 'Spin to Win'",
+   "options": "Gamification Steps"
+  },
+  {
+   "fieldname": "vouchers_tab",
+   "fieldtype": "Tab Break",
+   "label": "Vouchers"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-07-18 21:50:16.176146",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Cashback Campaign",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

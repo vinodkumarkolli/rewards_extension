@@ -1,0 +1,59 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-18 21:25:39.342733",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "step_name",
+  "coins",
+  "voucher_amount",
+  "weightage"
+ ],
+ "fields": [
+  {
+   "fieldname": "step_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Step Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "coins",
+   "fieldtype": "Float",
+   "label": "Coins",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "voucher_amount",
+   "fieldtype": "Float",
+   "label": "Voucher Amount",
+   "non_negative": 1,
+   "precision": "2"
+  },
+  {
+   "fieldname": "weightage",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Weightage",
+   "non_negative": 1,
+   "precision": "0",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-07-18 21:29:01.585957",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Gamification Steps",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
