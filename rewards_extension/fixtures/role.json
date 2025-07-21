@@ -1,0 +1,80 @@
+[
+ {
+  "desk_access": 1,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": null,
+  "is_custom": 0,
+  "modified": "2025-07-19 10:02:01.225459",
+  "name": "Manufacturer",
+  "restrict_to_domain": null,
+  "role_name": "Manufacturer",
+  "two_factor_auth": 0
+ },
+ {
+  "desk_access": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": null,
+  "is_custom": 0,
+  "modified": "2025-07-19 10:02:56.185853",
+  "name": "Distributor",
+  "restrict_to_domain": null,
+  "role_name": "Distributor",
+  "two_factor_auth": 0
+ },
+ {
+  "desk_access": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": null,
+  "is_custom": 0,
+  "modified": "2025-07-19 10:03:34.277258",
+  "name": "Retailer",
+  "restrict_to_domain": null,
+  "role_name": "Retailer",
+  "two_factor_auth": 0
+ },
+ {
+  "desk_access": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": null,
+  "is_custom": 0,
+  "modified": "2025-07-19 10:04:03.244668",
+  "name": "Wholesaler",
+  "restrict_to_domain": null,
+  "role_name": "Wholesaler",
+  "two_factor_auth": 0
+ },
+ {
+  "desk_access": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": null,
+  "is_custom": 0,
+  "modified": "2025-07-19 10:16:40.852911",
+  "name": "Consumer",
+  "restrict_to_domain": null,
+  "role_name": "Consumer",
+  "two_factor_auth": 0
+ },
+ {
+  "desk_access": 0,
+  "disabled": 0,
+  "docstatus": 0,
+  "doctype": "Role",
+  "home_page": null,
+  "is_custom": 0,
+  "modified": "2025-07-19 17:12:02.098608",
+  "name": "Sales Person",
+  "restrict_to_domain": null,
+  "role_name": "Sales Person",
+  "two_factor_auth": 0
+ }
+]

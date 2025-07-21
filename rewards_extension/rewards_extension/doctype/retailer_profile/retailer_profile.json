@@ -9,11 +9,13 @@
   "retailer_name",
   "loyalty_points",
   "redeemed_points",
+  "profile_source",
+  "master_retail_profile",
   "column_break_vrgm",
-  "contacts",
+  "address",
   "address_html",
-  "section_break_mlev",
-  "distributor_alias"
+  "contact",
+  "contact_html"
  ],
  "fields": [
   {
@@ -36,12 +38,6 @@
    "label": "Redeemed Points"
   },
   {
-   "fieldname": "contacts",
-   "fieldtype": "Table",
-   "label": "Contacts",
-   "options": "Partner Mobile"
-  },
-  {
    "fieldname": "column_break_vrgm",
    "fieldtype": "Column Break"
   },
@@ -52,20 +48,39 @@
    "read_only": 1
   },
   {
-   "fieldname": "section_break_mlev",
-   "fieldtype": "Section Break"
+   "fieldname": "profile_source",
+   "fieldtype": "Select",
+   "label": "Profile Source",
+   "options": "\nRetailer Signup\nSales Person Drive"
   },
   {
-   "fieldname": "distributor_alias",
-   "fieldtype": "Table",
-   "label": "Distributor Alias",
-   "options": "Retailer Alias Names"
+   "fieldname": "master_retail_profile",
+   "fieldtype": "Link",
+   "label": "Master Retail Profile",
+   "options": "Master Retail Profile"
+  },
+  {
+   "fieldname": "address",
+   "fieldtype": "Link",
+   "label": "Address",
+   "options": "Address"
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Link",
+   "label": "Contact",
+   "options": "Contact"
+  },
+  {
+   "fieldname": "contact_html",
+   "fieldtype": "HTML",
+   "label": "Contact HTML"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-18 22:50:47.048762",
+ "modified": "2025-07-19 16:51:53.941338",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Retailer Profile",

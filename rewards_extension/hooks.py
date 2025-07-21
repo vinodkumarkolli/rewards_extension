@@ -241,4 +241,11 @@ app_license = "mit"
 # default_log_clearing_doctypes = {
 # 	"Logging DocType Name": 30  # days to retain logs
 # }
-
+fixtures = [
+    {
+        "doctype":"Custom Field", "filters":{"module":["in",["Rewards Extension"]]}
+    },
+    # {
+    #     "doctype":"Role","filters":[["role_name","in",["Manufacturer","Consumer","Distributor","Retailer","Wholesaler","Sales Person"]]]
+    # }
+]

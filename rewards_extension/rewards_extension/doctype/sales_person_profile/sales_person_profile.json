@@ -11,7 +11,9 @@
   "retailer_profile_drive_score",
   "quiz_score",
   "column_break_bnzv",
-  "distributor"
+  "distributor",
+  "contact",
+  "agent_code"
  ],
  "fields": [
   {
@@ -47,6 +49,19 @@
    "fieldname": "quiz_score",
    "fieldtype": "Float",
    "label": "Quiz Score"
+  },
+  {
+   "fieldname": "contact",
+   "fieldtype": "Link",
+   "label": "Contact",
+   "options": "Contact",
+   "reqd": 1
+  },
+  {
+   "description": "Code assigned by Distributor",
+   "fieldname": "agent_code",
+   "fieldtype": "Data",
+   "label": "Agent Code"
   }
  ],
  "grid_page_length": 50,
@@ -57,7 +72,7 @@
    "link_fieldname": "sales_person_link"
   }
  ],
- "modified": "2025-07-19 04:37:52.167112",
+ "modified": "2025-07-19 17:18:11.686480",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Sales Person Profile",

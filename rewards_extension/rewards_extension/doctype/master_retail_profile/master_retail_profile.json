@@ -1,0 +1,128 @@
+{
+ "actions": [],
+ "autoname": "format:MAS-RETA-{####}",
+ "creation": "2025-07-19 16:40:42.786361",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "retailer_name",
+  "first_purchase_date",
+  "category",
+  "last_purchase_date",
+  "contact_info_column",
+  "retailer_contact",
+  "retailer_address",
+  "column_break_kueb",
+  "loyalty_points",
+  "redeemed_points",
+  "expired_points",
+  "section_break_xoxk",
+  "retailer_alias_names"
+ ],
+ "fields": [
+  {
+   "fieldname": "retailer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Retailer Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "retailer_contact",
+   "fieldtype": "HTML",
+   "label": "Retailer Contact"
+  },
+  {
+   "fieldname": "retailer_address",
+   "fieldtype": "HTML",
+   "label": "Retailer Address"
+  },
+  {
+   "fieldname": "column_break_kueb",
+   "fieldtype": "Column Break",
+   "label": "Achievements"
+  },
+  {
+   "fieldname": "loyalty_points",
+   "fieldtype": "Float",
+   "label": "Loyalty Points"
+  },
+  {
+   "fieldname": "redeemed_points",
+   "fieldtype": "Float",
+   "label": "Redeemed Points"
+  },
+  {
+   "fieldname": "expired_points",
+   "fieldtype": "Float",
+   "label": "Expired Points"
+  },
+  {
+   "fieldname": "section_break_xoxk",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "retailer_alias_names",
+   "fieldtype": "Table",
+   "label": "Retailer Alias Names",
+   "options": "Retailer Alias Names"
+  },
+  {
+   "description": "This is also a kind of profile creation date",
+   "fieldname": "first_purchase_date",
+   "fieldtype": "Date",
+   "label": "First Purchase Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "contact_info_column",
+   "fieldtype": "Column Break",
+   "label": "Contact Info"
+  },
+  {
+   "fieldname": "category",
+   "fieldtype": "Select",
+   "label": "Category",
+   "options": "Bronze\nSilver\nGold\nPlatinum",
+   "reqd": 1
+  },
+  {
+   "fieldname": "last_purchase_date",
+   "fieldtype": "Date",
+   "label": "Last Purchase Date",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [
+  {
+   "link_doctype": "Retailer Profile",
+   "link_fieldname": "master_retail_profile"
+  }
+ ],
+ "modified": "2025-07-19 17:37:51.564601",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Master Retail Profile",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}
