@@ -1,15 +1,15 @@
 {
  "actions": [],
  "allow_rename": 1,
- "autoname": "field:retailer_name",
+ "autoname": "field:customer_name",
  "creation": "2025-07-18 22:28:05.277356",
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "retailer_name",
-  "loyalty_points",
-  "redeemed_points",
+  "customer_name",
+  "customer_type",
   "profile_source",
+  "profile_source_link",
   "master_retail_profile",
   "column_break_vrgm",
   "address",
@@ -18,25 +18,6 @@
   "contact_html"
  ],
  "fields": [
-  {
-   "fieldname": "retailer_name",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Retailer Name",
-   "reqd": 1,
-   "unique": 1
-  },
-  {
-   "fieldname": "loyalty_points",
-   "fieldtype": "Int",
-   "label": "Loyalty Points",
-   "non_negative": 1
-  },
-  {
-   "fieldname": "redeemed_points",
-   "fieldtype": "Int",
-   "label": "Redeemed Points"
-  },
   {
    "fieldname": "column_break_vrgm",
    "fieldtype": "Column Break"
@@ -49,9 +30,11 @@
   },
   {
    "fieldname": "profile_source",
-   "fieldtype": "Select",
+   "fieldtype": "Link",
    "label": "Profile Source",
-   "options": "\nRetailer Signup\nSales Person Drive"
+   "link_filters": "[[\"DocType\",\"name\",\"in\",[\"Gift Voucher\",\"Sales Person Profile\"]]]",
+   "options": "DocType",
+   "reqd": 1
   },
   {
    "fieldname": "master_retail_profile",
@@ -69,21 +52,61 @@
    "fieldname": "contact",
    "fieldtype": "Link",
    "label": "Contact",
-   "options": "Contact"
+   "options": "Contact",
+   "reqd": 1
   },
   {
    "fieldname": "contact_html",
    "fieldtype": "HTML",
    "label": "Contact HTML"
+  },
+  {
+   "fieldname": "customer_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Customer Name",
+   "reqd": 1,
+   "unique": 1
+  },
+  {
+   "fieldname": "customer_type",
+   "fieldtype": "Select",
+   "label": "Customer Type",
+   "options": "Consumer\nRetailer\nWholesaler\nDistributor",
+   "reqd": 1
+  },
+  {
+   "fieldname": "profile_source_link",
+   "fieldtype": "Dynamic Link",
+   "label": "Profile Source Link",
+   "options": "profile_source",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2025-07-19 16:51:53.941338",
+ "links": [
+  {
+   "link_doctype": "Gift Voucher",
+   "link_fieldname": "beneficiary"
+  },
+  {
+   "link_doctype": "Bank Account",
+   "link_fieldname": "account_holder_profile"
+  },
+  {
+   "link_doctype": "Payout",
+   "link_fieldname": "beneficiary"
+  },
+  {
+   "link_doctype": "Quiz Transcript",
+   "link_fieldname": "quizzer"
+  }
+ ],
+ "modified": "2025-07-21 17:06:51.780382",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
- "name": "Retailer Profile",
+ "name": "Customer Profile",
  "naming_rule": "By fieldname",
  "owner": "Administrator",
  "permissions": [

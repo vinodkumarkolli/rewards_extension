@@ -1,0 +1,98 @@
+{
+ "actions": [],
+ "autoname": "format:BANK-ACC-{######}",
+ "creation": "2025-07-21 16:17:00.820940",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "account_name",
+  "account_number",
+  "ifsc_code",
+  "column_break_mldf",
+  "bank",
+  "other_bank_name",
+  "account_holder_type",
+  "account_holder_profile"
+ ],
+ "fields": [
+  {
+   "fieldname": "account_number",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account Number",
+   "reqd": 1
+  },
+  {
+   "fieldname": "ifsc_code",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "IFSC Code",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_mldf",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "bank",
+   "fieldtype": "Select",
+   "in_list_view": 1,
+   "label": "Bank",
+   "options": "State Bank of India\nBank of Baroda\nBank of India\nBank of Maharashtra\nCanara Bank\nCentral Bank of India\nIndian Overseas Bank\nIndian Bank\nPunjab National Bank\nUnion Bank of India\nPunjab & Sind Bank\nUCO Bank\nAxis Bank Limited\nBandhan Bank Limited\nCSB Bank Limited\nCity Union Bank Limited\nDCB Bank Limited\nDhanlaxmi Bank Limited\nFederal Bank Limited\nHDFC Bank Limited\nICICI Bank Limited\nIndusInd Bank Limited\nIDFC FIRST Bank Limited\nJammu & Kashmir Bank Limited\nKarnataka Bank Limited\nKarur Vysya Bank Limited\nKotak Mahindra Bank Limited\nNainital Bank Limited\nRBL Bank Limited\nSouth Indian Bank Limited\nTamilnad Mercantile Bank Limited\nYES Bank Limited\nIDBI Bank Limited\nTamil Nadu Grama Bank\nOther",
+   "reqd": 1
+  },
+  {
+   "fieldname": "other_bank_name",
+   "fieldtype": "Data",
+   "label": "Other Bank Name"
+  },
+  {
+   "fieldname": "account_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Account Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "account_holder_type",
+   "fieldtype": "Link",
+   "label": "Account Holder Type",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "account_holder_profile",
+   "fieldtype": "Dynamic Link",
+   "label": "Account Holder Profile",
+   "options": "account_holder_type",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "links": [],
+ "modified": "2025-07-21 16:38:36.296298",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Bank Account",
+ "naming_rule": "Expression",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

@@ -1,0 +1,183 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-07-21 15:18:48.897341",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_knmj",
+  "amended_from",
+  "payout_id",
+  "payout_amount",
+  "payout_mode",
+  "beneficiary_type",
+  "beneficiary",
+  "beneficiary_details",
+  "column_break_xpit",
+  "payout_source_type",
+  "payout_source_link",
+  "payout_date",
+  "payout_status",
+  "payout_notes",
+  "transaction_details_section",
+  "transaction_id",
+  "transaction_date",
+  "column_break_zgkb",
+  "transaction_amount",
+  "transaction_image"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_knmj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Payout",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "payout_id",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Payout ID",
+   "reqd": 1
+  },
+  {
+   "fieldname": "payout_amount",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Payout Amount",
+   "precision": "2",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_xpit",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "payout_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Payout Request Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "beneficiary_type",
+   "fieldtype": "Link",
+   "label": "Beneficiary Type",
+   "link_filters": "[[\"DocType\",\"name\",\"in\",[\"Master Retail Profile\",\"Customer Profile\",\"Sales Person Profile\",\"Distributor Profile\"]]]",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "beneficiary",
+   "fieldtype": "Dynamic Link",
+   "label": "Beneficiary",
+   "options": "beneficiary_type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "payout_status",
+   "fieldtype": "Select",
+   "label": "Payout Status",
+   "options": "Under Process\nProcessed\nWithheld",
+   "reqd": 1
+  },
+  {
+   "fieldname": "payout_notes",
+   "fieldtype": "Long Text",
+   "label": "Payout Notes"
+  },
+  {
+   "fieldname": "payout_mode",
+   "fieldtype": "Select",
+   "label": "Payout Mode",
+   "options": "GPAY\nNEFT",
+   "reqd": 1
+  },
+  {
+   "description": "Details like GPAY #, Bank Account Details",
+   "fieldname": "beneficiary_details",
+   "fieldtype": "HTML",
+   "label": "Beneficiary Details"
+  },
+  {
+   "fieldname": "transaction_details_section",
+   "fieldtype": "Section Break",
+   "label": "Transaction Details"
+  },
+  {
+   "fieldname": "transaction_id",
+   "fieldtype": "Data",
+   "label": "Transaction ID"
+  },
+  {
+   "fieldname": "transaction_date",
+   "fieldtype": "Date",
+   "label": "Transaction Date"
+  },
+  {
+   "fieldname": "column_break_zgkb",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "transaction_amount",
+   "fieldtype": "Float",
+   "label": "Transaction Amount"
+  },
+  {
+   "fieldname": "payout_source_type",
+   "fieldtype": "Link",
+   "label": "Payout Source Type",
+   "link_filters": "[[\"DocType\",\"name\",\"in\",[\"Gift Voucher\",\"Distributor Profile\",\"Master Retail Profile\",\"Customer Profile\",\"Sales Person Profile\"]]]",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "payout_source_link",
+   "fieldtype": "Dynamic Link",
+   "label": "Payout Source Link",
+   "options": "payout_source_type",
+   "reqd": 1
+  },
+  {
+   "fieldname": "transaction_image",
+   "fieldtype": "Attach",
+   "label": "Transaction Image"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-07-21 16:50:00.395145",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Payout",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "modified",
+ "sort_order": "DESC",
+ "states": []
+}

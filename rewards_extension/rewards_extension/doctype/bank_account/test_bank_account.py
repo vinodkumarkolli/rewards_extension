@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestRetailerProfile(FrappeTestCase):
+class TestBankAccount(FrappeTestCase):
 	pass

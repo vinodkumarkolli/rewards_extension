@@ -20,8 +20,29 @@
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
- "links": [],
- "modified": "2025-07-18 22:26:07.297525",
+ "links": [
+  {
+   "link_doctype": "Sales Person Profile",
+   "link_fieldname": "distributor"
+  },
+  {
+   "link_doctype": "Gift Voucher",
+   "link_fieldname": "beneficiary"
+  },
+  {
+   "link_doctype": "Payout",
+   "link_fieldname": "beneficiary"
+  },
+  {
+   "link_doctype": "Bank Account",
+   "link_fieldname": "account_holder_profile"
+  },
+  {
+   "link_doctype": "Quiz Transcript",
+   "link_fieldname": "quizzer"
+  }
+ ],
+ "modified": "2025-07-21 17:04:19.437485",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Distributor Profile",

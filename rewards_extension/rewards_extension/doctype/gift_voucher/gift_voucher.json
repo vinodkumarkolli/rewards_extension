@@ -10,6 +10,7 @@
   "voucher_id",
   "secret_code",
   "campaign",
+  "campaign_target",
   "batch_id",
   "voucher_base_amount",
   "settlement_amount",
@@ -23,23 +24,22 @@
   "voucher_type",
   "voucher_retries",
   "section_break_vvfb",
-  "retailer_profile",
-  "distributor_profile",
-  "sales_person_profile",
+  "beneficiary_type",
+  "payout_mode",
+  "column_break_inko",
+  "beneficiary",
+  "beneficiary_gpay_number",
+  "beneficiary_bank_account",
+  "beneficiary_bank_account_html",
   "redeem_info_tab",
-  "redeem_gpay_mobile",
-  "redeem_customer_name",
   "fraud_score",
-  "payout_method",
+  "payout_request",
+  "quiz",
+  "column_break_seqz",
   "redeemed_date",
   "payment_held_date",
-  "column_break_seqz",
-  "held_noted",
-  "redeem_notes",
-  "extra_info_section",
-  "invoice_number",
-  "column_break_tqdd",
-  "distributor_name"
+  "quiz_transcript_section",
+  "transcript"
  ],
  "fields": [
   {
@@ -130,7 +130,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Voucher Status",
-   "options": "Generated\nActive\nBlocked\nRedemption Raised\nDenied Payment\nRedeemed",
+   "options": "Generated\nActive\nBlocked\nPayout Requested\nDenied Payment\nRedeemed",
    "reqd": 1
   },
   {
@@ -166,91 +166,18 @@
   },
   {
    "allow_on_submit": 1,
-   "fieldname": "redeem_gpay_mobile",
-   "fieldtype": "Data",
-   "label": "Redeem Gpay Mobile"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "redeem_customer_name",
-   "fieldtype": "Data",
-   "label": "Redeem Beneficiary Name"
-  },
-  {
-   "allow_on_submit": 1,
    "fieldname": "fraud_score",
    "fieldtype": "Float",
    "label": "Fraud Score"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "payout_method",
-   "fieldtype": "Select",
-   "label": "Payout Method",
-   "options": "GPAY"
   },
   {
    "fieldname": "column_break_seqz",
    "fieldtype": "Column Break"
   },
   {
-   "allow_on_submit": 1,
-   "fieldname": "held_noted",
-   "fieldtype": "Long Text",
-   "label": "Held Notes"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "redeem_notes",
-   "fieldtype": "Long Text",
-   "label": "Redeem Notes"
-  },
-  {
-   "fieldname": "extra_info_section",
-   "fieldtype": "Section Break",
-   "label": "Extra Info"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "invoice_number",
-   "fieldtype": "Data",
-   "label": "Invoice Number"
-  },
-  {
-   "fieldname": "column_break_tqdd",
-   "fieldtype": "Column Break"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "distributor_name",
-   "fieldtype": "Data",
-   "label": "Distributor Name"
-  },
-  {
    "fieldname": "section_break_vvfb",
    "fieldtype": "Section Break",
-   "label": "Profile"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "retailer_profile",
-   "fieldtype": "Link",
-   "label": "Retailer Profile",
-   "options": "Retailer Profile"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "sales_person_profile",
-   "fieldtype": "Link",
-   "label": "Sales Person Profile",
-   "options": "Sales Person Profile"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "distributor_profile",
-   "fieldtype": "Link",
-   "label": "Distributor Profile",
-   "options": "Distributor Profile"
+   "label": "Beneficiary"
   },
   {
    "fieldname": "secret_code",
@@ -268,6 +195,74 @@
    "label": "Voucher Type",
    "options": "Cash\nMerchandise\nMerchant Coupon\nGift Pass",
    "reqd": 1
+  },
+  {
+   "fieldname": "payout_request",
+   "fieldtype": "Link",
+   "label": "Payout Request",
+   "options": "Payout"
+  },
+  {
+   "fieldname": "campaign_target",
+   "fieldtype": "Select",
+   "label": "Campaign Target",
+   "options": "Consumers\nRetailers\nWholesalers\nDistributors\nSales Persons",
+   "reqd": 1
+  },
+  {
+   "fieldname": "beneficiary_type",
+   "fieldtype": "Link",
+   "label": "Beneficiary Type",
+   "link_filters": "[[\"DocType\",\"name\",\"in\",[\"Customer Profile\",\"Sales Person Profile\",\"Distributor Profile\"]]]",
+   "options": "DocType"
+  },
+  {
+   "fieldname": "column_break_inko",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "beneficiary",
+   "fieldtype": "Dynamic Link",
+   "label": "Beneficiary",
+   "options": "beneficiary_type"
+  },
+  {
+   "fieldname": "quiz",
+   "fieldtype": "Link",
+   "label": "Quiz",
+   "options": "Quiz Transcript"
+  },
+  {
+   "fieldname": "beneficiary_gpay_number",
+   "fieldtype": "Data",
+   "label": "Beneficiary GPAY Number"
+  },
+  {
+   "fieldname": "payout_mode",
+   "fieldtype": "Select",
+   "label": "Payout Mode",
+   "options": "GPAY\nNEFT"
+  },
+  {
+   "fieldname": "beneficiary_bank_account",
+   "fieldtype": "Link",
+   "label": "Beneficiary Bank Account",
+   "options": "Bank Account"
+  },
+  {
+   "fieldname": "beneficiary_bank_account_html",
+   "fieldtype": "HTML",
+   "label": "Beneficiary Bank Account HTML"
+  },
+  {
+   "fieldname": "quiz_transcript_section",
+   "fieldtype": "Section Break",
+   "label": "Quiz Transcript"
+  },
+  {
+   "fieldname": "transcript",
+   "fieldtype": "HTML",
+   "label": "Transcript"
   }
  ],
  "grid_page_length": 50,
@@ -275,11 +270,15 @@
  "is_submittable": 1,
  "links": [
   {
+   "link_doctype": "Payout",
+   "link_fieldname": "payout_source_link"
+  },
+  {
    "link_doctype": "Quiz Transcript",
    "link_fieldname": "gift_voucher_link"
   }
  ],
- "modified": "2025-07-19 17:21:41.229263",
+ "modified": "2025-07-21 16:57:24.054399",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Gift Voucher",

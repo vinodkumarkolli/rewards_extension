@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestMRPController(FrappeTestCase):
+class TestCustomerProfile(FrappeTestCase):
 	pass

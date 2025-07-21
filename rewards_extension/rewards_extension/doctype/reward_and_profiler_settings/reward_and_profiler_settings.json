@@ -11,6 +11,7 @@
   "sale_record_start_date",
   "sale_record_end_date",
   "lp_earn_freeze",
+  "sale_to_loyalty_point",
   "loyalty_points_expiry_column",
   "expiry_based_on",
   "expiry_days"
@@ -71,13 +72,21 @@
    "fieldtype": "Int",
    "label": "Expiry days",
    "mandatory_depends_on": "eval: doc.expiry_based_on =='Rolling Days'"
+  },
+  {
+   "description": "A Sale of 1\u20b9 earns how many loyalty points",
+   "fieldname": "sale_to_loyalty_point",
+   "fieldtype": "Float",
+   "label": "Sale to Loyalty Point",
+   "non_negative": 1,
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-19 17:55:01.395500",
+ "modified": "2025-07-21 14:43:03.260116",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Reward and Profiler Settings",

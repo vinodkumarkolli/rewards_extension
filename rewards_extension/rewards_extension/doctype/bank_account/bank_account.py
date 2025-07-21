@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class RetailerProfile(Document):
+class BankAccount(Document):
 	pass

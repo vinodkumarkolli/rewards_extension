@@ -7,13 +7,10 @@
  "field_order": [
   "transcript_id",
   "quiz_mobile_number",
-  "quiz_taken_by",
+  "quizzer_type",
+  "quizzer",
   "column_break_ypiy",
   "quiz_date",
-  "section_break_wkjz",
-  "gift_voucher_link",
-  "sales_person_link",
-  "distributor_link",
   "section_break_xccw",
   "transcript"
  ],
@@ -46,45 +43,31 @@
    "label": "Transcript"
   },
   {
-   "fieldname": "section_break_wkjz",
-   "fieldtype": "Section Break",
-   "label": "Association"
-  },
-  {
-   "fieldname": "gift_voucher_link",
-   "fieldtype": "Link",
-   "label": "Gift Voucher Link",
-   "options": "Gift Voucher"
-  },
-  {
-   "fieldname": "sales_person_link",
-   "fieldtype": "Link",
-   "label": "Sales Person Link",
-   "options": "Gift Voucher"
-  },
-  {
-   "fieldname": "distributor_link",
-   "fieldtype": "Link",
-   "label": "Distributor Link",
-   "options": "Gift Voucher"
-  },
-  {
    "fieldname": "quiz_mobile_number",
    "fieldtype": "Data",
    "label": "Quiz Mobile Number",
    "reqd": 1
   },
   {
-   "fieldname": "quiz_taken_by",
-   "fieldtype": "Data",
-   "label": "Quiz Taken by",
+   "fieldname": "quizzer_type",
+   "fieldtype": "Link",
+   "label": "Quizzer Type",
+   "link_filters": "[[\"DocType\",\"name\",\"in\",[\"Customer Profile\",\"Sales Person Profile\"]]]",
+   "options": "DocType",
+   "reqd": 1
+  },
+  {
+   "fieldname": "quizzer",
+   "fieldtype": "Dynamic Link",
+   "label": "Quizzer",
+   "options": "quizzer_type",
    "reqd": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [],
- "modified": "2025-07-19 04:36:37.304871",
+ "modified": "2025-07-21 15:49:45.945785",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Quiz Transcript",
