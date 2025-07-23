@@ -249,3 +249,5 @@ fixtures = [
     #     "doctype":"Role","filters":[["role_name","in",["Manufacturer","Consumer","Distributor","Retailer","Wholesaler","Sales Person"]]]
     # }
 ]
+
+website_route_rules = [{'from_route': '/profiles/<path:app_path>', 'to_route': 'profiles'}, {'from_route': '/coupons/<path:app_path>', 'to_route': 'coupons'},]
