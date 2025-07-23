@@ -7,7 +7,7 @@ app_license = "mit"
 
 # Apps
 # ------------------
-
+website_path_resolver = "rewards_extension.utils.path_resolver"
 # required_apps = []
 
 # Each item in the list will be shown as an app in the apps page
@@ -83,7 +83,7 @@ app_license = "mit"
 # ------------
 
 # before_install = "rewards_extension.install.before_install"
-# after_install = "rewards_extension.install.after_install"
+after_install = "rewards_extension.install.after_install"
 
 # Uninstallation
 # ------------

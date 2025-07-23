@@ -8,8 +8,8 @@
   "section_break_sgf5",
   "amended_from",
   "campaign_name",
-  "website_route",
-  "website_slug",
+  "route",
+  "published",
   "campaign_status",
   "base_voucher_price",
   "campaign_budget",
@@ -60,13 +60,6 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Campaign Name",
-   "reqd": 1
-  },
-  {
-   "fieldname": "website_route",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Website Route",
    "reqd": 1
   },
   {
@@ -232,13 +225,6 @@
    "label": "Vouchers"
   },
   {
-   "fieldname": "website_slug",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Website Slug",
-   "reqd": 1
-  },
-  {
    "fieldname": "quiz_tab",
    "fieldtype": "Tab Break",
    "label": "Quiz"
@@ -262,6 +248,23 @@
    "label": "Interface Steps",
    "options": "Campaign Interface Steps",
    "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "route",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Webpage Route",
+   "read_only": 1,
+   "reqd": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "default": "0",
+   "fieldname": "published",
+   "fieldtype": "Check",
+   "label": "Webpage Published",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
@@ -273,7 +276,7 @@
    "link_fieldname": "campaign"
   }
  ],
- "modified": "2025-07-19 04:44:39.619670",
+ "modified": "2025-07-22 17:05:22.713032",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Voucher Campaign",

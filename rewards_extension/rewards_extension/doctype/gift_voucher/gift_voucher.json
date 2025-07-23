@@ -7,7 +7,6 @@
  "field_order": [
   "section_break_5xtl",
   "amended_from",
-  "voucher_id",
   "secret_code",
   "campaign",
   "campaign_target",
@@ -26,13 +25,13 @@
   "section_break_vvfb",
   "beneficiary_type",
   "payout_mode",
+  "fraud_score",
   "column_break_inko",
   "beneficiary",
   "beneficiary_gpay_number",
   "beneficiary_bank_account",
   "beneficiary_bank_account_html",
   "redeem_info_tab",
-  "fraud_score",
   "payout_request",
   "quiz",
   "column_break_seqz",
@@ -56,14 +55,6 @@
    "print_hide": 1,
    "read_only": 1,
    "search_index": 1
-  },
-  {
-   "fieldname": "voucher_id",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Voucher ID",
-   "reqd": 1,
-   "unique": 1
   },
   {
    "fieldname": "created_on",
@@ -210,6 +201,7 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "beneficiary_type",
    "fieldtype": "Link",
    "label": "Beneficiary Type",
@@ -221,6 +213,7 @@
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "beneficiary",
    "fieldtype": "Dynamic Link",
    "label": "Beneficiary",
@@ -233,6 +226,7 @@
    "options": "Quiz Transcript"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "beneficiary_gpay_number",
    "fieldtype": "Data",
    "label": "Beneficiary GPAY Number"
@@ -244,6 +238,7 @@
    "options": "GPAY\nNEFT"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "beneficiary_bank_account",
    "fieldtype": "Link",
    "label": "Beneficiary Bank Account",
@@ -278,7 +273,7 @@
    "link_fieldname": "gift_voucher_link"
   }
  ],
- "modified": "2025-07-21 16:57:24.054399",
+ "modified": "2025-07-23 08:50:35.817444",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Gift Voucher",
