@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "format: CASHBACK-{YY}-{MM}-{###}",
+ "autoname": "hash",
  "creation": "2025-07-18 20:15:26.989755",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -8,19 +8,22 @@
   "section_break_sgf5",
   "amended_from",
   "campaign_name",
-  "route",
-  "published",
   "campaign_status",
   "base_voucher_price",
-  "campaign_budget",
-  "redeemed_amount",
+  "voucher_count",
   "column_break_dqhm",
   "start_date",
   "end_date",
   "campaign_target",
-  "voucher_count",
+  "campaign_budget",
+  "redeemed_amount",
   "calculated_campaign_budget",
   "budget_variance",
+  "webpage_template_section",
+  "webpage_header_image",
+  "webpage_popup_image",
+  "column_break_bqac",
+  "webpage_background_color",
   "gamification_settings_section",
   "gamification",
   "gamification_type",
@@ -32,6 +35,7 @@
   "unique_audience_redeem_limit",
   "column_break_jfbw",
   "target_uniqueness",
+  "print_template",
   "printing_template_section",
   "interface",
   "vouchers_tab",
@@ -127,12 +131,14 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "default": "Active",
    "fieldname": "campaign_status",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Campaign Status",
    "options": "Active\nHeld\nExpired",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -144,13 +150,13 @@
    "reqd": 1
   },
   {
-   "default": "doc.base_voucher_price * doc.voucher_count",
    "fieldname": "campaign_budget",
    "fieldtype": "Float",
    "in_standard_filter": 1,
    "is_virtual": 1,
    "label": "Campaign Budget",
-   "non_negative": 1
+   "non_negative": 1,
+   "precision": "2"
   },
   {
    "description": "No of vouchers planned to be printed and distributed in the campaign period",
@@ -164,7 +170,9 @@
   {
    "fieldname": "calculated_campaign_budget",
    "fieldtype": "Float",
-   "label": "Calculated Campaign Budget"
+   "is_virtual": 1,
+   "label": "Calculated Campaign Budget",
+   "non_negative": 1
   },
   {
    "depends_on": "eval: doc.gamification == 1",
@@ -236,13 +244,14 @@
    "options": "Quiz Question"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "voucher_batch",
    "fieldtype": "Table",
    "label": "Voucher Batch",
-   "options": "Voucher Batch"
+   "options": "Voucher Batch",
+   "read_only": 1
   },
   {
-   "description": "Microsoft Word (.doc,.docx)",
    "fieldname": "interface",
    "fieldtype": "Table",
    "label": "Interface Steps",
@@ -250,21 +259,39 @@
    "reqd": 1
   },
   {
-   "allow_on_submit": 1,
-   "fieldname": "route",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Webpage Route",
-   "read_only": 1,
+   "fieldname": "webpage_template_section",
+   "fieldtype": "Section Break",
+   "label": "Webpage Template"
+  },
+  {
+   "fieldname": "webpage_header_image",
+   "fieldtype": "Attach",
+   "label": "Webpage Header Image",
    "reqd": 1
   },
   {
-   "allow_on_submit": 1,
-   "default": "0",
-   "fieldname": "published",
-   "fieldtype": "Check",
-   "label": "Webpage Published",
-   "read_only": 1
+   "fieldname": "webpage_popup_image",
+   "fieldtype": "Attach",
+   "label": "Webpage Popup Image",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_bqac",
+   "fieldtype": "Column Break"
+  },
+  {
+   "description": "HEXCODE",
+   "fieldname": "webpage_background_color",
+   "fieldtype": "Data",
+   "label": "Webpage Background Color",
+   "reqd": 1
+  },
+  {
+   "description": "Microsoft Word (.doc,.docx)",
+   "fieldname": "print_template",
+   "fieldtype": "Attach",
+   "label": "Print Template",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
@@ -276,11 +303,11 @@
    "link_fieldname": "campaign"
   }
  ],
- "modified": "2025-07-22 17:05:22.713032",
- "modified_by": "Administrator",
+ "modified": "2025-07-23 17:18:28.101108",
+ "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Voucher Campaign",
- "naming_rule": "Expression",
+ "naming_rule": "Random",
  "owner": "Administrator",
  "permissions": [
   {
@@ -295,10 +322,56 @@
    "share": 1,
    "submit": 1,
    "write": 1
+  },
+  {
+   "amend": 1,
+   "cancel": 1,
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Campaign Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Manufacturer",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Campaign Viewer",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Guest",
+   "share": 1
   }
  ],
  "row_format": "Dynamic",
+ "search_fields": "campaign_name",
+ "show_title_field_in_link": 1,
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "campaign_name"
 }

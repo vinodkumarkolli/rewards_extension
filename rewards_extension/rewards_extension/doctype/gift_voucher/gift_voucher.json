@@ -20,8 +20,8 @@
   "activated_on",
   "blocked_date",
   "voucher_status",
-  "voucher_type",
-  "voucher_retries",
+  "voucher_trails",
+  "voucher_print_template",
   "section_break_vvfb",
   "beneficiary_type",
   "payout_mode",
@@ -32,6 +32,9 @@
   "beneficiary_bank_account",
   "beneficiary_bank_account_html",
   "redeem_info_tab",
+  "redemption_trials_section",
+  "trail",
+  "successful_redemption_section",
   "payout_request",
   "quiz",
   "column_break_seqz",
@@ -114,22 +117,17 @@
    "fieldname": "activated_on",
    "fieldtype": "Date",
    "in_standard_filter": 1,
-   "label": "Activated on"
+   "label": "Activated on",
+   "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "voucher_status",
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Voucher Status",
-   "options": "Generated\nActive\nBlocked\nPayout Requested\nDenied Payment\nRedeemed",
-   "reqd": 1
-  },
-  {
-   "default": "0",
-   "fieldname": "voucher_retries",
-   "fieldtype": "Int",
-   "label": "Voucher Retries",
-   "non_negative": 1,
+   "options": "Generated\nActive\nDisabled\nBlocked\nPayout Requested\nDenied Payment\nRedeemed",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -142,7 +140,8 @@
    "allow_on_submit": 1,
    "fieldname": "blocked_date",
    "fieldtype": "Date",
-   "label": "Blocked Date"
+   "label": "Blocked Date",
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
@@ -179,15 +178,7 @@
    "unique": 1
   },
   {
-   "description": "Merchant Coupons are Coupons that can be redeemed against other Merchants",
-   "fieldname": "voucher_type",
-   "fieldtype": "Select",
-   "in_list_view": 1,
-   "label": "Voucher Type",
-   "options": "Cash\nMerchandise\nMerchant Coupon\nGift Pass",
-   "reqd": 1
-  },
-  {
+   "allow_on_submit": 1,
    "fieldname": "payout_request",
    "fieldtype": "Link",
    "label": "Payout Request",
@@ -220,6 +211,7 @@
    "options": "beneficiary_type"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "quiz",
    "fieldtype": "Link",
    "label": "Quiz",
@@ -232,6 +224,7 @@
    "label": "Beneficiary GPAY Number"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "payout_mode",
    "fieldtype": "Select",
    "label": "Payout Mode",
@@ -258,6 +251,36 @@
    "fieldname": "transcript",
    "fieldtype": "HTML",
    "label": "Transcript"
+  },
+  {
+   "fieldname": "redemption_trials_section",
+   "fieldtype": "Section Break",
+   "label": "Redemption Trials"
+  },
+  {
+   "fieldname": "trail",
+   "fieldtype": "Table",
+   "label": "Trail",
+   "options": "Voucher Redeem Trail"
+  },
+  {
+   "fieldname": "successful_redemption_section",
+   "fieldtype": "Section Break",
+   "label": "Successful Redemption"
+  },
+  {
+   "default": "0",
+   "fieldname": "voucher_trails",
+   "fieldtype": "Int",
+   "is_virtual": 1,
+   "label": "Voucher Trails",
+   "non_negative": 1
+  },
+  {
+   "fieldname": "voucher_print_template",
+   "fieldtype": "Attach",
+   "label": "Voucher Print Template",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
@@ -267,14 +290,10 @@
   {
    "link_doctype": "Payout",
    "link_fieldname": "payout_source_link"
-  },
-  {
-   "link_doctype": "Quiz Transcript",
-   "link_fieldname": "gift_voucher_link"
   }
  ],
- "modified": "2025-07-23 08:50:35.817444",
- "modified_by": "Administrator",
+ "modified": "2025-07-23 19:42:24.671149",
+ "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Gift Voucher",
  "naming_rule": "Random",
@@ -289,6 +308,49 @@
    "read": 1,
    "report": 1,
    "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Guest",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Campaign Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Campaign Viewer",
+   "share": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Manufacturer",
    "share": 1,
    "submit": 1,
    "write": 1

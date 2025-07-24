@@ -1,0 +1,1 @@
+# The authentication module for frappe-ui based Single Page Applications

@@ -246,8 +246,11 @@ fixtures = [
         "doctype":"Custom Field", "filters":{"module":["in",["Rewards Extension"]]}
     },
     # {
-    #     "doctype":"Role","filters":[["role_name","in",["Manufacturer","Consumer","Distributor","Retailer","Wholesaler","Sales Person"]]]
-    # }
+    #     "doctype":"Role","filters":[["role_name","in",["Campaign Manager","Campaign Viewer"]]]
+    # },
+    {
+        "doctype":"Custom DocPerm", "filters":{}
+    }
 ]
 
 website_route_rules = [{'from_route': '/profiles/<path:app_path>', 'to_route': 'profiles'}, {'from_route': '/coupons/<path:app_path>', 'to_route': 'coupons'},]
