@@ -3,16 +3,22 @@ import { createRouter, createWebHistory } from "vue-router"
 import { session } from "./data/session"
 
 const routes = [
+	// {
+	// 	path: "/",
+	// 	name: "Home",
+	// 	component: () => import("@/pages/Home.vue"),
+	// },
+	// {
+	// 	name: "Login",
+	// 	path: "/account/login",
+	// 	component: () => import("@/pages/Login.vue"),
+	// },
 	{
-		path: "/",
-		name: "Home",
-		component: () => import("@/pages/Home.vue"),
-	},
-	{
-		name: "Login",
-		path: "/account/login",
-		component: () => import("@/pages/Login.vue"),
-	},
+		name:"Campaign",
+		path:'/campaign/:id',
+		component:()=>import('@/pages/Campaign.vue'),
+		props:true
+	}
 ]
 
 const router = createRouter({

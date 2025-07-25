@@ -6,8 +6,7 @@
  "editable_grid": 1,
  "engine": "InnoDB",
  "field_order": [
-  "interface_type",
-  "sequence"
+  "interface_type"
  ],
  "fields": [
   {
@@ -15,15 +14,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Interface Type",
-   "options": "Login\nValidation\nRedemption\nQuiz",
-   "reqd": 1
-  },
-  {
-   "fieldname": "sequence",
-   "fieldtype": "Int",
-   "in_list_view": 1,
-   "label": "Sequence",
-   "non_negative": 1,
+   "options": "Login\nContact\nVoucher Validation\nRedemption\nQuiz",
    "reqd": 1
   }
  ],
@@ -31,8 +22,8 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-07-19 04:43:10.518303",
- "modified_by": "Administrator",
+ "modified": "2025-07-24 20:15:40.692159",
+ "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Campaign Interface Steps",
  "owner": "Administrator",

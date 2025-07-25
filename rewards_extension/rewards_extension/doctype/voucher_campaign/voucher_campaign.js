@@ -24,8 +24,17 @@ frappe.ui.form.on("Voucher Campaign", {
 	},
     voucher_count(frm){
         frm.set_value("campaign_budget",frm.doc.base_voucher_price * frm.doc.voucher_count)
-    }
+    },
 });
+// frappe.ui.form.on('Quiz Question',{
+//     warm_question_req(frm,cdt,cdn){
+//         let row = locals[cdt][cdn];
+//         if(row.mandatory_answer==1){
+//             row.warm_question_req = 0;
+//             refresh_field('warm_question_req');
+//         }
+//     }
+// })
 function addVoucherBatchButtons(frm){
     frm.add_custom_button(__('Create a Batch'),function(){
         openBatchPopup(frm)

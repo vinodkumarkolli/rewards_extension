@@ -252,6 +252,8 @@
    "read_only": 1
   },
   {
+   "allow_on_submit": 1,
+   "description": "Row #s determine the Carousel Sequence in Webpage",
    "fieldname": "interface",
    "fieldtype": "Table",
    "label": "Interface Steps",
@@ -280,7 +282,7 @@
    "fieldtype": "Column Break"
   },
   {
-   "description": "HEXCODE",
+   "description": "hexcode",
    "fieldname": "webpage_background_color",
    "fieldtype": "Data",
    "label": "Webpage Background Color",
@@ -303,7 +305,7 @@
    "link_fieldname": "campaign"
   }
  ],
- "modified": "2025-07-23 17:18:28.101108",
+ "modified": "2025-07-24 20:17:21.431053",
  "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Voucher Campaign",
