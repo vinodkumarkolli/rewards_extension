@@ -16,7 +16,7 @@ const routes = [
 ]
 
 const router = createRouter({
-	history: createWebHistory("/profiles"),
+	history: createWebHistory("/vouchers"),
 	routes,
 })
 

@@ -11,7 +11,7 @@ export default defineConfig({
 			jinjaBootData: true,
 			lucideIcons: true,
 			buildConfig: {
-				indexHtmlPath: "../<app-name>/www/profiles.html",
+				indexHtmlPath: "../<app-name>/www/vouchers.html",
 				emptyOutDir: true,
 				sourcemap: true,
 			},
@@ -20,7 +20,7 @@ export default defineConfig({
 	],
 	build: {
 		chunkSizeWarningLimit: 1500,
-		outDir: "../<app-name>/public/profiles",
+		outDir: "../<app-name>/public/vouchers",
 		emptyOutDir: true,
 		target: "es2015",
 		sourcemap: true,

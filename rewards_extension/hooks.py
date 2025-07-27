@@ -153,8 +153,10 @@ after_install = "rewards_extension.install.after_install"
 # 		"rewards_extension.tasks.all"
 # 	],
 # 	"daily": [
+# 		"rewards_extension.rewards_extension.rewards_extension.doctype.guestotp.guestotp.delete_unused_guestotps",
 # 		"rewards_extension.tasks.daily"
 # 	],
+# }
 # 	"hourly": [
 # 		"rewards_extension.tasks.hourly"
 # 	],
@@ -253,4 +255,4 @@ fixtures = [
     }
 ]
 
-website_route_rules = [{'from_route': '/profiles/<path:app_path>', 'to_route': 'profiles'}, {'from_route': '/coupons/<path:app_path>', 'to_route': 'coupons'},]
+website_route_rules = [{'from_route': '/vouchers/<path:app_path>', 'to_route': 'vouchers'}, {'from_route': '/profiles/<path:app_path>', 'to_route': 'profiles'}, {'from_route': '/coupons/<path:app_path>', 'to_route': 'coupons'},]

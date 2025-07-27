@@ -24,29 +24,32 @@ export default {
     mounted(){
         if (this.id) {
             // console.log('fetching campaign',props.id)
-            let resource = createResource({
-                url:'frappe.client.get',
-                params:{
-                    doctype:"Voucher Campaign",
-                    name:this.id,
-                    fields:['*']
+            fetch('/api/resource/Voucher%20Campaign/'+this.id, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'token '
                 },
-                onSuccess:(res)=>{
-                    this.campaign=res
-                    const startDate = new Date(this.campaign.start_date);
-                    const endDate = new Date(this.campaign.end_date);
-                    const da = new Date();
-                    if(endDate >da && startDate <= da && this.campaign.campaign_status =='Active'){
-                        this.campaignActive=true;
-                        this.activeStep = this.campaign.interface[0]['interface_type'];
-                        // this.activeStep=this.campaign.interface[0];
-                    }
-                    else{
-                        this.campaignActive=false;
-                    }
-                }
+                body: JSON.stringify({
+                    fields: ['*']
+                })
             })
-            resource.fetch()
+            .then(response => response.json())
+            .then(res => {
+                console.log(res)
+                this.campaign = res.message;
+                const startDate = new Date(this.campaign.start_date);
+                const endDate = new Date(this.campaign.end_date);
+                const da = new Date();
+                if (endDate > da && startDate <= da && this.campaign.campaign_status == 'Active') {
+                    this.campaignActive = true;
+                    this.activeStep = this.campaign.interface[0]['interface_type'];
+                    // this.activeStep=this.campaign.interface[0];
+                }
+                else {
+                    this.campaignActive = false;
+                }
+            });
         }
     }
 }
