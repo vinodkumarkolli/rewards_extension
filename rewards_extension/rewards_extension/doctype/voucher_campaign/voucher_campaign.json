@@ -305,8 +305,8 @@
    "link_fieldname": "campaign"
   }
  ],
- "modified": "2025-07-24 20:17:21.431053",
- "modified_by": "vinodkumarkolli@gmail.com",
+ "modified": "2025-07-29 00:04:14.755364",
+ "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Voucher Campaign",
  "naming_rule": "Random",
@@ -365,7 +365,7 @@
    "print": 1,
    "read": 1,
    "report": 1,
-   "role": "Guest",
+   "role": "Consumer",
    "share": 1
   }
  ],
