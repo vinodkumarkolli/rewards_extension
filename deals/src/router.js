@@ -13,21 +13,10 @@ const routes = [
 		path: "/account/login",
 		component: () => import("@/pages/Login.vue"),
 	},
-	{
-		name: "OTPLogin",
-		path: "/account/login/otp",
-		component: () => import("@/pages/Login.vue"),
-		props: { mode: "otp" }
-	},
-	{
-		name: "Signup",
-		path: "/account/signup",
-		component: () => import("@/pages/Signup.vue"),
-	},
 ]
 
 const router = createRouter({
-	history: createWebHistory("/vouchers"),
+	history: createWebHistory("/deals"),
 	routes,
 })
 
@@ -39,15 +28,12 @@ router.beforeEach(async (to, from, next) => {
 		isLoggedIn = false
 	}
 
-	// Allow access to login and signup routes when not logged in
-	if ((to.name === "Login" || to.name === "Signup") && !isLoggedIn) {
-		next();
-	} else if (to.name === "Login" && isLoggedIn) {
-		next({ name: "Home" });
+	if (to.name === "Login" && isLoggedIn) {
+		next({ name: "Home" })
 	} else if (to.name !== "Login" && !isLoggedIn) {
-		next({ name: "Login" });
+		next({ name: "Login" })
 	} else {
-		next();
+		next()
 	}
 })
 
