@@ -9,7 +9,10 @@
   <!-- Top Navigation Bar -->
   <nav class="fixed top-0 left-0 w-full bg-white shadow-md p-4 z-10">
     <div class="max-w-3xl mx-auto flex justify-between items-center">
-      <div class="font-bold text-gray-800">Rewards App</div>
+      <div class="flex items-center bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg shadow-md">
+        <span class="text-2xl mr-2">🎟️</span>
+        <div class="font-bold text-lg">Coupon Rewards</div>
+      </div>
       <div class="flex items-center space-x-3">
         <div v-if="userResource && userResource.loading" class="text-sm text-gray-500">Loading...</div>
         <div v-else-if="userResource && userResource.doc" class="flex items-center">

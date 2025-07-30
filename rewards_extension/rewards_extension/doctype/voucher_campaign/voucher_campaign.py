@@ -9,7 +9,38 @@ from frappe.utils import nowdate
 
 
 class VoucherCampaign(Document):
-	pass
+    def before_save(self):
+        # Move files to custom folders if set
+        if self.webpage_header_image:
+            # Extract filename from path
+            filename = self.webpage_header_image.split("/")[-1]
+            
+            # Define target folder path
+            target_folder = "Home/Voucher Templates/Website Headers"
+            target_path = f"{target_folder}/{filename}"
+            
+            # Skip if already in target folder
+            if not self.webpage_header_image.startswith(target_folder):
+                # Move file to target folder
+                file_doc = frappe.get_doc("File", {"file_url": self.webpage_header_image})
+                file_doc.folder = target_folder
+                file_doc.save()
+                
+                # Update document field with new path
+                self.webpage_header_image = target_path
+                
+        # Handle webpage_popup_image
+        if self.webpage_popup_image:
+            filename = self.webpage_popup_image.split("/")[-1]
+            target_folder = "Home/Voucher Templates/Website Popups"
+            target_path = f"{target_folder}/{filename}"
+            
+            if not self.webpage_popup_image.startswith(target_folder):
+                file_doc = frappe.get_doc("File", {"file_url": self.webpage_popup_image})
+                file_doc.folder = target_folder
+                file_doc.save()
+                self.webpage_popup_image = target_path
+                
 @frappe.whitelist()
 def change_campaign_status(campaign:str,status:str):
     doc = frappe.get_doc("Voucher Campaign",campaign)

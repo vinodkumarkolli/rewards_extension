@@ -23,7 +23,7 @@
   "webpage_header_image",
   "webpage_popup_image",
   "column_break_bqac",
-  "webpage_background_color",
+  "instructions",
   "gamification_settings_section",
   "gamification",
   "gamification_type",
@@ -35,7 +35,6 @@
   "unique_audience_redeem_limit",
   "column_break_jfbw",
   "target_uniqueness",
-  "print_template",
   "printing_template_section",
   "interface",
   "vouchers_tab",
@@ -282,17 +281,10 @@
    "fieldtype": "Column Break"
   },
   {
-   "description": "hexcode",
-   "fieldname": "webpage_background_color",
-   "fieldtype": "Data",
-   "label": "Webpage Background Color",
-   "reqd": 1
-  },
-  {
-   "description": "Microsoft Word (.doc,.docx)",
-   "fieldname": "print_template",
-   "fieldtype": "Attach",
-   "label": "Print Template",
+   "fieldname": "instructions",
+   "fieldtype": "Table",
+   "label": "Instructions",
+   "options": "Campaign Instruction",
    "reqd": 1
   }
  ],
@@ -305,8 +297,8 @@
    "link_fieldname": "campaign"
   }
  ],
- "modified": "2025-07-29 00:04:14.755364",
- "modified_by": "Administrator",
+ "modified": "2025-07-30 20:00:36.355721",
+ "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Voucher Campaign",
  "naming_rule": "Random",

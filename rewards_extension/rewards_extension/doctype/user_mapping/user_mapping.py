@@ -5,5 +5,5 @@
 from frappe.model.document import Document
 
 
-class GuestOTP(Document):
+class UserMapping(Document):
 	pass
