@@ -1,5 +1,5 @@
 <template>
-  <div class="m-3 flex flex-row items-center justify-center">
+  <div class="m-3 flex flex-row items-center justify-center h-screen">
     <Card :title="currentStepTitle" class="w-full max-w-md mt-4">
       <!-- Mobile Input Step -->
       <div v-if="currentStep === 'mobile'">
@@ -26,7 +26,6 @@
           <Button type="submit" :loading="loading" variant="solid" :disabled="!!mobileError">Send OTP</Button>
         </form>
       </div>
-
       <!-- OTP Verification Step -->
       <div v-if="currentStep === 'otp'">
         <form class="flex flex-col space-y-2 w-full" @submit.prevent="verifyOTP">
@@ -122,6 +121,9 @@ import { ref, computed, onMounted, nextTick } from 'vue'
 import { call } from 'frappe-ui'
 import { Card, Button } from 'frappe-ui'
 
+import { useRoute } from 'vue-router'
+
+const route = useRoute()
 const currentStep = ref('mobile')
 const mobile = ref('')
 const mobileError = ref('')
@@ -249,26 +251,40 @@ async function verifyOTP() {
     })
     
     if (res.status === 'success') {
+      // Get deal ID from route parameters
+      const dealId = route.params.id
+      
+      // Redirect to deal-specific URL if ID exists
+      const redirectPath = dealId ? `/deals/${dealId}` : '/'
+      
       // Show animation for 1 second before redirect
       setTimeout(() => {
-        window.location.href = '/'
+        window.location.href = redirectPath
       }, 1000)
     } else {
       otpError.value = 'OTP verification failed. Please try again.'
       verifying.value = false
     }
   } catch (error) {
-    console.error('OTP verification error:', error)
+    // console.error('OTP verification error:', error)
     
-    // Handle specific OTP validation error
-    if (error?.exc_type === 'ValidationError' && error?.message?.includes('Invalid OTP')) {
-      otpError.value = 'Incorrect OTP entered. Please try again.'
+    // Handle all ValidationError exceptions from backend
+    if (error?.exc_type === 'ValidationError') {
+      // Extract the actual error message from the exception
+      // const message = error.message.split(':').pop()?.trim() || 'Invalid OTP'
+      const message = 'Invalid OTP'
+      otpError.value = message
     } else {
       otpError.value = 'An error occurred during verification. Please try again.'
     }
     
     verifying.value = false
     loading.value = false
+    
+    // Reset OTP fields but keep digits for correction
+    setTimeout(() => {
+      otpInputs.value[0]?.focus()
+    }, 100)
   }
 }
 

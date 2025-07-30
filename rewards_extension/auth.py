@@ -129,8 +129,16 @@ def verify_login_otp(tmp_id: str, otp: str):
     if tmp_id in SESSION_CACHE:
         del SESSION_CACHE[tmp_id]
 
-    frappe.local.response["redirect_to"] = "/"
-    return {"status": "success", "message": "Login successful."}
+    # Get user details to include in response
+    user_doc = frappe.get_doc("User", cached_data.get("user"))
+    print("User Doc",user_doc)
+    return {
+        "status": "success",
+        "message": "Login successful.",
+        "first_name": user_doc.first_name,
+        "mobile_no": user_doc.mobile_no,
+        "default_route": "/"
+    }
 
 def generate_hmac_token(data: dict) -> str:
 	"""Generate HMAC-signed token for session storage"""

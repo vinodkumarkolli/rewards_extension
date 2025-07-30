@@ -4,13 +4,15 @@ import { session } from "./data/session"
 
 const routes = [
 	{
-		path: "/",
+		path: "/:id?",
 		name: "Home",
 		component: () => import("@/pages/Home.vue"),
+		props: true,
 	},
 	{
 		name: "Login",
-		path: "/account/login",
+		path: "/account/login/:id?",
+		props: true,
 		component: () => import("@/pages/Login.vue"),
 	},
 ]
@@ -42,11 +44,15 @@ router.beforeEach(async (to, from, next) => {
   }
 
   if (to.name === "Login" && isLoggedIn) {
-    next({ name: "Home" })
+  	// Preserve deal ID when redirecting to Home
+  	const dealId = to.params.id
+  	next({ name: "Home", params: { id: dealId } })
   } else if (to.name !== "Login" && !isLoggedIn) {
-    next({ name: "Login" })
+  	// Pass current deal ID to login page
+  	const dealId = to.params.id
+  	next({ name: "Login", params: { id: dealId } })
   } else {
-    next()
+  	next()
   }
 })
 

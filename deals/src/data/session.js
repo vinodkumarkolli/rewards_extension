@@ -23,10 +23,20 @@ export const session = reactive({
 			}
 		},
 		onSuccess(data) {
+			console.log(data)
 			userResource.reload()
 			session.user = sessionUser()
+			session.first_name = data.first_name
+			session.mobile_no = data.mobile_no
+			session.user_image = data.user_image // Add user image from login response
 			session.login.reset()
-			router.replace(data.default_route || "/")
+			
+			// Redirect to original URL or home with ID
+			const redirectPath = router.currentRoute.value.query.redirect ||
+								(router.currentRoute.value.params.id
+									? `/${router.currentRoute.value.params.id}`
+									: (data.default_route || "/"))
+			router.replace(redirectPath)
 		},
 	}),
 	logout: createResource({
@@ -34,9 +44,15 @@ export const session = reactive({
 		onSuccess() {
 			userResource.reset()
 			session.user = sessionUser()
+			session.first_name = null
+			session.mobile_no = null
+			session.user_image = null // Clear user image on logout
 			router.replace({ name: "Login" })
 		},
 	}),
 	user: sessionUser(),
+	first_name: null,
+	mobile_no: null,
+	user_image: null, // Add user_image property
 	isLoggedIn: computed(() => !!session.user),
 })
