@@ -103,32 +103,34 @@ def signup(first_name: str, last_name: str, company_name: str, mobile_no: str, e
 @frappe.whitelist(allow_guest=True)
 @rate_limit(key="tmp_id", limit=10, seconds=60 * 5) # Allow more verification attempts
 def verify_login_otp(tmp_id: str, otp: str):
-	"""
-	Verifies the OTP and logs the user in if it's correct.
-	"""
-	if not (tmp_id and otp):
-		frappe.throw(_("Temporary ID and OTP are required."))
+    """
+    Verifies the OTP and logs the user in if it's correct.
+    Allows multiple attempts without invalidating the session.
+    """
+    if not (tmp_id and otp):
+        frappe.throw(_("Temporary ID and OTP are required."))
 
-	# Retrieve token from cache
-	if tmp_id not in SESSION_CACHE or time.time() > SESSION_CACHE[tmp_id]["expiration"]:
-		frappe.throw(_("Login request expired. Please try again."))
-	
-	token = SESSION_CACHE[tmp_id]["token"]
-	cached_data = verify_hmac_token(token)
-	
-	# Clean up cache
-	if tmp_id in SESSION_CACHE:
-		del SESSION_CACHE[tmp_id]
+    # Retrieve token from cache
+    if tmp_id not in SESSION_CACHE or time.time() > SESSION_CACHE[tmp_id]["expiration"]:
+        frappe.throw(_("Login request expired. Please try again."))
+    
+    token = SESSION_CACHE[tmp_id]["token"]
+    cached_data = verify_hmac_token(token)
 
-	if str(cached_data.get("otp")) != str(otp):
-		frappe.throw(_("Invalid OTP. Please try again."))
+    # Only clean up cache on success
+    if str(cached_data.get("otp")) != str(otp):
+        frappe.throw(_("Invalid OTP. Please try again."))
 
-	# OTP is correct, log the user in
-	frappe.local.login_manager = LoginManager()
-	frappe.local.login_manager.login_as(cached_data.get("user"))
+    # OTP is correct, log the user in
+    frappe.local.login_manager = LoginManager()
+    frappe.local.login_manager.login_as(cached_data.get("user"))
 
-	frappe.local.response["redirect_to"] = "/"
-	return {"status": "success", "message": "Login successful."}
+    # Clean up cache on success
+    if tmp_id in SESSION_CACHE:
+        del SESSION_CACHE[tmp_id]
+
+    frappe.local.response["redirect_to"] = "/"
+    return {"status": "success", "message": "Login successful."}
 
 def generate_hmac_token(data: dict) -> str:
 	"""Generate HMAC-signed token for session storage"""
