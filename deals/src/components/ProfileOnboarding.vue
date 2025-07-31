@@ -17,32 +17,9 @@
       </div>
     </div>
 
-    <!-- Step 2: Customer Type -->
-    <div v-if="currentStep === 2">
-      <div class="space-y-4">
-        <div id="profileQuestion2">
-          <label class="block text-sm font-medium text-gray-700">What describes you the best? <span class="text-red-500">*</span></label>
-          <div class="mt-2 flex flex-wrap gap-x-6 gap-y-2">
-            <div v-for="c_type in customerTypes" :key="c_type" class="flex items-center">
-              <input
-                :id="`customer_type_${c_type}`"
-                name="customer_type"
-                type="radio"
-                :value="c_type"
-                v-model="customerProfileData.customer_type"
-                class="focus:ring-black h-4 w-4 text-black border-gray-300"
-              />
-              <label :for="`customer_type_${c_type}`" class="ml-2 block text-sm text-gray-900">
-                {{ c_type }}
-              </label>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
 
-    <!-- Step 3: Address -->
-    <div v-if="currentStep === 3">
+    <!-- Step 2: Address -->
+    <div v-if="currentStep === 2">
       <div class="space-y-4">
         <div id="profileQuestion3" class="space-y-4">
                   <div>
@@ -101,13 +78,13 @@
         variant="outline"
       />
       <Button
-        v-if="currentStep < 3"
+        v-if="currentStep < 2"
         label="Next"
         @click="goToStep(currentStep + 1)"
         variant="solid"
       />
       <Button
-        v-if="currentStep === 3"
+        v-if="currentStep === 2"
         label="Submit Profile"
         @click="$emit('submit')"
         :loading="creatingProfile"
@@ -124,6 +101,12 @@ export default {
     voucherCampaign: Object,
     customerTypes: Array,
     creatingProfile: Boolean
+  },
+  created() {
+    if (this.voucherCampaign?.campaign_target) {
+      this.customerProfileData.customer_type =
+        this.voucherCampaign.campaign_target.slice(0, -1);
+    }
   },
   data() {
     return {

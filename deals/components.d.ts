@@ -10,6 +10,8 @@ declare module 'vue' {
   export interface GlobalComponents {
     GuidedTour: typeof import('./src/components/GuidedTour.vue')['default']
     ProfileOnboarding: typeof import('./src/components/ProfileOnboarding.vue')['default']
+    Quiz: typeof import('./src/components/Quiz.vue')['default']
+    Redemption: typeof import('./src/components/Redemption.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SimpleCarousel: typeof import('./src/components/SimpleCarousel.vue')['default']

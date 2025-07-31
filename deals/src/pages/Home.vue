@@ -49,12 +49,12 @@
   </div>
   <div class="max-w-3xl py-12 mx-auto h-screen flex flex-col items-center justify-center relative z-10" v-if="id">
     <!-- Show coupon input after tour completion -->
-    <div v-if="tourCompleted && profileData" class="bg-gray-100 rounded-lg p-4 flex-col items-center justify-center">
+    <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon'" class="bg-gray-100 rounded-lg p-4 flex-col items-center justify-center">
       <div class="flex flex-col justify-start">
       <h3 class="text-xl font-bold mb-4 text-gray-700">
         Welcome {{ profileData.customer_name }}
       </h3>
-      <p class="text-sm text-gray-500 mb-6">We are happy to see you here. There are exciting rewards waiting for you. </p>
+      <p class="text-sm text-gray-500 mb-4">We are happy to see you here. There are exciting rewards waiting for you. </p>
       </div>
       <div class="w-full max-w-xs flex-col items-center justify-center">
         <Input
@@ -83,6 +83,33 @@
         {{ validationMessage }}
       </Alert>
     </div>
+    
+    <!-- Quiz Component -->
+    <Quiz
+      v-if="currentStep === 'quiz' && showQuiz"
+      :quizData="quizData"
+      @complete="completeQuiz"
+    />
+    
+    <!-- Redemption Component -->
+    <Redemption
+      v-if="currentStep === 'redemption' && showRedemption"
+      @complete="completeRedemption"
+    />
+    
+    <!-- Success Message -->
+    <div v-if="currentStep === 'success'" class="bg-white rounded-lg p-8 shadow-lg max-w-md text-center">
+      <div class="text-green-500 text-5xl mb-4">✓</div>
+      <h3 class="text-2xl font-bold mb-2 text-gray-800">Redemption Successful!</h3>
+      <p class="text-gray-600 mb-6">Your reward will be processed shortly. Thank you for participating!</p>
+      <Button
+        label="Logout"
+        @click="session.logout.submit()"
+        variant="solid"
+        class="w-full"
+      />
+    </div>
+    
     <!-- Customer Profile Form -->
     <div v-if="tourCompleted && !profileData" class="mt-6 p-6 bg-white rounded-lg shadow-lg w-full max-w-md">
       <h3 class="text-xl font-bold mb-4 text-gray-700">Create Your Profile</h3>
@@ -96,20 +123,6 @@
         @submit="createProfile"
       />
     </div>
-    <!-- Show original content if tour not completed -->
-    <!-- <div v-else>
-      <h2 class="font-bold text-lg text-gray-600 mb-4">
-        Welcome {{ session.user }}!
-      </h2>
-      <div v-if="id">
-        <p>
-          ID Passed: {{ id }}
-        </p>
-      </div>
-      <div class="flex flex-row space-x-2 mt-4">
-        <Button @click="showDialog = true">Open Dialog</Button>
-      </div>
-    </div> -->
   </div>
   
   <!-- Guided Tour -->
@@ -126,6 +139,8 @@ import { ref, watch, onMounted } from "vue"
 import { session } from "../data/session"
 import GuidedTour from '@/components/GuidedTour.vue'
 import ProfileOnboarding from '@/components/ProfileOnboarding.vue';
+import Quiz from '@/components/Quiz.vue';
+import Redemption from '@/components/Redemption.vue';
 
 const props = defineProps({
   id: { type: String, default: null }
@@ -135,7 +150,7 @@ const showDialog = ref(false)
 // State management
 const showTour = ref(false)
 const voucherCampaign = ref(null)
-const currentStep = ref('tour') // 'tour', 'profile', or 'coupon'
+const currentStep = ref('tour') // 'tour', 'profile','coupon', 'quiz', 'redemption', 'success'
 const tourCompleted = ref(false) // Simple reactive tour completion state
 const couponCode = ref('')
 const validating = ref(false)
@@ -156,6 +171,10 @@ const customerProfileData = ref({
 })
 // Reactive variable to store profile data (single declaration)
 const profileData = ref(null)
+const quizData = ref([]) // Stores quiz questions
+const showQuiz = ref(false) // Controls Quiz visibility
+const showRedemption = ref(false) // Controls Redemption visibility
+const redemptionComplete = ref(false) // Tracks redemption completion
 
 // Create document resource for current user
 const userResource = createDocumentResource({
@@ -172,13 +191,18 @@ const userResource = createDocumentResource({
 const voucherResource = createDocumentResource({
   doctype: "Voucher Campaign",
   name: props.id,
-  fields: ["name", "campaign_name", "campaign_target","instructions.*"],
+  fields: ["name", "campaign_name", "campaign_target","instructions.*", "quiz.*"],
   auto: true,
   onSuccess(data) {
     if (data) {
       // console.log("Campaign data:", data)
       voucherCampaign.value = data
       showTour.value = true
+      // Store quiz data if available
+      if (data.quiz) {
+        quizData.value = data.quiz
+        console.log("Quiz data:", quizData.value)
+      }
     }
   }
 })
@@ -189,15 +213,17 @@ async function completeTour() {
   
   try {
     // Properly await the API call to get the resolved profile object
-    const profile = await call('rewards_extension.rewards_extension.doctype.gift_voucher.gift_voucher.search_customer_profile_for_contact', {
-      user: session.user,
-    })
-    
-    if (profile) {
-      profileData.value = profile
-      currentStep.value = 'coupon' // Show coupon form
-    } else {
-      currentStep.value = 'profile' // Show profile form
+    if(voucherCampaign.value.campaign_target != 'Sales Persons'){
+      const profile = await call('rewards_extension.rewards_extension.doctype.gift_voucher.gift_voucher.search_customer_profile_for_contact', {
+        user: session.user,
+      })
+      
+      if (profile) {
+        profileData.value = profile
+        currentStep.value = 'coupon' // Show coupon form
+      } else {
+        currentStep.value = 'profile' // Show profile form
+      }
     }
   } catch (error) {
     console.error('Profile check failed:', error)
@@ -214,20 +240,29 @@ async function validateCoupon() {
     const result = await call('rewards_extension.rewards_extension.doctype.gift_voucher.gift_voucher.validate_coupon_code_and_create_trail', {
       coupon_code: couponCode.value,
       user: session.user,
-      campaign_id: voucherCampaign.value.name
+      campaign_id: voucherCampaign.value.name,
+      profile: profileData.value
     })
     
     if (result.valid) {
       sessionStorage.setItem('voucher_trail_id', result.trail.trail_id)
       currentVoucherName.value = result.coupon_details.voucher_name
-
-      if(voucherCampaign.value.campaign_target == 'Retailers'){
-        //Call custom API method to search current user across Customer Profiles and fetch the Customer Profile if exists
-        // Validate coupon logic (profile is handled before coupon form appears)
+      
+      // Check if there's quiz data
+      if (quizData.value && quizData.value.length > 0) {
+        currentStep.value = 'quiz'
+        showQuiz.value = true
       } else {
-        validationSuccess.value = true
-        validationMessage.value = 'Coupon validated! Trail initiated successfully'
+        // If no quiz, go directly to redemption
+        currentStep.value = 'redemption'
+        showRedemption.value = true
       }
+      
+      validationSuccess.value = true
+      validationMessage.value = 'Coupon validated successfully!'
+    } else {
+      validationSuccess.value = false
+      validationMessage.value = result.message || 'Invalid coupon code'
     }
   } catch (error) {
     validationSuccess.value = false
@@ -259,7 +294,7 @@ async function createProfile() {
 
     if (newProfile) {
       validationSuccess.value = true
-      validationMessage.value = 'Profile created successfully! You can now proceed.'
+      // validationMessage.value = 'Profile created successfully! You can now proceed.'
     }
   } catch (error) {
     validationSuccess.value = false
@@ -267,6 +302,18 @@ async function createProfile() {
   } finally {
     creatingProfile.value = false
   }
+}
+
+function completeQuiz() {
+  showQuiz.value = false
+  currentStep.value = 'redemption'
+  showRedemption.value = true
+}
+
+function completeRedemption() {
+  showRedemption.value = false
+  redemptionComplete.value = true
+  currentStep.value = 'success'
 }
 
 watch(() => props.id, (newId) => {

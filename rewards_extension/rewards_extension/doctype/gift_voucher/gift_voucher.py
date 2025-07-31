@@ -10,49 +10,73 @@ class GiftVoucher(Document):
 	pass
 
 @frappe.whitelist()
-def validate_coupon_code_and_create_trail(coupon_code, user, campaign_id):
+def validate_coupon_code_and_create_trail(coupon_code, user, campaign_id, profile):
 	# Validate coupon exists and is active
-	voucher = frappe.get_value(
+	if isinstance(profile, str):
+		customer_profile = json.loads(profile)
+	else:
+		customer_profile = profile
+	voucher_name = frappe.db.get_value(
 		"Gift Voucher",
-		filters={"secret_code": coupon_code, "voucher_status": "Active","campaign": campaign_id},
-		fieldname=["name", "secret_code", "campaign_target", "voucher_base_amount"]
+		filters={"secret_code": coupon_code, "voucher_status": "Active", "campaign": campaign_id},
+		fieldname="name",
 	)
-	if not voucher:
-		return {
-			"valid": False,
-			"message": "Invalid coupon code or voucher is not active"
-		}
-	
-	# Extract values from tuple
-	voucher_name, secret_code, campaign_target, voucher_value = voucher
-	
+	if not voucher_name:
+		# The original implementation returned a dict. Throwing an exception is cleaner
+		# and can be caught by the frontend call, which has a try-catch block.
+		frappe.throw(frappe._("Invalid coupon code or voucher is not active"))
+
+	voucher_doc = frappe.get_doc("Gift Voucher", voucher_name)
+
 	# Create trail record
 	trail = frappe.get_doc({
 		"doctype": "Voucher Redeem Trail",
-		"parent": voucher_name,
+		"parent": voucher_doc.name,
 		"parenttype": "Gift Voucher",
 		"parentfield": "trail",
 		"user": user,
 		"trail_datetime": now(),
-		"trail_status": "Initiated"
+		"trail_status": "Initiated",
 	})
 	trail.insert(ignore_permissions=True)
 	trail.submit()
-	
+
+	# Add a comment to the voucher to log this event
+	comment = f"{user} has registered the present voucher to his profile on {now()}"
+	voucher_doc.add_comment("Info", comment)
+	customer_type = customer_profile.get("customer_type")
+	# Map customer_type to beneficiary_type using switch-like logic
+	beneficiary_type = {
+        "Retailer": "Customer Profile",
+		"Wholesaler": "Customer Profile",
+		"Distributor": "Customer Profile",
+        "Distributor": "Distributor Profile",
+        "Sales Person": "Sales Person Profile"
+    }.get(customer_type, customer_type)  # Default to original if not found
+	voucher_doc.beneficiary_type = beneficiary_type
+	voucher_doc.save(ignore_permissions=True)
+	voucher_doc.beneficiary = customer_profile.get("customer_name")
+	voucher_doc.save(ignore_permissions=True)
+	comment = f"{customer_profile.get('customer_name')} of type {customer_profile.get('customer_type')} is allocated this voucher"
+	voucher_doc.add_comment('Edit',comment)
+    
 	return {
 		"valid": True,
 		"coupon_details": {
-			"coupon_code": coupon_code,
-			"voucher_name": voucher_name,
-			"campaign_target": campaign_target,
-			"voucher_value": voucher_value
+			"coupon_code": voucher_doc.secret_code,
+			"voucher_name": voucher_doc.name,
+			"campaign_target": voucher_doc.campaign_target,
+			"voucher_value": voucher_doc.voucher_base_amount,
+			"beneficiary_type": voucher_doc.beneficiary_type,
+			"beneficiary": voucher_doc.beneficiary
 		},
 		"trail": {
 			"trail_id": trail.name,
 			"trail_datetime": trail.trail_datetime,
-			"trail_status": trail.trail_status
-		}
+			"trail_status": trail.trail_status,
+		},
 	}
+
 @frappe.whitelist()
 def search_customer_profile_for_contact(user):
 	"""
@@ -110,7 +134,33 @@ def create_customer_profile(customer_data, user):
 	address.save(ignore_permissions=True)
 	return profile.as_dict()
 
-@frappe.whitelist()
-def update_beneficiary_profile(profile,voucher):
-	#update beneficiary_type and beneficiary fields of voucher doc
-	pass
+# @frappe.whitelist()
+# def update_beneficiary_profile(profile,voucher,trail_id):
+#     #update beneficiary_type and beneficiary fields of voucher doc
+#     if isinstance(profile, str):
+#         customer_profile = json.loads(profile)
+#     else:
+#         customer_profile = profile
+#     voucher_doc = frappe.get_doc("Gift Voucher", voucher)
+    
+#     customer_type = customer_profile.get("customer_type")
+#     # Map customer_type to beneficiary_type using switch-like logic
+#     beneficiary_type = {
+#         "Retailer": "Customer Profile",
+# 		"Wholesaler": "Customer Profile",
+# 		"Distributor": "Customer Profile",
+#         "Distributor": "Distributor Profile",
+#         "Sales Person": "Sales Person Profile"
+#     }.get(customer_type, customer_type)  # Default to original if not found
+    
+#     voucher_doc.beneficiary_type = beneficiary_type
+#     voucher_doc.save(ignore_permissions=True)
+#     voucher_doc.beneficiary = customer_profile.get("customer_name")
+#     voucher_doc.save(ignore_permissions=True)
+#     comment = f"{customer_profile.get('customer_name')} of type {customer_profile.get('customer_type')} is allocated this voucher"
+#     voucher_doc.add_comment('Edit',comment)
+#     # voucher_trail_doc = frappe.get_doc("Voucher Redeem Trail", trail_id)
+#     # # voucher_trail_doc.trail_status = "Assigned"
+#     # voucher_trail_doc.save(ignore_permissions=True)
+#     frappe.db.commit()
+#     return voucher_doc.as_dict()
