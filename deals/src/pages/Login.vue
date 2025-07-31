@@ -120,6 +120,8 @@
 import { ref, computed, onMounted, nextTick } from 'vue'
 import { call } from 'frappe-ui'
 import { Card, Button } from 'frappe-ui'
+import GuidedTour from '../components/GuidedTour.vue'
+import { createDocumentResource } from 'frappe-ui'
 
 import { useRoute } from 'vue-router'
 
@@ -145,6 +147,15 @@ const signupData = ref({
   first_name: '',
   last_name: '',
   company_name: ''
+})
+
+// Tour state
+const showTour = ref(false)
+const voucherCampaign = ref(null)
+const tourResource = createDocumentResource({
+  doctype: 'Voucher Campaign',
+  fields: ['campaign_name', 'instructions.*'],
+  auto: false
 })
 
 /**
@@ -254,13 +265,8 @@ async function verifyOTP() {
       // Get deal ID from route parameters
       const dealId = route.params.id
       
-      // Redirect to deal-specific URL if ID exists
-      const redirectPath = dealId ? `/deals/${dealId}` : '/'
-      
-      // Show animation for 1 second before redirect
-      setTimeout(() => {
-        window.location.href = redirectPath
-      }, 1000)
+      // Always redirect after login
+      redirectToDealPage()
     } else {
       otpError.value = 'OTP verification failed. Please try again.'
       verifying.value = false
@@ -380,6 +386,15 @@ async function resendOTP() {
   }
 }
 
+// Redirect to deal page
+function redirectToDealPage() {
+  const dealId = route.params.id
+  const redirectPath = dealId ? `/deals/${dealId}` : '/'
+  
+  setTimeout(() => {
+    window.location.href = redirectPath
+  }, 1000)
+}
 </script>
 
 <!--

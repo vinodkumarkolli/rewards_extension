@@ -72,7 +72,7 @@ def create_voucher_batch(campaign:str,count:int):
         voucher.voucher_status='Generated'
         voucher.secret_code=generate_code()
         voucher.status='Active'
-        voucher.voucher_print_template=campaign_doc.print_template
+        # voucher.voucher_print_template=campaign_doc.print_template
         voucher.insert(ignore_permissions=True)
         voucher.submit()
 #Generates SECRET CODE for the Vouchers

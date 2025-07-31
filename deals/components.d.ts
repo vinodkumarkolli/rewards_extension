@@ -8,8 +8,10 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    GuidedTour: typeof import('./src/components/GuidedTour.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SimpleCarousel: typeof import('./src/components/SimpleCarousel.vue')['default']
     Spinner: typeof import('./src/components/Spinner.vue')['default']
   }
 }

@@ -13,18 +13,15 @@
         <span class="text-2xl mr-2">🎟️</span>
         <div class="font-bold text-lg">Coupon Rewards</div>
       </div>
-      <div class="flex items-center space-x-3">
-        <div v-if="userResource && userResource.loading" class="text-sm text-gray-500">Loading...</div>
-        <div v-else-if="userResource && userResource.doc" class="flex items-center">
-          <div class="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center mr-2">
-            <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 text-gray-500" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd" />
-            </svg>
-          </div>
-          <div class="text-sm">
-            <span class="font-bold">{{ userResource.doc.first_name }}</span>
-            <span class="text-gray-500"> • {{ userResource.doc.mobile_no }}</span>
-          </div>
+      <div class="flex items-center">
+        <div class="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center mr-3 text-blue-600">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-6-3a2 2 0 11-4 0 2 2 0 014 0zm-2 4a5 5 0 00-4.546 2.916A5.986 5.986 0 005 10a6 6 0 0012 0c0-.35-.03-.693-.088-1.027A5 5 0 0010 11z" clip-rule="evenodd" />
+          </svg>
+        </div>
+        <div class="text-right">
+          <div class="font-bold text-sm">{{ userResource.doc?.full_name }}</div>
+          <div class="text-gray-500 text-xs">{{ userResource.doc?.mobile_no }}</div>
         </div>
       </div>
     </div>
@@ -51,38 +48,143 @@
     </Alert>
   </div>
   <div class="max-w-3xl py-12 mx-auto h-screen flex flex-col items-center justify-center relative z-10" v-if="id">
-    <h2 class="font-bold text-lg text-gray-600 mb-4">
-      Welcome {{ session.user }}!
-    </h2>
-    <div v-if="id">
-      <p>
-        ID Passed: {{ id }}
-      </p>
+    <!-- Show coupon input after tour completion -->
+    <div v-if="tourCompleted" class="bg-gray-100 rounded-lg p-4">
+      <h2 class="font-bold text-lg text-gray-600 mb-4">
+        Claim your Reward
+      </h2>
+      
+      <div class="w-full max-w-xs">
+        <Input
+          type="text"
+          label=""
+          variant="outline"
+          v-model="couponCode"
+          placeholder="6 Character Secret Code"
+          class="mb-3"
+        />
+        <Button
+          label="Submit"
+          @click="validateCoupon"
+          :loading="validating"
+          variant="solid"
+          class="w-full"
+        />
+      </div>
+      
+      <Alert
+        v-if="validationMessage"
+        :type="validationSuccess ? 'success' : 'danger'"
+        class="mt-4"
+      >
+        {{ validationMessage }}
+      </Alert>
     </div>
-    <div class="flex flex-row space-x-2 mt-4">
-      <Button @click="showDialog = true">Open Dialog</Button>
+    
+    <!-- Show original content if tour not completed -->
+    <div v-else>
+      <h2 class="font-bold text-lg text-gray-600 mb-4">
+        Welcome {{ session.user }}!
+      </h2>
+      <div v-if="id">
+        <p>
+          ID Passed: {{ id }}
+        </p>
+      </div>
+      <div class="flex flex-row space-x-2 mt-4">
+        <Button @click="showDialog = true">Open Dialog</Button>
+      </div>
     </div>
   </div>
+  
+  <!-- Guided Tour -->
+  <GuidedTour 
+    v-if="showTour && voucherCampaign"
+    :campaign="voucherCampaign"
+    @complete="completeTour"
+  />
 </template>
 
 <script setup>
-import { Dialog, Alert, Button,createDocumentResource } from "frappe-ui"
-import { ref, watch } from "vue"
+import { Dialog, Alert, Button, Input, call, createDocumentResource } from "frappe-ui"
+import { ref, watch, onMounted } from "vue"
 import { session } from "../data/session"
+import GuidedTour from '@/components/GuidedTour.vue'
 
 const props = defineProps({
   id: { type: String, default: null }
 })
 
 const showDialog = ref(false)
+const showTour = ref(false)
+const voucherCampaign = ref(null)
+const couponCode = ref('')
+const validating = ref(false)
+const validationMessage = ref('')
+const validationSuccess = ref(false)
+const tourCompleted = ref(localStorage.getItem('tourCompleted') === 'true')
+
+// Create document resource for current user
 const userResource = createDocumentResource({
   doctype: "User",
   name: session.user,
+  fields: ["full_name", "mobile_no"],
   auto: true,
   onSuccess(data) {
-    console.log("User details fetched:", data)
+    // console.log("User details fetched:", data)
   }
 })
+
+// Create document resource for voucher campaign
+const voucherResource = createDocumentResource({
+  doctype: "Voucher Campaign",
+  name: props.id,
+  fields: ["name", "campaign_name", "campaign_target","instructions.*"],
+  auto: true,
+  onSuccess(data) {
+    if (data) {
+      // console.log("Campaign data:", data)
+      voucherCampaign.value = data
+      showTour.value = true
+    }
+  }
+})
+
+function completeTour() {
+  localStorage.setItem('tourCompleted', 'true')
+  showTour.value = false
+  tourCompleted.value = true
+}
+
+async function validateCoupon() {
+  validating.value = true
+  validationMessage.value = ''
+  
+  try {
+    // Call custom API method with system manager permissions
+    const result = await call('rewards_extension.rewards_extension.doctype.gift_voucher.gift_voucher.validate_coupon_code_and_create_trail', {
+      coupon_code: couponCode.value,
+      user: session.user,
+      campaign_id: voucherCampaign.value.name
+    })
+    
+    if (result.valid) {
+      // Store trail ID in session
+      sessionStorage.setItem('voucher_trail_id', result.trail_id)
+      
+      validationSuccess.value = true
+      validationMessage.value = 'Coupon validated! Trail initiated successfully'
+    } else {
+      validationSuccess.value = false
+      validationMessage.value = result.message || 'Invalid coupon code or voucher is not active'
+    }
+  } catch (error) {
+    validationSuccess.value = false
+    validationMessage.value = 'Error validating coupon: ' + error.message
+  } finally {
+    validating.value = false
+  }
+}
 
 watch(() => props.id, (newId) => {
   if (newId) {
