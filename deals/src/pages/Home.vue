@@ -49,19 +49,22 @@
   </div>
   <div class="max-w-3xl py-12 mx-auto h-screen flex flex-col items-center justify-center relative z-10" v-if="id">
     <!-- Show coupon input after tour completion -->
-    <div v-if="tourCompleted" class="bg-gray-100 rounded-lg p-4">
-      <h2 class="font-bold text-lg text-gray-600 mb-4">
-        Claim your Reward
-      </h2>
-      
-      <div class="w-full max-w-xs">
+    <div v-if="tourCompleted && profileData" class="bg-gray-100 rounded-lg p-4 flex-col items-center justify-center">
+      <div class="flex flex-col justify-start">
+      <h3 class="text-xl font-bold mb-4 text-gray-700">
+        Welcome {{ profileData.customer_name }}
+      </h3>
+      <p class="text-sm text-gray-500 mb-6">We are happy to see you here. There are exciting rewards waiting for you. </p>
+      </div>
+      <div class="w-full max-w-xs flex-col items-center justify-center">
         <Input
           type="text"
-          label=""
+          maxlength="6"
+          label="Coupon Code"
           variant="outline"
           v-model="couponCode"
-          placeholder="6 Character Secret Code"
-          class="mb-3"
+          placeholder="6 Character Code"
+          class="mb-3 w-full"
         />
         <Button
           label="Submit"
@@ -80,9 +83,21 @@
         {{ validationMessage }}
       </Alert>
     </div>
-    
+    <!-- Customer Profile Form -->
+    <div v-if="tourCompleted && !profileData" class="mt-6 p-6 bg-white rounded-lg shadow-lg w-full max-w-md">
+      <h3 class="text-xl font-bold mb-4 text-gray-700">Create Your Profile</h3>
+      <p class="text-sm text-gray-500 mb-6">We couldn't find an existing profile. Please provide your details to continue.</p>
+      
+      <ProfileOnboarding
+        :customer-profile-data="customerProfileData"
+        :voucher-campaign="voucherCampaign"
+        :customer-types="customerTypes"
+        :creating-profile="creatingProfile"
+        @submit="createProfile"
+      />
+    </div>
     <!-- Show original content if tour not completed -->
-    <div v-else>
+    <!-- <div v-else>
       <h2 class="font-bold text-lg text-gray-600 mb-4">
         Welcome {{ session.user }}!
       </h2>
@@ -94,7 +109,7 @@
       <div class="flex flex-row space-x-2 mt-4">
         <Button @click="showDialog = true">Open Dialog</Button>
       </div>
-    </div>
+    </div> -->
   </div>
   
   <!-- Guided Tour -->
@@ -106,23 +121,41 @@
 </template>
 
 <script setup>
-import { Dialog, Alert, Button, Input, call, createDocumentResource } from "frappe-ui"
+import { Dialog, Alert, Button, Input, Select, call, createDocumentResource } from "frappe-ui"
 import { ref, watch, onMounted } from "vue"
 import { session } from "../data/session"
 import GuidedTour from '@/components/GuidedTour.vue'
+import ProfileOnboarding from '@/components/ProfileOnboarding.vue';
 
 const props = defineProps({
   id: { type: String, default: null }
 })
 
 const showDialog = ref(false)
+// State management
 const showTour = ref(false)
 const voucherCampaign = ref(null)
+const currentStep = ref('tour') // 'tour', 'profile', or 'coupon'
+const tourCompleted = ref(false) // Simple reactive tour completion state
 const couponCode = ref('')
 const validating = ref(false)
 const validationMessage = ref('')
 const validationSuccess = ref(false)
-const tourCompleted = ref(localStorage.getItem('tourCompleted') === 'true')
+const creatingProfile = ref(false)
+const currentVoucherName = ref('')
+const customerTypes = ['Consumer', 'Retailer', 'Wholesaler', 'Distributor']
+const customerProfileData = ref({
+  customer_name: '',
+  customer_type: '',
+  address: {
+    address_line1: '',
+    locality: '',
+    city: '',
+    pincode: ''
+  }
+})
+// Reactive variable to store profile data (single declaration)
+const profileData = ref(null)
 
 // Create document resource for current user
 const userResource = createDocumentResource({
@@ -150,10 +183,26 @@ const voucherResource = createDocumentResource({
   }
 })
 
-function completeTour() {
-  localStorage.setItem('tourCompleted', 'true')
-  showTour.value = false
+async function completeTour() {
   tourCompleted.value = true
+  showTour.value = false
+  
+  try {
+    // Properly await the API call to get the resolved profile object
+    const profile = await call('rewards_extension.rewards_extension.doctype.gift_voucher.gift_voucher.search_customer_profile_for_contact', {
+      user: session.user,
+    })
+    
+    if (profile) {
+      profileData.value = profile
+      currentStep.value = 'coupon' // Show coupon form
+    } else {
+      currentStep.value = 'profile' // Show profile form
+    }
+  } catch (error) {
+    console.error('Profile check failed:', error)
+    currentStep.value = 'profile' // Default to profile form on error
+  }
 }
 
 async function validateCoupon() {
@@ -169,20 +218,54 @@ async function validateCoupon() {
     })
     
     if (result.valid) {
-      // Store trail ID in session
-      sessionStorage.setItem('voucher_trail_id', result.trail_id)
-      
-      validationSuccess.value = true
-      validationMessage.value = 'Coupon validated! Trail initiated successfully'
-    } else {
-      validationSuccess.value = false
-      validationMessage.value = result.message || 'Invalid coupon code or voucher is not active'
+      sessionStorage.setItem('voucher_trail_id', result.trail.trail_id)
+      currentVoucherName.value = result.coupon_details.voucher_name
+
+      if(voucherCampaign.value.campaign_target == 'Retailers'){
+        //Call custom API method to search current user across Customer Profiles and fetch the Customer Profile if exists
+        // Validate coupon logic (profile is handled before coupon form appears)
+      } else {
+        validationSuccess.value = true
+        validationMessage.value = 'Coupon validated! Trail initiated successfully'
+      }
     }
   } catch (error) {
     validationSuccess.value = false
     validationMessage.value = 'Error validating coupon: ' + error.message
   } finally {
     validating.value = false
+  }
+}
+
+async function createProfile() {
+  // Basic validation
+  if (!customerProfileData.value.customer_name || !customerProfileData.value.customer_type || !customerProfileData.value.address.address_line1 || !customerProfileData.value.address.locality || !customerProfileData.value.address.city || !customerProfileData.value.address.pincode) {
+    validationMessage.value = 'Please fill all required fields.'
+    validationSuccess.value = false
+    return
+  }
+
+  creatingProfile.value = true
+  validationMessage.value = ''
+
+  try {
+    const newProfile = await call('rewards_extension.rewards_extension.doctype.gift_voucher.gift_voucher.create_customer_profile', {
+      customer_data: customerProfileData.value,
+      user: session.user
+    })
+    profileData.value = newProfile // Store profile data
+    // Transition to coupon input after profile creation
+    currentStep.value = 'coupon'
+
+    if (newProfile) {
+      validationSuccess.value = true
+      validationMessage.value = 'Profile created successfully! You can now proceed.'
+    }
+  } catch (error) {
+    validationSuccess.value = false
+    validationMessage.value = 'Error creating profile: ' + error.message
+  } finally {
+    creatingProfile.value = false
   }
 }
 

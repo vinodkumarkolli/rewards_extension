@@ -35,8 +35,6 @@
   "unique_audience_redeem_limit",
   "column_break_jfbw",
   "target_uniqueness",
-  "printing_template_section",
-  "interface",
   "vouchers_tab",
   "voucher_batch",
   "quiz_tab",
@@ -90,11 +88,6 @@
    "label": "Campaign Target",
    "options": "Consumers\nRetailers\nWholesalers\nDistributors\nSales Persons",
    "reqd": 1
-  },
-  {
-   "fieldname": "printing_template_section",
-   "fieldtype": "Section Break",
-   "label": "Interface"
   },
   {
    "fieldname": "global_settings_section",
@@ -251,15 +244,6 @@
    "read_only": 1
   },
   {
-   "allow_on_submit": 1,
-   "description": "Row #s determine the Carousel Sequence in Webpage",
-   "fieldname": "interface",
-   "fieldtype": "Table",
-   "label": "Interface Steps",
-   "options": "Campaign Interface Steps",
-   "reqd": 1
-  },
-  {
    "fieldname": "webpage_template_section",
    "fieldtype": "Section Break",
    "label": "Webpage Template"
@@ -297,8 +281,8 @@
    "link_fieldname": "campaign"
   }
  ],
- "modified": "2025-07-30 20:05:36.498160",
- "modified_by": "Administrator",
+ "modified": "2025-07-31 13:41:46.696324",
+ "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Voucher Campaign",
  "naming_rule": "Random",

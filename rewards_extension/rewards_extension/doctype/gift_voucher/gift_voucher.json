@@ -227,7 +227,7 @@
    "fieldname": "payout_mode",
    "fieldtype": "Select",
    "label": "Payout Mode",
-   "options": "GPAY\nNEFT"
+   "options": "GPAY\nUPI ID"
   },
   {
    "allow_on_submit": 1,
@@ -287,7 +287,7 @@
    "link_fieldname": "payout_source_link"
   }
  ],
- "modified": "2025-07-31 00:06:51.818157",
+ "modified": "2025-07-31 13:53:25.102950",
  "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Gift Voucher",

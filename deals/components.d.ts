@@ -9,6 +9,7 @@ export {}
 declare module 'vue' {
   export interface GlobalComponents {
     GuidedTour: typeof import('./src/components/GuidedTour.vue')['default']
+    ProfileOnboarding: typeof import('./src/components/ProfileOnboarding.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SimpleCarousel: typeof import('./src/components/SimpleCarousel.vue')['default']

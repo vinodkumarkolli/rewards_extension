@@ -8,18 +8,16 @@
  "field_order": [
   "customer_name",
   "customer_type",
-  "profile_source",
-  "profile_source_link",
   "master_retail_profile",
+  "users",
   "column_break_vrgm",
-  "address",
-  "address_html",
-  "users"
+  "address_html"
  ],
  "fields": [
   {
    "fieldname": "column_break_vrgm",
-   "fieldtype": "Column Break"
+   "fieldtype": "Column Break",
+   "label": "Addresses"
   },
   {
    "fieldname": "address_html",
@@ -28,24 +26,10 @@
    "read_only": 1
   },
   {
-   "fieldname": "profile_source",
-   "fieldtype": "Link",
-   "label": "Profile Source",
-   "link_filters": "[[\"DocType\",\"name\",\"in\",[\"Gift Voucher\",\"Sales Person Profile\"]]]",
-   "options": "DocType",
-   "reqd": 1
-  },
-  {
    "fieldname": "master_retail_profile",
    "fieldtype": "Link",
    "label": "Master Retail Profile",
    "options": "Master Retail Profile"
-  },
-  {
-   "fieldname": "address",
-   "fieldtype": "Link",
-   "label": "Address",
-   "options": "Address"
   },
   {
    "fieldname": "customer_name",
@@ -60,13 +44,6 @@
    "fieldtype": "Select",
    "label": "Customer Type",
    "options": "Consumer\nRetailer\nWholesaler\nDistributor",
-   "reqd": 1
-  },
-  {
-   "fieldname": "profile_source_link",
-   "fieldtype": "Dynamic Link",
-   "label": "Profile Source Link",
-   "options": "profile_source",
    "reqd": 1
   },
   {
@@ -96,8 +73,8 @@
    "link_fieldname": "quizzer"
   }
  ],
- "modified": "2025-07-30 18:21:57.336274",
- "modified_by": "Administrator",
+ "modified": "2025-07-31 15:37:39.346099",
+ "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Customer Profile",
  "naming_rule": "By fieldname",
