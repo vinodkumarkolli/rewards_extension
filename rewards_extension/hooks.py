@@ -23,7 +23,9 @@ website_path_resolver = "rewards_extension.utils.path_resolver"
 
 # Includes in <head>
 # ------------------
-
+# App configuration
+app_include_js = ["rewards_extension.bundle.js"]
+app_include_css = ["rewards_extension.bundle.css"]
 # include js, css files in header of desk.html
 # app_include_css = "/assets/rewards_extension/css/rewards_extension.css"
 # app_include_js = "/assets/rewards_extension/js/rewards_extension.js"
@@ -147,6 +149,13 @@ after_install = "rewards_extension.install.after_install"
 
 # Scheduled Tasks
 # ---------------
+# Scheduled tasks for rewards_extension
+scheduler_events = {
+    "hourly": [
+        "rewards_extension.rewards_extension.doctype.gift_voucher.gift_voucher.expire_old_vouchers",
+        "rewards_extension.rewards_extension.doctype.voucher_campaign.voucher_campaign.expire_old_campaigns"
+    ]
+}
 
 # scheduler_events = {
 # 	"all": [

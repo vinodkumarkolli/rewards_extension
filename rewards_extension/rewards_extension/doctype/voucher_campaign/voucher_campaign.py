@@ -9,14 +9,6 @@ from frappe.utils import nowdate
 
 
 class VoucherCampaign(Document):
-	def before_save(self):
-		self.webpage_header_image = self._move_file(
-			self.webpage_header_image, "Home/Voucher Templates/Website Headers"
-		)
-		# self.webpage_popup_image = self._move_file(
-		# 	self.webpage_popup_image, "Home/Voucher Templates/Website Popups"
-		# )
-
 	def _move_file(self, file_path, target_folder):
 		if not file_path or file_path.startswith(target_folder):
 			return file_path
@@ -120,3 +112,31 @@ def activate_pending_batch(batch,campaign):
         activate_gift_vouchers(vouchers)
 
     return 'Success'
+
+
+@frappe.whitelist()
+def expire_old_campaigns():
+    """
+    Expire campaigns where campaign_status is 'Active' 
+    and end_date has passed
+    """
+    today = frappe.utils.nowdate()
+    
+    # Get all expired campaigns
+    expired_campaigns = frappe.get_all(
+        "Voucher Campaign",
+        filters={
+            "campaign_status": "Active",
+            "end_date": ["<", today]
+        },
+        fields=["name"]
+    )
+    
+    # Update status to 'Expired'
+    for campaign in expired_campaigns:
+        doc = frappe.get_doc("Voucher Campaign", campaign.name)
+        doc.campaign_status = "Expired"
+        doc.save(ignore_permissions=True)
+        doc.add_comment('Edit', f"The Voucher Campaign expired on {today}")
+        
+    frappe.logger().info(f"Expired {len(expired_campaigns)} voucher campaigns")

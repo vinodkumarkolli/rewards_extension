@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "hash",
+ "autoname": "format:{2390980######}",
  "creation": "2025-07-18 21:51:28.359369",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -126,7 +126,7 @@
    "fieldtype": "Select",
    "in_list_view": 1,
    "label": "Voucher Status",
-   "options": "Generated\nActive\nDisabled\nBlocked\nPayout Requested\nDenied Payment\nRedeemed",
+   "options": "Generated\nActive\nExpired\nBlocked\nPayout Requested\nDenied Payment\nRedeemed",
    "read_only": 1,
    "reqd": 1
   },
@@ -158,7 +158,8 @@
    "allow_on_submit": 1,
    "fieldname": "fraud_score",
    "fieldtype": "Float",
-   "label": "Fraud Score"
+   "label": "Fraud Score",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_seqz",
@@ -263,12 +264,13 @@
    "label": "Successful Redemption"
   },
   {
+   "allow_on_submit": 1,
    "default": "0",
    "fieldname": "voucher_trails",
    "fieldtype": "Int",
-   "is_virtual": 1,
    "label": "Voucher Trails",
-   "non_negative": 1
+   "non_negative": 1,
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
@@ -287,11 +289,11 @@
    "link_fieldname": "payout_source_link"
   }
  ],
- "modified": "2025-08-02 16:35:49.439028",
+ "modified": "2025-08-02 21:39:36.436221",
  "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Gift Voucher",
- "naming_rule": "Random",
+ "naming_rule": "Expression",
  "owner": "Administrator",
  "permissions": [
   {

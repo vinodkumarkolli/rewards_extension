@@ -63,7 +63,7 @@ def create_app_folders():
     frappe.call('frappe.core.api.file.create_new_folder', "Voucher Templates", "Home")
     
     # Create subfolders using absolute paths
-    frappe.call('frappe.core.api.file.create_new_folder', "Website Popups", "Home/Voucher Templates")
+    # frappe.call('frappe.core.api.file.create_new_folder', "Website Popups", "Home/Voucher Templates")
     frappe.call('frappe.core.api.file.create_new_folder', "Instruction Thumbnails", "Home/Voucher Templates")
     frappe.call('frappe.core.api.file.create_new_folder', "Website Headers", "Home/Voucher Templates")
     frappe.call('frappe.core.api.file.create_new_folder', "Print Templates", "Home/Voucher Templates")

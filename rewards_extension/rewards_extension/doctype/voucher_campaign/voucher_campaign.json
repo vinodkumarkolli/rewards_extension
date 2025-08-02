@@ -26,7 +26,6 @@
   "column_break_jfbw",
   "target_uniqueness",
   "webpage_template_section",
-  "webpage_header_image",
   "instructions",
   "gamification_settings_section",
   "gamification",
@@ -248,12 +247,6 @@
    "label": "Webpage Template"
   },
   {
-   "fieldname": "webpage_header_image",
-   "fieldtype": "Attach",
-   "label": "Webpage Header Image",
-   "reqd": 1
-  },
-  {
    "fieldname": "instructions",
    "fieldtype": "Table",
    "label": "Instructions",
@@ -276,7 +269,7 @@
    "link_fieldname": "campaign"
   }
  ],
- "modified": "2025-08-02 14:43:56.589973",
+ "modified": "2025-08-02 19:04:06.207438",
  "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Voucher Campaign",

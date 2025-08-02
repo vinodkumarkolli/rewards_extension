@@ -18,6 +18,19 @@ frappe.ui.form.on("Voucher Campaign", {
             }
         }
         frm.page.btn_secondary.hide();
+        frm.add_custom_button(__('Temporary Button'),function(){
+            frappe.call({
+            // method:'rewards_extension.rewards_extension.doctype.gift_voucher.gift_voucher.expire_old_vouchers',
+            method:'rewards_extension.rewards_extension.doctype.voucher_campaign.voucher_campaign.expire_old_campaigns',
+            args:{},
+            callback:function(r){
+                if(!r.exc){
+                    //refresh_field('status');
+                    console.log(r.message);
+                }
+            }
+            })    
+        })
     },
     base_voucher_price(frm) {
         frm.set_value("campaign_budget",frm.doc.base_voucher_price * frm.doc.voucher_count)
@@ -31,7 +44,6 @@ function addVoucherBatchButtons(frm){
     const now = moment();
     const endDate = moment(frm.doc.end_date);
     const startDate = moment(frm.doc.start_date);
-
     if(now.isBetween(startDate,endDate)){
         frm.add_custom_button(__('Create a Batch'),function(){
             openBatchPopup(frm)

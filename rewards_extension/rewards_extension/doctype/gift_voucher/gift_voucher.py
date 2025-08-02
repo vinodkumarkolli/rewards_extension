@@ -49,7 +49,7 @@ def validate_coupon_code_and_create_trail(coupon_code, user, campaign_id, profil
 	beneficiary_type = {
         "Retailer": "Customer Profile",
 		"Wholesaler": "Customer Profile",
-		"Distributor": "Customer Profile",
+		"Consumer": "Customer Profile",
         "Distributor": "Distributor Profile",
         "Sales Person": "Sales Person Profile"
     }.get(customer_type, customer_type)  # Default to original if not found
@@ -57,6 +57,8 @@ def validate_coupon_code_and_create_trail(coupon_code, user, campaign_id, profil
 	voucher_doc.save(ignore_permissions=True)
 	voucher_doc.beneficiary = customer_profile.get("customer_name")
 	voucher_doc.voucher_status = "Blocked"
+	voucher_doc.blocked_date = now()
+	voucher_doc.voucher_trails = voucher_doc.voucher_trails + 1
 	voucher_doc.save(ignore_permissions=True)
 	comment = f"{customer_profile.get('customer_name')} of type {customer_profile.get('customer_type')} is allocated this voucher"
 	voucher_doc.add_comment('Edit',comment)
@@ -181,3 +183,31 @@ def create_payout_doc(voucher_doc):
 		frappe.log_error(f"Payout creation failed for voucher {voucher_doc.name}: {str(e)}")
 		return {'status':'failed', 'message': str(e)}
 	
+
+@frappe.whitelist()
+def expire_old_vouchers():
+    """
+    Expire vouchers where voucher_status is 'Active' or 'Generated' 
+    and valid_till date has passed
+    """
+    today = frappe.utils.nowdate()
+    
+    # Get all expired vouchers
+    expired_vouchers = frappe.get_all(
+        "Gift Voucher",
+        filters={
+            "voucher_status": ["in", ["Active", "Generated"]],
+            "valid_till": ["<", today]
+        },
+        fields=["name"]
+    )
+    
+    # Update status to 'Expired'
+    for voucher in expired_vouchers:
+        voucher_doc = frappe.get_doc("Gift Voucher", voucher.name)
+        voucher_doc.voucher_status = "Expired"
+        voucher_doc.save(ignore_permissions=True)
+        voucher_doc.add_comment('Comment', f'Voucher Expired on {now()}')
+        frappe.db.commit()
+        
+    frappe.logger().info(f"Expired {len(expired_vouchers)} gift vouchers")
