@@ -9,6 +9,7 @@ import hashlib
 import json
 import base64
 import time
+import requests  # Added for WhatsApp API
 
 # Simple in-memory session storage as fallback for guest users
 SESSION_CACHE = {}
@@ -42,9 +43,9 @@ def send_login_otp(mobile_no: str):
 	expiration = time.time() + 300  # 5 minutes
 	SESSION_CACHE[tmp_id] = {"token": token, "expiration": expiration}
 
-	# For testing, skip SMS sending and log OTP to console
-	print(f"Login OTP for {mobile_no} ({user}): {otp}")
-	frappe.log_error(f"Passwordless Login OTP for {mobile_no} ({user}): {otp}", "OTP Log")
+	# Send OTP via WhatsApp
+	if not send_whatsapp_otp(mobile_no, otp, "login"):
+		frappe.log_error(f"Failed to send WhatsApp OTP to {mobile_no}", "WhatsApp OTP Error")
 
 	# Send the temporary ID back to the client
 	return {"status": "success", "tmp_id": tmp_id, "message": "OTP sent successfully."}
@@ -90,15 +91,12 @@ def signup(first_name: str, last_name: str, company_name: str, mobile_no: str, e
 	expiration = time.time() + 300  # 5 minutes
 	SESSION_CACHE[tmp_id] = {"token": token, "expiration": expiration}
 	
-	# For testing, skip SMS sending and log OTP to console
-	print(f"Signup OTP for {mobile_no} ({user.name}): {otp}")
-	frappe.log_error(f"Signup OTP for {mobile_no} ({user.name}): {otp}", "OTP Log")
+	# Send OTP via WhatsApp
+	if not send_whatsapp_otp(mobile_no, otp, "signup"):
+		frappe.log_error(f"Failed to send WhatsApp OTP to {mobile_no}", "WhatsApp OTP Error")
 	
 	return {"status": "success", "tmp_id": tmp_id, "message": "Account created. OTP sent to your mobile."}
 
-
-@frappe.whitelist(allow_guest=True)
-@rate_limit(key="tmp_id", limit=10, seconds=60 * 5) # Allow more verification attempts
 
 @frappe.whitelist(allow_guest=True)
 @rate_limit(key="tmp_id", limit=10, seconds=60 * 5) # Allow more verification attempts
@@ -131,7 +129,6 @@ def verify_login_otp(tmp_id: str, otp: str):
 
     # Get user details to include in response
     user_doc = frappe.get_doc("User", cached_data.get("user"))
-    print("User Doc",user_doc)
     return {
         "status": "success",
         "message": "Login successful.",
@@ -209,3 +206,70 @@ def decode_mobile_from_email(email):
 	except Exception as e:
 		frappe.log_error(f"Email decoding failed: {str(e)}")
 		return None
+
+def send_whatsapp_otp(mobile_no, otp, purpose):
+	"""Send OTP via WhatsApp API securely without logging sensitive data"""
+	# Get API configuration from environment
+	api_url = frappe.conf.get("whatsapp_api_url")
+	api_version = frappe.conf.get("whatsapp_api_version")
+	access_token = frappe.conf.get("whatsapp_access_token")
+	phone_number_id = frappe.conf.get("wa_phone_number_id")
+	template_name = frappe.conf.get("wa_login_otp_template")
+	
+	if not all([api_url, api_version, access_token, phone_number_id, template_name]):
+		frappe.log_error("WhatsApp configuration incomplete", "WhatsApp Config Error")
+		return False
+	
+	try:
+		# Construct API endpoint
+		url = f"{api_url}/{api_version}/{phone_number_id}/messages"
+		
+		# Prepare request data
+		headers = {
+			"Authorization": f"Bearer {access_token}",
+			"Content-Type": "application/json"
+		}
+		
+		# # Convert OTP to base36 to shorten the URL parameter
+		# import base64
+		# base36_otp = base64.b36encode(str(otp).encode()).decode()
+		
+		payload = {
+			"messaging_product": "whatsapp",
+			"to": mobile_no,
+			"type": "template",
+			"template": {
+				"name": template_name,
+				"language": {"code": "en"},
+				"components": [
+					{
+						"type": "BODY",
+						"parameters": [
+							{"type": "text", "text": otp}
+						]
+					},
+					{
+						"type": "BUTTON",
+						"sub_type": "url",
+						"index": 0,
+						"parameters": [
+							{"type": "text", "text": f"{otp}"}
+						]
+					}
+				]
+			}
+		}
+		
+		# Send request
+		response = requests.post(url, headers=headers, json=payload)
+		response.raise_for_status()
+		
+		# Log successful send without sensitive data
+		frappe.logger().info(f"WhatsApp OTP sent to {mobile_no} for {purpose}")
+		return True
+	except Exception as e:
+		frappe.log_error(
+			f"WhatsApp API error: {str(e)}",
+			"WhatsApp API Error"
+		)
+		return False
