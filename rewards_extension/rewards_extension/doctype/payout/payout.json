@@ -75,10 +75,12 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "payout_status",
    "fieldtype": "Select",
    "label": "Payout Status",
    "options": "Under Process\nProcessed\nWithheld",
+   "read_only": 1,
    "reqd": 1
   },
   {
@@ -105,23 +107,29 @@
    "label": "Transaction Details"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "transaction_id",
    "fieldtype": "Data",
-   "label": "Transaction ID"
+   "label": "Transaction ID",
+   "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "transaction_date",
    "fieldtype": "Date",
-   "label": "Transaction Date"
+   "label": "Transaction Date",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_zgkb",
    "fieldtype": "Column Break"
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "transaction_amount",
    "fieldtype": "Float",
-   "label": "Transaction Amount"
+   "label": "Transaction Amount",
+   "read_only": 1
   },
   {
    "fieldname": "payout_source_type",
@@ -139,16 +147,18 @@
    "reqd": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "transaction_image",
    "fieldtype": "Attach",
-   "label": "Transaction Image"
+   "label": "Transaction Image",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-02 13:56:37.349179",
+ "modified": "2025-08-02 23:00:45.988084",
  "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Payout",

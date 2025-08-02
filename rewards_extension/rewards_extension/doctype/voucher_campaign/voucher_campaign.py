@@ -9,23 +9,7 @@ from frappe.utils import nowdate
 
 
 class VoucherCampaign(Document):
-	def _move_file(self, file_path, target_folder):
-		if not file_path or file_path.startswith(target_folder):
-			return file_path
-
-		try:
-			file_doc = frappe.get_doc("File", {"file_url": file_path})
-			filename = file_path.split("/")[-1]
-			target_path = f"/{target_folder}/{filename}"
-
-			file_doc.folder = target_folder
-			file_doc.save()
-
-			return target_path
-		except frappe.DoesNotExistError:
-			frappe.log_error(f"File not found for path: {file_path}", "Voucher Campaign File Move")
-			return file_path
-
+	pass
 @frappe.whitelist()
 def change_campaign_status(campaign:str,status:str):
     doc = frappe.get_doc("Voucher Campaign",campaign)
