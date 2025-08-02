@@ -24,7 +24,7 @@ def validate_coupon_code_and_create_trail(coupon_code, user, campaign_id, profil
 	if not voucher_name:
 		# The original implementation returned a dict. Throwing an exception is cleaner
 		# and can be caught by the frontend call, which has a try-catch block.
-		frappe.throw(frappe._("Invalid coupon code or voucher is not active"))
+		return {'valid': False, 'message': 'Invalid Coupon Code'}
 
 	voucher_doc = frappe.get_doc("Gift Voucher", voucher_name)
 
@@ -56,6 +56,7 @@ def validate_coupon_code_and_create_trail(coupon_code, user, campaign_id, profil
 	voucher_doc.beneficiary_type = beneficiary_type
 	voucher_doc.save(ignore_permissions=True)
 	voucher_doc.beneficiary = customer_profile.get("customer_name")
+	voucher_doc.voucher_status = "Blocked"
 	voucher_doc.save(ignore_permissions=True)
 	comment = f"{customer_profile.get('customer_name')} of type {customer_profile.get('customer_type')} is allocated this voucher"
 	voucher_doc.add_comment('Edit',comment)
@@ -68,7 +69,9 @@ def validate_coupon_code_and_create_trail(coupon_code, user, campaign_id, profil
 			"campaign_target": voucher_doc.campaign_target,
 			"voucher_value": voucher_doc.voucher_base_amount,
 			"beneficiary_type": voucher_doc.beneficiary_type,
-			"beneficiary": voucher_doc.beneficiary
+			"beneficiary": voucher_doc.beneficiary,
+			"doctype":voucher_doc.doctype,
+			"voucher_base_amount":voucher_doc.voucher_base_amount,
 		},
 		"trail": {
 			"trail_id": trail.name,
@@ -134,33 +137,43 @@ def create_customer_profile(customer_data, user):
 	address.save(ignore_permissions=True)
 	return profile.as_dict()
 
-# @frappe.whitelist()
-# def update_beneficiary_profile(profile,voucher,trail_id):
-#     #update beneficiary_type and beneficiary fields of voucher doc
-#     if isinstance(profile, str):
-#         customer_profile = json.loads(profile)
-#     else:
-#         customer_profile = profile
-#     voucher_doc = frappe.get_doc("Gift Voucher", voucher)
-    
-#     customer_type = customer_profile.get("customer_type")
-#     # Map customer_type to beneficiary_type using switch-like logic
-#     beneficiary_type = {
-#         "Retailer": "Customer Profile",
-# 		"Wholesaler": "Customer Profile",
-# 		"Distributor": "Customer Profile",
-#         "Distributor": "Distributor Profile",
-#         "Sales Person": "Sales Person Profile"
-#     }.get(customer_type, customer_type)  # Default to original if not found
-    
-#     voucher_doc.beneficiary_type = beneficiary_type
-#     voucher_doc.save(ignore_permissions=True)
-#     voucher_doc.beneficiary = customer_profile.get("customer_name")
-#     voucher_doc.save(ignore_permissions=True)
-#     comment = f"{customer_profile.get('customer_name')} of type {customer_profile.get('customer_type')} is allocated this voucher"
-#     voucher_doc.add_comment('Edit',comment)
-#     # voucher_trail_doc = frappe.get_doc("Voucher Redeem Trail", trail_id)
-#     # # voucher_trail_doc.trail_status = "Assigned"
-#     # voucher_trail_doc.save(ignore_permissions=True)
-#     frappe.db.commit()
-#     return voucher_doc.as_dict()
+@frappe.whitelist()
+def update_redemption_details(voucher_name,redeem_details,user):
+	voucher_doc = frappe.get_doc("Gift Voucher", voucher_name)
+	voucher_doc.payout_mode = redeem_details.get("payout_mode")
+	voucher_doc.settlement_amount = redeem_details.get("settlement_amount")
+	if redeem_details.get("payout_mode") == "UPI ID":
+		voucher_doc.beneficiary_upi_details = redeem_details.get("upi_id")
+	if redeem_details.get("payout_mode") == "GPAY":
+		voucher_doc.beneficiary_upi_details = redeem_details.get("gpay_number")
+	voucher_doc.save(ignore_permissions=True)
+	comment = f"{user} has submitted his payment details to redeem this voucher for a Settlement Amount of {voucher_doc.settlement_amount} and Payout Mode: {redeem_details.get('payout_mode')} & Details: {voucher_doc.beneficiary_upi_details}"
+	voucher_doc.add_comment('Edit',comment)
+	payout_result = create_payout_doc(voucher_doc)
+	if payout_result.get('status') == 'success':
+		return {'status':'success'}
+	else:
+		return {'status':'failed', 'message': 'Payout creation failed'}
+
+@frappe.whitelist()
+def create_payout_doc(voucher_doc):
+	try:
+		payout_doc = frappe.get_doc({
+			"doctype": "Payout",
+			"payout_amount":voucher_doc.settlement_amount,
+			"payout_mode": voucher_doc.payout_mode,
+			"beneficiary_type": voucher_doc.beneficiary_type,
+			"beneficiary": voucher_doc.beneficiary,
+			"beneficiary_details": voucher_doc.beneficiary_upi_details,
+			"payout_source_type":voucher_doc.doctype,
+			"payout_source_link":voucher_doc.name,
+			"payout_date": now(),
+			"payout_status":"Under Process"
+		})
+		payout_doc.insert(ignore_permissions=True)
+		payout_doc.submit()
+		return {'status':'success'}
+	except Exception as e:
+		frappe.log_error(f"Payout creation failed for voucher {voucher_doc.name}: {str(e)}")
+		return {'status':'failed', 'message': str(e)}
+	

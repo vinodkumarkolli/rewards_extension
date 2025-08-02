@@ -5,30 +5,23 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "transcript_id",
-  "quiz_mobile_number",
+  "quiz_user",
   "quizzer_type",
   "quizzer",
   "column_break_ypiy",
   "quiz_date",
   "section_break_xccw",
-  "transcript"
+  "transcript",
+  "amended_from"
  ],
  "fields": [
-  {
-   "fieldname": "transcript_id",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Transcript ID",
-   "reqd": 1
-  },
   {
    "fieldname": "column_break_ypiy",
    "fieldtype": "Column Break"
   },
   {
    "fieldname": "quiz_date",
-   "fieldtype": "Date",
+   "fieldtype": "Datetime",
    "in_list_view": 1,
    "label": "Quiz Date",
    "reqd": 1
@@ -41,12 +34,6 @@
    "fieldname": "transcript",
    "fieldtype": "Long Text",
    "label": "Transcript"
-  },
-  {
-   "fieldname": "quiz_mobile_number",
-   "fieldtype": "Data",
-   "label": "Quiz Mobile Number",
-   "reqd": 1
   },
   {
    "fieldname": "quizzer_type",
@@ -62,13 +49,31 @@
    "label": "Quizzer",
    "options": "quizzer_type",
    "reqd": 1
+  },
+  {
+   "fieldname": "quiz_user",
+   "fieldtype": "Link",
+   "label": "Quiz User",
+   "options": "User",
+   "reqd": 1
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Quiz Transcript",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
+ "is_submittable": 1,
  "links": [],
- "modified": "2025-07-21 15:49:45.945785",
- "modified_by": "Administrator",
+ "modified": "2025-08-01 18:29:31.275449",
+ "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Quiz Transcript",
  "owner": "Administrator",

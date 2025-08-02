@@ -27,14 +27,13 @@
   "fraud_score",
   "column_break_inko",
   "beneficiary",
-  "beneficiary_gpay_number",
+  "beneficiary_upi_details",
   "beneficiary_bank_account",
   "beneficiary_bank_account_html",
   "redeem_info_tab",
   "redemption_trials_section",
   "trail",
   "successful_redemption_section",
-  "payout_request",
   "quiz",
   "column_break_seqz",
   "redeemed_date",
@@ -177,13 +176,6 @@
    "unique": 1
   },
   {
-   "allow_on_submit": 1,
-   "fieldname": "payout_request",
-   "fieldtype": "Link",
-   "label": "Payout Request",
-   "options": "Payout"
-  },
-  {
    "fieldname": "campaign_target",
    "fieldtype": "Select",
    "label": "Campaign Target",
@@ -196,7 +188,8 @@
    "fieldtype": "Link",
    "label": "Beneficiary Type",
    "link_filters": "[[\"DocType\",\"name\",\"in\",[\"Customer Profile\",\"Sales Person Profile\",\"Distributor Profile\"]]]",
-   "options": "DocType"
+   "options": "DocType",
+   "read_only": 1
   },
   {
    "fieldname": "column_break_inko",
@@ -207,27 +200,24 @@
    "fieldname": "beneficiary",
    "fieldtype": "Dynamic Link",
    "label": "Beneficiary",
-   "options": "beneficiary_type"
+   "options": "beneficiary_type",
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
    "fieldname": "quiz",
    "fieldtype": "Link",
    "label": "Quiz",
-   "options": "Quiz Transcript"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "beneficiary_gpay_number",
-   "fieldtype": "Data",
-   "label": "Beneficiary GPAY Number"
+   "options": "Quiz Transcript",
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
    "fieldname": "payout_mode",
    "fieldtype": "Select",
    "label": "Payout Mode",
-   "options": "GPAY\nUPI ID"
+   "options": "GPAY\nUPI ID",
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
@@ -247,8 +237,9 @@
    "label": "Quiz Transcript"
   },
   {
+   "fetch_from": "quiz.transcript",
    "fieldname": "transcript",
-   "fieldtype": "HTML",
+   "fieldtype": "Long Text",
    "label": "Transcript"
   },
   {
@@ -276,6 +267,13 @@
    "is_virtual": 1,
    "label": "Voucher Trails",
    "non_negative": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "beneficiary_upi_details",
+   "fieldtype": "Data",
+   "label": "Beneficiary UPI details",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
@@ -287,7 +285,7 @@
    "link_fieldname": "payout_source_link"
   }
  ],
- "modified": "2025-07-31 13:53:25.102950",
+ "modified": "2025-08-01 22:28:27.150022",
  "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Gift Voucher",

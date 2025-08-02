@@ -49,51 +49,59 @@
   </div>
   <div class="max-w-3xl py-12 mx-auto h-screen flex flex-col items-center justify-center relative z-10" v-if="id">
     <!-- Show coupon input after tour completion -->
-    <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon'" class="bg-gray-100 rounded-lg p-4 flex-col items-center justify-center">
-      <div class="flex flex-col justify-start">
-      <h3 class="text-xl font-bold mb-4 text-gray-700">
-        Welcome {{ profileData.customer_name }}
-      </h3>
-      <p class="text-sm text-gray-500 mb-4">We are happy to see you here. There are exciting rewards waiting for you. </p>
-      </div>
-      <div class="w-full max-w-xs flex-col items-center justify-center">
-        <Input
-          type="text"
-          maxlength="6"
-          label="Coupon Code"
-          variant="outline"
-          v-model="couponCode"
-          placeholder="6 Character Code"
-          class="mb-3 w-full"
-        />
-        <Button
-          label="Submit"
-          @click="validateCoupon"
-          :loading="validating"
-          variant="solid"
-          class="w-full"
-        />
-      </div>
-      
-      <Alert
-        v-if="validationMessage"
-        :type="validationSuccess ? 'success' : 'danger'"
-        class="mt-4"
-      >
-        {{ validationMessage }}
-      </Alert>
-    </div>
+    <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon'" class="bg-white rounded-lg shadow-lg flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto space-y-2">
+          <div class="text-center mb-4">
+            <h3 class="text-xl font-bold mb-2 text-gray-700">
+              Welcome {{ profileData.customer_name }}
+            </h3>
+            <p class="text-sm text-gray-500">We are happy to see you here. There are exciting rewards waiting for you.</p>
+          </div>
+          
+          <div class="w-full max-w-md">
+            <Input
+              type="text"
+              maxlength="6"
+              label="Coupon Code"
+              variant="outline"
+              v-model="couponCode"
+              placeholder="6 Character Code"
+              class="w-full"
+              :class="{'border-red-500': validationMessage && !validationSuccess}"
+            />
+            <div v-if="validationMessage && !validationSuccess" class="text-red-500 text-sm mt-1 w-full text-left">
+              {{ validationMessage }}
+            </div>
+          </div>
+          
+          <Button
+            label="Submit"
+            @click="validateCoupon"
+            :loading="validating"
+            variant="solid"
+            class="w-full"
+          />
+          
+          <!-- <Alert
+            v-if="validationMessage"
+            :type="validationSuccess ? 'success' : 'danger'"
+            class="w-full"
+          >
+            {{ validationMessage }}
+          </Alert> -->
+        </div>
     
     <!-- Quiz Component -->
     <Quiz
-      v-if="currentStep === 'quiz' && showQuiz"
+      v-if="currentStep === 'quiz' && showQuiz && profileData && quizData.length > 0"
       :quizData="quizData"
+      :profileData="profileData"
+      :source="currentVoucher"
       @complete="completeQuiz"
     />
     
     <!-- Redemption Component -->
     <Redemption
-      v-if="currentStep === 'redemption' && showRedemption"
+      v-if="currentStep === 'redemption' && showRedemption" :voucher="currentVoucher"
       @complete="completeRedemption"
     />
     
@@ -111,10 +119,9 @@
     </div>
     
     <!-- Customer Profile Form -->
-    <div v-if="tourCompleted && !profileData" class="mt-6 p-6 bg-white rounded-lg shadow-lg w-full max-w-md">
+    <div v-if="tourCompleted && !profileData" class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-auto flex flex-col items-center justify-center relative z-10">
       <h3 class="text-xl font-bold mb-4 text-gray-700">Create Your Profile</h3>
       <p class="text-sm text-gray-500 mb-6">We couldn't find an existing profile. Please provide your details to continue.</p>
-      
       <ProfileOnboarding
         :customer-profile-data="customerProfileData"
         :voucher-campaign="voucherCampaign"
@@ -157,7 +164,7 @@ const validating = ref(false)
 const validationMessage = ref('')
 const validationSuccess = ref(false)
 const creatingProfile = ref(false)
-const currentVoucherName = ref('')
+const currentVoucher = ref({name:'',doctype:'',amount:0.00})
 const customerTypes = ['Consumer', 'Retailer', 'Wholesaler', 'Distributor']
 const customerProfileData = ref({
   customer_name: '',
@@ -201,7 +208,6 @@ const voucherResource = createDocumentResource({
       // Store quiz data if available
       if (data.quiz) {
         quizData.value = data.quiz
-        console.log("Quiz data:", quizData.value)
       }
     }
   }
@@ -211,29 +217,50 @@ async function completeTour() {
   tourCompleted.value = true
   showTour.value = false
   
-  try {
-    // Properly await the API call to get the resolved profile object
-    if(voucherCampaign.value.campaign_target != 'Sales Persons'){
-      const profile = await call('rewards_extension.rewards_extension.doctype.gift_voucher.gift_voucher.search_customer_profile_for_contact', {
-        user: session.user,
-      })
-      
-      if (profile) {
-        profileData.value = profile
-        currentStep.value = 'coupon' // Show coupon form
+  // Show spinner during transition
+  const spinner = showSpinner();
+  
+  setTimeout(() => {
+    try {
+      // Properly await the API call to get the resolved profile object
+      if(voucherCampaign.value.campaign_target != 'Sales Persons'){
+        call('rewards_extension.rewards_extension.doctype.gift_voucher.gift_voucher.search_customer_profile_for_contact', {
+          user: session.user,
+        }).then(profile => {
+          if (profile) {
+            profileData.value = profile
+            currentStep.value = 'coupon' // Show coupon form
+          } else {
+            currentStep.value = 'profile' // Show profile form
+          }
+          hideSpinner(spinner);
+        }).catch(error => {
+          console.error('Profile check failed:', error)
+          currentStep.value = 'profile' // Default to profile form on error
+          hideSpinner(spinner);
+        });
       } else {
-        currentStep.value = 'profile' // Show profile form
+        hideSpinner(spinner);
       }
+    } catch (error) {
+      console.error('Error in completeTour:', error)
+      hideSpinner(spinner);
     }
-  } catch (error) {
-    console.error('Profile check failed:', error)
-    currentStep.value = 'profile' // Default to profile form on error
-  }
+  }, 500);
 }
 
 async function validateCoupon() {
   validating.value = true
   validationMessage.value = ''
+  
+  // Client-side validation
+  const couponRegex = /^[A-Z0-9]{6}$/
+  if (!couponRegex.test(couponCode.value)) {
+    validationSuccess.value = false
+    validationMessage.value = 'Coupon code must be exactly 6 uppercase alphanumeric characters'
+    validating.value = false
+    return
+  }
   
   try {
     // Call custom API method with system manager permissions
@@ -243,10 +270,9 @@ async function validateCoupon() {
       campaign_id: voucherCampaign.value.name,
       profile: profileData.value
     })
-    
-    if (result.valid) {
+    if (result.valid == true) {
       sessionStorage.setItem('voucher_trail_id', result.trail.trail_id)
-      currentVoucherName.value = result.coupon_details.voucher_name
+      currentVoucher.value = {'name':result.coupon_details.voucher_name,'doctype':result.coupon_details.doctype,'amount': result.coupon_details.voucher_base_amount}
       
       // Check if there's quiz data
       if (quizData.value && quizData.value.length > 0) {
@@ -259,7 +285,6 @@ async function validateCoupon() {
       }
       
       validationSuccess.value = true
-      validationMessage.value = 'Coupon validated successfully!'
     } else {
       validationSuccess.value = false
       validationMessage.value = result.message || 'Invalid coupon code'
@@ -340,8 +365,39 @@ const rewardStyle = (index) => {
     opacity: Math.random() * 0.3 + 0.1
   };
 }
-</script>
+// Helper functions for spinner animation
+function showSpinner() {
+  const spinner = document.createElement('div');
+  spinner.className = 'fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50';
+  spinner.innerHTML = '<div class="animate-spin rounded-full h-16 w-16 border-t-2 border-b-2 border-blue-500"></div>';
+  document.body.appendChild(spinner);
+  return spinner;
+}
 
+function hideSpinner(spinner) {
+  if (spinner && spinner.parentNode) {
+    document.body.removeChild(spinner);
+  }
+}
+
+// Updated step transition function with spinner animation
+function nextStep() {
+  const spinner = showSpinner();
+  
+  setTimeout(() => {
+    if (currentStep.value === 'onboarding') {
+      currentStep.value = 'coupon';
+    } else if (currentStep.value === 'coupon') {
+      currentStep.value = 'quiz';
+    } else if (currentStep.value === 'quiz') {
+      currentStep.value = 'redemption';
+    }
+    
+    hideSpinner(spinner);
+  }, 500);
+}
+
+</script>
 <style scoped>
 /* Rewards raining animation */
 .reward-item {

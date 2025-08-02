@@ -19,10 +19,13 @@
   "redeemed_amount",
   "calculated_campaign_budget",
   "budget_variance",
+  "global_settings_section",
+  "voucher_retries",
+  "unique_audience_redeem_limit",
+  "column_break_jfbw",
+  "target_uniqueness",
   "webpage_template_section",
   "webpage_header_image",
-  "webpage_popup_image",
-  "column_break_bqac",
   "instructions",
   "gamification_settings_section",
   "gamification",
@@ -30,11 +33,6 @@
   "gamification_steps",
   "column_break_yowx",
   "gamification_logic",
-  "global_settings_section",
-  "voucher_retries",
-  "unique_audience_redeem_limit",
-  "column_break_jfbw",
-  "target_uniqueness",
   "vouchers_tab",
   "voucher_batch",
   "quiz_tab",
@@ -255,16 +253,6 @@
    "reqd": 1
   },
   {
-   "fieldname": "webpage_popup_image",
-   "fieldtype": "Attach",
-   "label": "Webpage Popup Image",
-   "reqd": 1
-  },
-  {
-   "fieldname": "column_break_bqac",
-   "fieldtype": "Column Break"
-  },
-  {
    "fieldname": "instructions",
    "fieldtype": "Table",
    "label": "Instructions",
@@ -281,8 +269,8 @@
    "link_fieldname": "campaign"
   }
  ],
- "modified": "2025-07-31 13:41:46.696324",
- "modified_by": "vinodkumarkolli@gmail.com",
+ "modified": "2025-08-01 13:29:11.481665",
+ "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Voucher Campaign",
  "naming_rule": "Random",

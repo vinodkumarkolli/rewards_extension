@@ -13,9 +13,9 @@ class VoucherCampaign(Document):
 		self.webpage_header_image = self._move_file(
 			self.webpage_header_image, "Home/Voucher Templates/Website Headers"
 		)
-		self.webpage_popup_image = self._move_file(
-			self.webpage_popup_image, "Home/Voucher Templates/Website Popups"
-		)
+		# self.webpage_popup_image = self._move_file(
+		# 	self.webpage_popup_image, "Home/Voucher Templates/Website Popups"
+		# )
 
 	def _move_file(self, file_path, target_folder):
 		if not file_path or file_path.startswith(target_folder):

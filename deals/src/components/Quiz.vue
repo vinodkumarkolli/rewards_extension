@@ -1,51 +1,27 @@
 <template>
-  <div class="mt-6 p-6 bg-white rounded-lg shadow-lg w-full max-w-md">
-    <h3 class="text-xl font-bold mb-4 text-gray-700">Rewards Quiz</h3>
-    <p class="text-sm text-gray-500 mb-6">Answer these questions to unlock your reward</p>
+  <div class="bg-white rounded-lg shadow-lg flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto">
+    <h3 class="text-xl font-bold mb-2 text-gray-700">Rewards Quiz</h3>
+    <p class="text-sm text-gray-500">Answer these questions to unlock your reward</p>
     
-    <div v-if="currentStep < quizData.length">
+    <div v-if="currentStep < quizData.length"  class="w-full max-w-md py-4">
       <div class="mb-6">
-        <h4 class="font-medium mb-2 text-gray-700">
-          {{ quizData[currentStep].question }} (Step {{ currentStep + 1 }} of {{ quizData.length }})
+        <h4 class="font-medium mb-2 text-gray-900 flex flex-col items-center justify-center">
+          Step {{ currentStep + 1 }} of {{ quizData.length }} -  ({{ quizData[currentStep].question_heading }})
         </h4>
         
-        <!-- Warmup Question -->
-        <div v-if="quizData[currentStep].warmup_question" class="mb-4">
-          <p class="text-sm text-gray-500 mb-2">{{ quizData[currentStep].warmup_question }}</p>
-          <Select
-            v-if="quizData[currentStep].warmup_type === 'Select'"
-            :options="quizData[currentStep].warmup_options.split(',')"
-            v-model="answers[currentStep].warmup"
-            placeholder="Select an option"
-            class="w-full"
-          />
-          <Input
-            v-else
-            type="text"
-            v-model="answers[currentStep].warmup"
-            :placeholder="quizData[currentStep].warmup_placeholder || 'Enter your answer'"
-            class="w-full"
-          />
-        </div>
-        
         <!-- Main Question -->
-        <div class="mb-4">
-          <p class="text-sm text-gray-500 mb-2">{{ quizData[currentStep].main_question }}</p>
-          <Input
-            type="text"
+        <div class="mb-4 py-2">
+          <p class="text-sm text-gray-700 mb-2">
+            {{ quizData[currentStep].main_question }}
+            <span v-if="quizData[currentStep].mandatory_answer === 1" class="text-red-500">*</span>
+          </p>
+          <p class="text-sm text-gray-500 mb-2" v-if="quizData[currentStep].main_question_description">( {{ quizData[currentStep].main_question_description }} )</p>
+          <component
+            :is="getComponentType(quizData[currentStep].main_question_type)"
             v-model="answers[currentStep].main"
-            :placeholder="quizData[currentStep].main_placeholder || 'Enter your answer'"
-            class="w-full"
-          />
-        </div>
-        
-        <!-- Followup Question -->
-        <div v-if="quizData[currentStep].followup_question">
-          <p class="text-sm text-gray-500 mb-2">{{ quizData[currentStep].followup_question }}</p>
-          <Input
-            type="text"
-            v-model="answers[currentStep].followup"
-            :placeholder="quizData[currentStep].followup_placeholder || 'Enter your answer'"
+            :options="quizData[currentStep].main_question_options ? quizData[currentStep].main_question_options.split('\n') : []"
+            :placeholder="quizData[currentStep].main_placeholder || (quizData[currentStep].mandatory_answer ? 'Required: ' : 'Optional: ') + getDefaultPlaceholder(quizData[currentStep].main_question_type)"
+            :multiple="quizData[currentStep].main_question_type === 'Multi Select'"
             class="w-full"
           />
         </div>
@@ -53,35 +29,40 @@
       
       <!-- Navigation Controls -->
       <div class="flex justify-between mt-8">
-        <button
+        <Button
           v-if="currentStep > 0"
+          :variant="'outline'"
           @click="currentStep--"
-          class="px-4 py-2 bg-gray-200 text-gray-800 rounded hover:bg-gray-300"
+          class="mr-2"
         >
           Previous
-        </button>
-        <button
+        </Button>
+        <Button
           v-else
+          :variant="'outline'"
           disabled
-          class="px-4 py-2 bg-gray-100 text-gray-400 rounded cursor-not-allowed"
+          class="mr-2"
         >
           Previous
-        </button>
+        </Button>
         
-        <button
+        <Button
           v-if="currentStep < quizData.length - 1"
+          :variant="'solid'"
           @click="currentStep++"
-          class="px-4 py-2 bg-blue-500 text-white rounded hover:bg-blue-600"
+          :disabled="isCurrentStepMandatory && !isMainAnswerProvided"
         >
           Next
-        </button>
-        <button
+        </Button>
+        <Button
           v-else
+          :variant="'solid'"
           @click="submitQuiz"
-          class="px-4 py-2 bg-green-500 text-white rounded hover:bg-green-600"
+          :loading="submitting"
+          :disabled="isCurrentStepMandatory && !isMainAnswerProvided"
         >
           Submit
-        </button>
+        </Button>
       </div>
     </div>
     <div v-else>
@@ -100,42 +81,68 @@
 </template>
 
 <script setup>
-import { ref } from "vue"
-import { Input, Select, Button, Alert, call } from "frappe-ui"
+import { ref, computed, h } from "vue"
+import { Input, Select, Button, Alert, call, Rating, Checkbox } from "frappe-ui"
+import { session } from "../data/session"
 
 const props = defineProps({
-  quizData: Array
+  quizData: Array,
+  profileData: { type: Object, default: null },
+  source: { type: Object, default: null }
 })
 
 const emit = defineEmits(['complete'])
 
 const currentStep = ref(0)
-const answers = ref(props.quizData.map(() => ({
-  warmup: '',
-  main: '',
-  followup: ''
-})))
+const answers = ref(props.quizData.map(question => {
+  let mainInitial = '';
+  if (question.main_question_type === 'Rating') {
+    mainInitial = null; // Use null for numeric Rating component
+  }
+  return {
+    main: mainInitial
+  };
+}))
 const submitting = ref(false)
 const submissionMessage = ref('')
 const submissionSuccess = ref(false)
+
+// Computed properties for mandatory answer validation
+const isCurrentStepMandatory = computed(() => {
+  return props.quizData[currentStep.value]?.mandatory_answer === 1
+})
+
+const isMainAnswerProvided = computed(() => {
+  const answer = answers.value[currentStep.value].main
+  const questionType = props.quizData[currentStep.value]?.main_question_type
+  
+  if (questionType === 'Multi Select') {
+    return Array.isArray(answer) && answer.length > 0
+  }
+  
+  return answer !== null && answer !== undefined && answer !== ''
+})
 
 
 async function submitQuiz() {
   submitting.value = true
   submissionMessage.value = ''
-  
+  // Create array of main_question values
+  const mainQuestions = props.quizData.map(q => q.main_question)
   try {
     // Call API to submit quiz answers
-    const result = await call('rewards_extension.rewards_extension.doctype.gift_voucher.gift_voucher.submit_quiz_answers', {
+    const result = await call('rewards_extension.rewards_extension.doctype.quiz_transcript.quiz_transcript.submit_quiz_answers', {
+      questions:mainQuestions,
       answers: answers.value,
-      voucher_trail_id: sessionStorage.getItem('voucher_trail_id')
+      profile: props.profileData,
+      user: session.user,
+      source: props.source
     })
-    
-    if (result.success) {
+    if (result.status == 'success') {
       submissionSuccess.value = true
       submissionMessage.value = 'Answers submitted successfully!'
       // Emit completion event after short delay
-      setTimeout(() => emit('complete'), 1500)
+      setTimeout(() => emit('complete'), 300)
     } else {
       submissionMessage.value = result.message || 'Error submitting answers'
     }
@@ -143,6 +150,116 @@ async function submitQuiz() {
     submissionMessage.value = 'Error: ' + error.message
   } finally {
     submitting.value = false
+  }
+}
+
+function getComponentType(questionType) {
+  switch(questionType) {
+    case 'Select':
+      return {
+        props: ['options', 'modelValue'],
+        emits: ['update:modelValue'],
+        components: { Checkbox },
+        render() {
+          return h('div', { class: 'space-y-2' },
+            this.options.map((option, index) =>
+              h('div', { class: 'flex items-center', key: index }, [
+                h(Checkbox, {
+                  modelValue: this.modelValue === option,
+                  onChange: (value) => {
+                    if (value) this.$emit('update:modelValue', option)
+                  },
+                  class: 'mr-2 text-blue-600',
+                  radio: true
+                }),
+                h('label', {
+                  class: 'text-sm text-gray-700 cursor-pointer',
+                  onClick: () => this.$emit('update:modelValue', option)
+                }, option)
+              ])
+            )
+          );
+        }
+      };
+    case 'Multi Select':
+      return {
+        props: ['options', 'modelValue'],
+        emits: ['update:modelValue'],
+        components: { Checkbox },
+        render() {
+          return h('div', { class: 'space-y-2' },
+            this.options.map((option, index) =>
+              h('div', { class: 'flex items-center', key: index }, [
+                h(Checkbox, {
+                  modelValue: (this.modelValue || []).includes(option),
+                  onChange: (checked) => {
+                    const currentValue = [...this.modelValue || []];
+                    const indexInValue = currentValue.indexOf(option);
+                    
+                    if (checked && indexInValue === -1) {
+                      currentValue.push(option);
+                    } else if (!checked && indexInValue > -1) {
+                      currentValue.splice(indexInValue, 1);
+                    }
+                    
+                    this.$emit('update:modelValue', currentValue);
+                  },
+                  class: 'mr-2 text-blue-600'
+                }),
+                h('label', {
+                  class: 'text-sm text-gray-700 cursor-pointer',
+                  onClick: () => {
+                    const currentChecked = (this.modelValue || []).includes(option);
+                    const newValue = !currentChecked;
+                    
+                    const currentValue = [...this.modelValue || []];
+                    if (newValue && !currentValue.includes(option)) {
+                      currentValue.push(option);
+                    } else if (!newValue) {
+                      const index = currentValue.indexOf(option);
+                      if (index > -1) currentValue.splice(index, 1);
+                    }
+                    
+                    this.$emit('update:modelValue', currentValue);
+                  }
+                }, option)
+              ])
+            )
+          );
+        }
+      };
+    case 'Rating':
+      return {
+        components: { Rating },
+        props: ['modelValue'],
+        emits: ['update:modelValue'],
+        render() {
+          return h(Rating, {
+            modelValue: this.modelValue,
+            'onUpdate:modelValue': (value) => this.$emit('update:modelValue', value),
+            maxRating: 10,
+            class: 'text-blue-600'
+          });
+        }
+      };
+    case 'Data':
+      return Input;
+    default:
+      return Input;
+  }
+}
+
+function getDefaultPlaceholder(questionType) {
+  switch(questionType) {
+    case 'Select':
+    case 'Multi Select':
+      return 'Select an option';
+    case 'Rating':
+      return 'Enter rating (1-5)';
+    case 'Data':
+      return 'Enter your answer';
+    default:
+      return 'Enter your answer';
   }
 }
 </script>

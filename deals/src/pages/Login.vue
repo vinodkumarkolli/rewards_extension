@@ -67,7 +67,7 @@
       </div>
 
       <!-- Signup Form Step -->
-      <div v-if="currentStep === 'signup'">
+      <div v-if="currentStep === 'signup'" class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-auto flex flex-col items-center justify-center relative z-10">
         <form class="flex flex-col space-y-2 w-full" @submit.prevent="signupUser">
           <div class="relative">
             <div class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-gray-500">
@@ -106,8 +106,8 @@
             label="Company Name"
             v-model="signupData.company_name"
           />
-          <Button type="submit" :loading="loading" variant="solid">Sign Up</Button>
-          <Button type="button" @click="currentStep = 'mobile'" variant="outline" class="mt-2">
+          <Button type="submit" :loading="loading" variant="solid" class="w-full">Sign Up</Button>
+          <Button type="button" @click="currentStep = 'mobile'" variant="outline" class="w-full">
             Change Number
           </Button>
         </form>

@@ -7,7 +7,6 @@
  "field_order": [
   "section_break_knmj",
   "amended_from",
-  "payout_id",
   "payout_amount",
   "payout_mode",
   "beneficiary_type",
@@ -42,13 +41,6 @@
    "search_index": 1
   },
   {
-   "fieldname": "payout_id",
-   "fieldtype": "Data",
-   "in_list_view": 1,
-   "label": "Payout ID",
-   "reqd": 1
-  },
-  {
    "fieldname": "payout_amount",
    "fieldtype": "Float",
    "in_list_view": 1,
@@ -62,7 +54,7 @@
   },
   {
    "fieldname": "payout_date",
-   "fieldtype": "Date",
+   "fieldtype": "Datetime",
    "in_list_view": 1,
    "label": "Payout Request Date",
    "reqd": 1
@@ -98,7 +90,7 @@
    "fieldname": "payout_mode",
    "fieldtype": "Select",
    "label": "Payout Mode",
-   "options": "GPAY\nNEFT",
+   "options": "GPAY\nUPI ID",
    "reqd": 1
   },
   {
@@ -156,8 +148,8 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-07-21 16:50:00.395145",
- "modified_by": "Administrator",
+ "modified": "2025-08-01 22:56:57.006791",
+ "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Payout",
  "owner": "Administrator",
