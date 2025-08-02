@@ -8,6 +8,7 @@
   "section_break_sgf5",
   "amended_from",
   "campaign_name",
+  "campaign_description",
   "campaign_status",
   "base_voucher_price",
   "voucher_count",
@@ -258,6 +259,12 @@
    "label": "Instructions",
    "options": "Campaign Instruction",
    "reqd": 1
+  },
+  {
+   "fieldname": "campaign_description",
+   "fieldtype": "Small Text",
+   "label": "Campaign Description",
+   "reqd": 1
   }
  ],
  "grid_page_length": 50,
@@ -269,8 +276,8 @@
    "link_fieldname": "campaign"
   }
  ],
- "modified": "2025-08-01 13:29:11.481665",
- "modified_by": "Administrator",
+ "modified": "2025-08-02 14:43:56.589973",
+ "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Voucher Campaign",
  "naming_rule": "Random",

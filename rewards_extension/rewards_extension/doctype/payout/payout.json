@@ -96,7 +96,7 @@
   {
    "description": "Details like GPAY #, Bank Account Details",
    "fieldname": "beneficiary_details",
-   "fieldtype": "HTML",
+   "fieldtype": "Data",
    "label": "Beneficiary Details"
   },
   {
@@ -148,7 +148,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-01 22:56:57.006791",
+ "modified": "2025-08-02 13:56:37.349179",
  "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Payout",

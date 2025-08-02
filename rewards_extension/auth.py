@@ -75,7 +75,7 @@ def signup(first_name: str, last_name: str, company_name: str, mobile_no: str, e
 		"email": email,
 		"enabled": 1,
 		"send_welcome_email": 0,
-		"roles": [{"role": "Consumer"}]
+		"roles": [{"role": "Website User"}]
 	})
 	user.insert(ignore_permissions=True)
 	

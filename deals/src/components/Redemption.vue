@@ -104,7 +104,7 @@ async function submitRedemption() {
       user: session.user
     })
     
-    if (result.success) {
+    if (result.status == 'success') {
       submissionSuccess.value = true
       submissionMessage.value = 'Redemption submitted successfully! Your reward will be processed within 24 hrs. Please contact +91-6399962999 for any concerns'
       // Emit completion event after short delay

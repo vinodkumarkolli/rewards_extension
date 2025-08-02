@@ -1,6 +1,14 @@
 <template>
-  <div class="m-3 flex flex-row items-center justify-center h-screen">
-    <Card :title="currentStepTitle" class="w-full max-w-md mt-4">
+  <div>
+    <!-- Simplified Rewards Animation Background -->
+    <div class="fixed inset-0 overflow-hidden bg-[#FFF8E1]">
+      <div v-for="i in 20" :key="i" class="absolute reward-item" :style="rewardStyle(i)">
+        <span v-if="Math.random() > 0.7" class="rupee-symbol">₹</span>
+      </div>
+    </div>
+    
+    <div class="m-3 flex flex-row items-center justify-center h-screen relative" v-bind="$attrs">
+      <Card :title="currentStepTitle" class="w-full max-w-md mt-4">
       <!-- Mobile Input Step -->
       <div v-if="currentStep === 'mobile'">
         <form class="flex flex-col space-y-2 w-full" @submit.prevent="sendOTP">
@@ -14,15 +22,15 @@
                 name="mobile"
                 type="text"
                 maxlength="10"
-                placeholder="Mobile number"
+                placeholder="Whatsapp Number"
                 label="Mobile Number"
                 v-model="mobile"
                 class="pl-10 w-full"
                 @input="validateMobileNumber"
               />
             </div>
-            <div v-if="mobileError" class="text-red-500 text-sm mt-1">{{ mobileError }}</div>
           </div>
+          <div v-if="mobileError" class="text-red-500 text-sm mt-1">{{ mobileError }}</div>
           <Button type="submit" :loading="loading" variant="solid" :disabled="!!mobileError">Send OTP</Button>
         </form>
       </div>
@@ -114,6 +122,7 @@
       </div>
     </Card>
   </div>
+  </div>
 </template>
 
 <script lang="ts" setup>
@@ -126,6 +135,24 @@ import { createDocumentResource } from 'frappe-ui'
 import { useRoute } from 'vue-router'
 
 const route = useRoute()
+
+// Generate random positions and animations for reward items
+const rewardStyle = (index: number) => {
+  const left = Math.random() * 100;
+  const animationDuration = 5 + Math.random() * 10;
+  const animationDelay = Math.random() * 5;
+  const size = 10 + Math.random() * 20;
+  
+  return {
+    left: `${left}%`,
+    animationDuration: `${animationDuration}s`,
+    animationDelay: `${animationDelay}s`,
+    width: `${size}px`,
+    height: `${size}px`,
+    background: `hsl(${Math.random() * 360}, 50%, 40%)`,
+    opacity: Math.random() * 0.3 + 0.1
+  };
+}
 const currentStep = ref('mobile')
 const mobile = ref('')
 const mobileError = ref('')
@@ -181,13 +208,9 @@ function validateMobileNumber() {
     return false
   }
   
-  if (mobile.value.length !== 10) {
-    mobileError.value = 'Mobile number must be 10 digits'
-    return false
-  }
-  
-  if (!/^\d+$/.test(mobile.value)) {
-    mobileError.value = 'Mobile number must contain only digits'
+  // Validate Indian mobile number format (starts with 6-9 and 10 digits)
+  if (!/^[6-9]\d{9}$/.test(mobile.value)) {
+    mobileError.value = 'Please enter a valid Indian mobile number'
     return false
   }
   
@@ -233,7 +256,8 @@ async function signupUser() {
       last_name: signupData.value.last_name,
       company_name: signupData.value.company_name,
       mobile_no: '+91' + mobile.value,
-      email: email
+      email: email,
+      role_profile_name:'Consumer Profile'
     })
     
     if (res.status === 'success') {
@@ -396,6 +420,33 @@ function redirectToDealPage() {
   }, 1000)
 }
 </script>
+
+<style scoped>
+/* Rewards raining animation */
+.reward-item {
+  position: absolute;
+  top: -50px;
+  border-radius: 50%;
+  animation: fall linear infinite;
+  box-shadow: 0 0 10px rgba(255, 215, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.rupee-symbol {
+  font-size: 1.2rem;
+  font-weight: bold;
+  color: #5D4037;
+  text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
+}
+
+@keyframes fall {
+  to {
+    transform: translateY(100vh) rotate(360deg);
+  }
+}
+</style>
 
 <!--
 Test Cases for Passwordless Login:

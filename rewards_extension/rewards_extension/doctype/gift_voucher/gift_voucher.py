@@ -151,6 +151,10 @@ def update_redemption_details(voucher_name,redeem_details,user):
 	voucher_doc.add_comment('Edit',comment)
 	payout_result = create_payout_doc(voucher_doc)
 	if payout_result.get('status') == 'success':
+		voucher_doc.voucher_status = "Payout Requested"
+		voucher_doc.save(ignore_permissions=True)
+		comment1 = f"{payout_result.get('payout').name} - payout request has been created for this voucher"
+		voucher_doc.add_comment('Edit',comment1)
 		return {'status':'success'}
 	else:
 		return {'status':'failed', 'message': 'Payout creation failed'}
@@ -172,7 +176,7 @@ def create_payout_doc(voucher_doc):
 		})
 		payout_doc.insert(ignore_permissions=True)
 		payout_doc.submit()
-		return {'status':'success'}
+		return {'status':'success','payout':payout_doc}
 	except Exception as e:
 		frappe.log_error(f"Payout creation failed for voucher {voucher_doc.name}: {str(e)}")
 		return {'status':'failed', 'message': str(e)}

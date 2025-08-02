@@ -1,13 +1,13 @@
 <template>
   <!-- Rewards Animation Background -->
-  <div class="fixed inset-0 overflow-hidden z-0">
+  <div class="fixed inset-0 overflow-hidden z-0 bg-[#FFF8E1]">
     <div v-for="i in 20" :key="i" class="absolute reward-item" :style="rewardStyle(i)">
       <span v-if="Math.random() > 0.7" class="rupee-symbol">₹</span>
     </div>
   </div>
 
   <!-- Top Navigation Bar -->
-  <nav class="fixed top-0 left-0 w-full bg-white shadow-md p-4 z-10">
+  <nav class="fixed top-0 left-0 w-full bg-[#FFF8E1] shadow-md p-4 z-10">
     <div class="max-w-3xl mx-auto flex justify-between items-center">
       <div class="flex items-center bg-gradient-to-r from-blue-500 to-purple-500 text-white px-4 py-2 rounded-lg shadow-md">
         <span class="text-2xl mr-2">🎟️</span>
@@ -361,7 +361,7 @@ const rewardStyle = (index) => {
     animationDelay: `${animationDelay}s`,
     width: `${size}px`,
     height: `${size}px`,
-    background: `hsl(${Math.random() * 360}, 70%, 60%)`,
+    background: `hsl(${Math.random() * 360}, 50%, 40%)`,
     opacity: Math.random() * 0.3 + 0.1
   };
 }
@@ -414,7 +414,7 @@ function nextStep() {
 .rupee-symbol {
   font-size: 1.2rem;
   font-weight: bold;
-  color: white;
+  color: #5D4037;
   text-shadow: 0 0 3px rgba(0, 0, 0, 0.5);
 }
 
