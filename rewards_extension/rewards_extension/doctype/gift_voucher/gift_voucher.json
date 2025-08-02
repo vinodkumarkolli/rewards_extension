@@ -102,13 +102,15 @@
    "fieldname": "settlement_amount",
    "fieldtype": "Float",
    "label": "Settlement Amount",
-   "non_negative": 1
+   "non_negative": 1,
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
    "fieldname": "settled_amount",
    "fieldtype": "Float",
-   "label": "Settled Amount"
+   "label": "Settled Amount",
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
@@ -285,7 +287,7 @@
    "link_fieldname": "payout_source_link"
   }
  ],
- "modified": "2025-08-01 22:28:27.150022",
+ "modified": "2025-08-02 16:35:49.439028",
  "modified_by": "vinodkumarkolli@gmail.com",
  "module": "Rewards Extension",
  "name": "Gift Voucher",

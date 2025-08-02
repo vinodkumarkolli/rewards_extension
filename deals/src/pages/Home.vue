@@ -48,6 +48,12 @@
     </Alert>
   </div>
   <div class="max-w-3xl py-12 mx-auto h-screen flex flex-col items-center justify-center relative z-10" v-if="id">
+    <div v-if="campaignValid">
+      <!-- Campaign Header (Unified) -->
+      <div v-if="voucherCampaign && ['coupon', 'quiz', 'redemption'].includes(currentStep)" class="w-full max-w-md mx-auto mb-4 bg-yellow-50 p-4 rounded-lg border border-yellow-200 text-center">
+        <h2 class="text-xl font-bold text-gray-800 mb-1">{{ voucherCampaign.campaign_name }}</h2>
+        <p class="text-gray-600 text-sm">{{ voucherCampaign.campaign_description }}</p>
+      </div>
     <!-- Show coupon input after tour completion -->
     <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon'" class="bg-white rounded-lg shadow-lg flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto space-y-2">
           <div class="text-center mb-4">
@@ -91,6 +97,7 @@
         </div>
     
     <!-- Quiz Component -->
+    
     <Quiz
       v-if="currentStep === 'quiz' && showQuiz && profileData && quizData.length > 0"
       :quizData="quizData"
@@ -100,6 +107,7 @@
     />
     
     <!-- Redemption Component -->
+    
     <Redemption
       v-if="currentStep === 'redemption' && showRedemption" :voucher="currentVoucher"
       @complete="completeRedemption"
@@ -130,11 +138,23 @@
         @submit="createProfile"
       />
     </div>
+    </div>
+    <div v-else class="text-center">
+      <Alert type="danger" class="max-w-md mx-auto">
+        {{ campaignError }}
+      </Alert>
+      <Button
+        label="Go Back"
+        @click="$router.push('/')"
+        variant="solid"
+        class="mt-4 w-full max-w-xs"
+      />
+    </div>
   </div>
   
   <!-- Guided Tour -->
-  <GuidedTour 
-    v-if="showTour && voucherCampaign"
+  <GuidedTour
+    v-if="showTour && voucherCampaign && campaignValid"
     :campaign="voucherCampaign"
     @complete="completeTour"
   />
@@ -182,6 +202,8 @@ const quizData = ref([]) // Stores quiz questions
 const showQuiz = ref(false) // Controls Quiz visibility
 const showRedemption = ref(false) // Controls Redemption visibility
 const redemptionComplete = ref(false) // Tracks redemption completion
+const campaignValid = ref(true) // Tracks campaign validity
+const campaignError = ref('') // Stores campaign error message
 
 // Create document resource for current user
 const userResource = createDocumentResource({
@@ -198,16 +220,25 @@ const userResource = createDocumentResource({
 const voucherResource = createDocumentResource({
   doctype: "Voucher Campaign",
   name: props.id,
-  fields: ["name", "campaign_name", "campaign_target","instructions.*", "quiz.*"],
+  fields: ["name", "start_date", "end_date","campaign_status", "campaign_name", "campaign_target","instructions.*", "quiz.*"],
   auto: true,
   onSuccess(data) {
     if (data) {
-      // console.log("Campaign data:", data)
-      voucherCampaign.value = data
-      showTour.value = true
-      // Store quiz data if available
-      if (data.quiz) {
-        quizData.value = data.quiz
+      // Check campaign validity
+      const today = new Date().toISOString().split('T')[0];
+      if (data.campaign_status !== 'Active' || today < data.start_date || today > data.end_date) {
+        // Campaign is not valid, show error
+        campaignValid.value = false;
+        campaignError.value = 'This campaign is not active or has expired.';
+        showTour.value = false;
+      } else {
+        // Campaign is valid, proceed
+        voucherCampaign.value = data
+        showTour.value = true
+        // Store quiz data if available
+        if (data.quiz) {
+          quizData.value = data.quiz
+        }
       }
     }
   }
@@ -237,14 +268,14 @@ async function completeTour() {
         }).catch(error => {
           console.error('Profile check failed:', error)
           currentStep.value = 'profile' // Default to profile form on error
-          hideSpinner(spinner);
+          hideSpinner(spinner); // Ensure spinner is hidden on error
         });
       } else {
         hideSpinner(spinner);
       }
     } catch (error) {
       console.error('Error in completeTour:', error)
-      hideSpinner(spinner);
+      hideSpinner(spinner); // Ensure spinner is hidden on error
     }
   }, 500);
 }

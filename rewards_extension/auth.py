@@ -51,7 +51,7 @@ def send_login_otp(mobile_no: str):
 
 @frappe.whitelist(allow_guest=True)
 @rate_limit(key="mobile_no", limit=5, seconds=60 * 5)
-def signup(first_name: str, last_name: str, company_name: str, mobile_no: str, email: str):
+def signup(first_name: str, last_name: str, company_name: str, mobile_no: str, email: str, role_profile_name):
 	"""
 	Handles new user signup and sends OTP for verification
 	"""
@@ -75,7 +75,7 @@ def signup(first_name: str, last_name: str, company_name: str, mobile_no: str, e
 		"email": email,
 		"enabled": 1,
 		"send_welcome_email": 0,
-		"roles": [{"role": "Website User"}]
+		"role_profile_name":role_profile_name
 	})
 	user.insert(ignore_permissions=True)
 	

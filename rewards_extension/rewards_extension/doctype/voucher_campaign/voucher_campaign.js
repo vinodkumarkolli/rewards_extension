@@ -26,38 +26,35 @@ frappe.ui.form.on("Voucher Campaign", {
         frm.set_value("campaign_budget",frm.doc.base_voucher_price * frm.doc.voucher_count)
     },
 });
-// frappe.ui.form.on('Quiz Question',{
-//     warm_question_req(frm,cdt,cdn){
-//         let row = locals[cdt][cdn];
-//         if(row.mandatory_answer==1){
-//             row.warm_question_req = 0;
-//             refresh_field('warm_question_req');
-//         }
-//     }
-// })
+
 function addVoucherBatchButtons(frm){
-    frm.add_custom_button(__('Create a Batch'),function(){
-        openBatchPopup(frm)
-    },__('Voucher Batch'))
-    //Check for Pending Inactivated Batches
-    frappe.call({
-        method:'rewards_extension.rewards_extension.doctype.voucher_campaign.voucher_campaign.get_pending_batches',
-        args:{
-            campaign:frm.doc.name
-        },
-        callback:function(r){
-            if(!r.exc){
-                //refresh_field('status');
-                console.log(r.message);
-                if(r.message.length>0){
-                    frm.add_custom_button(__('Activate Voucher Batch'),function(){
-                        addBatchActivationForm(frm,r.message)
-                    },__('Voucher Batch'))
+    const now = moment();
+    const endDate = moment(frm.doc.end_date);
+    const startDate = moment(frm.doc.start_date);
+
+    if(now.isBetween(startDate,endDate)){
+        frm.add_custom_button(__('Create a Batch'),function(){
+            openBatchPopup(frm)
+        },__('Voucher Batch'))
+        //Check for Pending Inactivated Batches
+        frappe.call({
+            method:'rewards_extension.rewards_extension.doctype.voucher_campaign.voucher_campaign.get_pending_batches',
+            args:{
+                campaign:frm.doc.name
+            },
+            callback:function(r){
+                if(!r.exc){
+                    //refresh_field('status');
+                    console.log(r.message);
+                    if(r.message.length>0){
+                        frm.add_custom_button(__('Activate Voucher Batch'),function(){
+                            addBatchActivationForm(frm,r.message)
+                        },__('Voucher Batch'))
+                    }
                 }
             }
-        }
-    })
-    
+        })
+    }
 }
 function addBatchActivationForm(frm,options){
     d = new frappe.ui.Dialog({
