@@ -19,6 +19,7 @@
   "valid_till",
   "activated_on",
   "blocked_date",
+  "blocked_by_user",
   "voucher_status",
   "voucher_trails",
   "section_break_vvfb",
@@ -31,8 +32,6 @@
   "beneficiary_bank_account",
   "beneficiary_bank_account_html",
   "redeem_info_tab",
-  "redemption_trials_section",
-  "trail",
   "successful_redemption_section",
   "quiz",
   "column_break_seqz",
@@ -116,7 +115,6 @@
    "allow_on_submit": 1,
    "fieldname": "activated_on",
    "fieldtype": "Date",
-   "in_standard_filter": 1,
    "label": "Activated on",
    "read_only": 1
   },
@@ -125,6 +123,7 @@
    "fieldname": "voucher_status",
    "fieldtype": "Select",
    "in_list_view": 1,
+   "in_standard_filter": 1,
    "label": "Voucher Status",
    "options": "Generated\nActive\nExpired\nBlocked\nPayout Requested\nDenied Payment\nRedeemed",
    "read_only": 1,
@@ -246,19 +245,6 @@
    "label": "Transcript"
   },
   {
-   "fieldname": "redemption_trials_section",
-   "fieldtype": "Section Break",
-   "label": "Redemption Trials"
-  },
-  {
-   "allow_on_submit": 1,
-   "fieldname": "trail",
-   "fieldtype": "Table",
-   "label": "Trail",
-   "options": "Voucher Redeem Trail",
-   "read_only": 1
-  },
-  {
    "fieldname": "successful_redemption_section",
    "fieldtype": "Section Break",
    "label": "Successful Redemption"
@@ -278,6 +264,14 @@
    "fieldtype": "Data",
    "label": "Beneficiary UPI details",
    "read_only": 1
+  },
+  {
+   "allow_on_submit": 1,
+   "fieldname": "blocked_by_user",
+   "fieldtype": "Link",
+   "label": "Blocked by User",
+   "options": "User",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
@@ -289,8 +283,8 @@
    "link_fieldname": "payout_source_link"
   }
  ],
- "modified": "2025-08-02 21:39:36.436221",
- "modified_by": "vinodkumarkolli@gmail.com",
+ "modified": "2025-08-04 20:38:01.699077",
+ "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Gift Voucher",
  "naming_rule": "Expression",

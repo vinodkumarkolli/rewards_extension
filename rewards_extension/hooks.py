@@ -138,7 +138,11 @@ after_install = "rewards_extension.install.after_install"
 # Document Events
 # ---------------
 # Hook on document methods and events
-
+# doc_events = {
+#     'Address':{
+#         "before_save":"rewards_extension.utils.geocode_address"
+#     }
+# }
 # doc_events = {
 # 	"*": {
 # 		"on_update": "method",

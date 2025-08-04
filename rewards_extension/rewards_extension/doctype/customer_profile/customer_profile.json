@@ -10,6 +10,7 @@
   "customer_type",
   "master_retail_profile",
   "users",
+  "fraud_score",
   "column_break_vrgm",
   "address_html"
  ],
@@ -51,6 +52,13 @@
    "fieldtype": "Table",
    "label": "Users",
    "options": "User Mapping"
+  },
+  {
+   "default": "100",
+   "fieldname": "fraud_score",
+   "fieldtype": "Data",
+   "label": "Fraud Score",
+   "read_only": 1
   }
  ],
  "grid_page_length": 50,
@@ -73,8 +81,8 @@
    "link_fieldname": "quizzer"
   }
  ],
- "modified": "2025-07-31 15:37:39.346099",
- "modified_by": "vinodkumarkolli@gmail.com",
+ "modified": "2025-08-04 20:44:16.781154",
+ "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Customer Profile",
  "naming_rule": "By fieldname",

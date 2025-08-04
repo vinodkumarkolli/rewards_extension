@@ -13,12 +13,12 @@ class GiftVoucher(Document):
 def validate_coupon_code_and_create_trail(coupon_code, user, campaign_id, profile):
 	# Validate coupon exists and is active
 	if isinstance(profile, str):
-		customer_profile = json.loads(profile)
+		redeemer_profile = json.loads(profile)
 	else:
-		customer_profile = profile
+		redeemer_profile = profile
 	voucher_name = frappe.db.get_value(
 		"Gift Voucher",
-		filters={"secret_code": coupon_code, "voucher_status": "Active", "campaign": campaign_id},
+		filters={"secret_code": coupon_code, "voucher_status": ["in",["Active","Blocked"]], "campaign": campaign_id},
 		fieldname="name",
 	)
 	if not voucher_name:
@@ -27,60 +27,76 @@ def validate_coupon_code_and_create_trail(coupon_code, user, campaign_id, profil
 		return {'valid': False, 'message': 'Invalid Coupon Code'}
 
 	voucher_doc = frappe.get_doc("Gift Voucher", voucher_name)
+	campaign_doc = frappe.get_doc("Voucher Campaign", campaign_id)
 
-	# Create trail record
-	trail = frappe.get_doc({
-		"doctype": "Voucher Redeem Trail",
-		"parent": voucher_doc.name,
-		"parenttype": "Gift Voucher",
-		"parentfield": "trail",
-		"user": user,
-		"trail_datetime": now(),
-		"trail_status": "Initiated",
-	})
-	trail.insert(ignore_permissions=True)
-	trail.submit()
-
-	# Add a comment to the voucher to log this event
-	comment = f"{user} has registered the present voucher to his profile on {now()}"
-	voucher_doc.add_comment("Info", comment)
-	customer_type = customer_profile.get("customer_type")
-	# Map customer_type to beneficiary_type using switch-like logic
-	beneficiary_type = {
+	if voucher_doc.voucher_status == "Active":
+		comment = f"{user} has blocked the present voucher ({voucher_doc.name}) to his profile on {now()}"
+		voucher_doc.add_comment("Info", comment)
+		customer_type = redeemer_profile.get("customer_type")
+		# Map customer_type to beneficiary_type using switch-like logic
+		beneficiary_type = {
         "Retailer": "Customer Profile",
 		"Wholesaler": "Customer Profile",
 		"Consumer": "Customer Profile",
         "Distributor": "Distributor Profile",
         "Sales Person": "Sales Person Profile"
-    }.get(customer_type, customer_type)  # Default to original if not found
-	voucher_doc.beneficiary_type = beneficiary_type
-	voucher_doc.save(ignore_permissions=True)
-	voucher_doc.beneficiary = customer_profile.get("customer_name")
-	voucher_doc.voucher_status = "Blocked"
-	voucher_doc.blocked_date = now()
-	voucher_doc.voucher_trails = voucher_doc.voucher_trails + 1
-	voucher_doc.save(ignore_permissions=True)
-	comment = f"{customer_profile.get('customer_name')} of type {customer_profile.get('customer_type')} is allocated this voucher"
-	voucher_doc.add_comment('Edit',comment)
-    
-	return {
-		"valid": True,
-		"coupon_details": {
-			"coupon_code": voucher_doc.secret_code,
-			"voucher_name": voucher_doc.name,
-			"campaign_target": voucher_doc.campaign_target,
-			"voucher_value": voucher_doc.voucher_base_amount,
-			"beneficiary_type": voucher_doc.beneficiary_type,
-			"beneficiary": voucher_doc.beneficiary,
-			"doctype":voucher_doc.doctype,
-			"voucher_base_amount":voucher_doc.voucher_base_amount,
-		},
-		"trail": {
-			"trail_id": trail.name,
-			"trail_datetime": trail.trail_datetime,
-			"trail_status": trail.trail_status,
-		},
-	}
+		}.get(customer_type, customer_type)  # Default to original if not found
+		voucher_doc.beneficiary_type = beneficiary_type
+		voucher_doc.save(ignore_permissions=True)
+		voucher_doc.beneficiary = redeemer_profile.get("customer_name")
+		voucher_doc.voucher_status = "Blocked"
+		voucher_doc.blocked_date = now()
+		voucher_doc.blocked_by_user = user
+		voucher_doc.voucher_trails = voucher_doc.voucher_trails + 1
+		voucher_doc.save(ignore_permissions=True)
+		comment = f"{redeemer_profile.get('customer_name')} of type {redeemer_profile.get('customer_type')} is allocated this voucher"
+		voucher_doc.add_comment('Edit',comment)
+		return {
+			"valid": True,
+			"coupon_details": {
+				"coupon_code": voucher_doc.secret_code,
+				"voucher_name": voucher_doc.name,
+				"campaign_target": voucher_doc.campaign_target,
+				"voucher_value": voucher_doc.voucher_base_amount,
+				"beneficiary_type": voucher_doc.beneficiary_type,
+				"beneficiary": voucher_doc.beneficiary,
+				"doctype":voucher_doc.doctype,
+				"voucher_base_amount":voucher_doc.voucher_base_amount,
+			}
+		}
+	if voucher_doc.voucher_status == "Blocked" and voucher_doc.voucher_trails <= campaign_doc.voucher_retries:
+		comment = f"{user} has retried for - {voucher_doc.name} voucher. Time: {now()}"
+		voucher_doc.add_comment("Info", comment)
+		# voucher_doc.blocked_by_user = user
+		voucher_doc.voucher_trails = voucher_doc.voucher_trails + 1
+		voucher_doc.save(ignore_permissions=True)
+		if voucher_doc.blocked_by_user == user:
+			return {
+				"valid": True,
+				"coupon_details": {
+					"coupon_code": voucher_doc.secret_code,
+					"voucher_name": voucher_doc.name,
+					"campaign_target": voucher_doc.campaign_target,
+					"voucher_value": voucher_doc.voucher_base_amount,
+					"beneficiary_type": voucher_doc.beneficiary_type,
+					"beneficiary": voucher_doc.beneficiary,
+					"doctype":voucher_doc.doctype,
+					"voucher_base_amount":voucher_doc.voucher_base_amount,
+				}
+			}
+		else:
+			return {
+				"valid": False,
+				"message": 'You cannot use this Voucher. This is blocked by another user'
+			}
+	else:
+		return {
+			"valid": False,
+			"message": 'Voucher has been tried too many times.'
+		}
+@frappe.whitelist()
+def fraud_analysis(beneficiary_type,beneficiary,user):
+	pass
 
 @frappe.whitelist()
 def search_customer_profile_for_contact(user):

@@ -3,7 +3,7 @@
 
 import frappe
 from frappe.model.document import Document
-
+from frappe.utils import now
 
 class Payout(Document):
 	pass
@@ -17,6 +17,12 @@ def approve_payout(payout_id,trx_id,trx_amt,trx_date,trx_image):
 	payout_doc.transaction_image = trx_image
 	payout_doc.payout_status = "Processed"
 	payout_doc.save(ignore_permissions=True)
+	frappe.db.commit()
+	source_doc = frappe.get(payout_doc.payout_source_type,payout_doc.payout_source_link)
+	source_doc.voucher_status = "Redeemed"
+	source_doc.redeemed_date = now()
+	source_doc.save(ignore_permissions=True)
+	source_doc.add_comment('Comment', f'Voucher Redeemed on {payout_doc.transaction_date}')
 	frappe.db.commit()
 	return "Success"
 

@@ -51,6 +51,32 @@
             class="mt-1 w-full"
           />
         </div>
+        <div>
+          <label for="state" class="block text-sm font-medium text-gray-700">State <span class="text-red-500">*</span></label>
+          <select
+            id="state"
+            v-model="customerProfileData.address.state"
+            required
+            class="mt-1 w-full rounded-md border border-gray-300 bg-white py-2 px-3 shadow-sm focus:border-blue-500 focus:outline-none focus:ring-blue-500 sm:text-sm"
+          >
+            <option value="">Select State</option>
+            <option v-for="state in indianStates" :key="state" :value="state">
+              {{ state }}
+            </option>
+          </select>
+        </div>
+        
+        <div>
+          <label for="country" class="block text-sm font-medium text-gray-700">Country <span class="text-red-500">*</span></label>
+          <Input
+            id="country"
+            v-model="customerProfileData.address.country"
+            placeholder="Enter your country"
+            required
+            disabled
+            class="mt-1 w-full bg-gray-100"
+          />
+        </div>
         
         <div>
           <label for="pincode" class="block text-sm font-medium text-gray-700">Pincode <span class="text-red-500">*</span></label>
@@ -59,9 +85,12 @@
             v-model="customerProfileData.address.pincode"
             placeholder="Enter your 6-digit pincode"
             required
+            maxlength="6"
             class="mt-1 w-full"
           />
         </div>
+        
+        
       </div>
     </div>
 
@@ -92,6 +121,7 @@
         label="Submit Profile"
         @click="$emit('submit')"
         :loading="creatingProfile"
+        :disabled="!isFormValid"
         variant="solid"
       />
     </div>
@@ -104,6 +134,7 @@ export default {
     customerProfileData: Object,
     voucherCampaign: Object,
     customerTypes: Array,
+    indianStates: Array,
     creatingProfile: Boolean
   },
   created() {
@@ -116,6 +147,25 @@ export default {
     return {
       currentStep: 1
     };
+  },
+  computed: {
+    isFormValid() {
+      const data = this.customerProfileData;
+      if (this.currentStep === 1) {
+        return data.customer_name && data.customer_type;
+      } else if (this.currentStep === 2) {
+        return data.customer_name &&
+               data.customer_type &&
+               data.address.address_line1 &&
+               data.address.locality &&
+               data.address.city &&
+               data.address.pincode &&
+               data.address.state &&
+               data.address.country &&
+               /^\d{6}$/.test(data.address.pincode);
+      }
+      return false;
+    }
   },
   methods: {
     goToStep(step) {

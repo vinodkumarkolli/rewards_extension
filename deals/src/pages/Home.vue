@@ -42,20 +42,39 @@
     </div>
   </div>
 
-  <div class="max-w-3xl py-12 mx-auto h-screen flex flex-col items-center justify-center relative z-10" v-if="!id">
+  <div class="max-w-3xl py-12 mx-auto h-screen flex flex-col items-center justify-center relative z-10" v-if="mainAlertShow">
     <Alert>
-        You need to navigate here with a valid url by scanning from QR or from a link shared by your sales person
+        {{ mainAlertMessage }}
     </Alert>
   </div>
-  <div class="max-w-3xl py-12 mx-auto h-screen flex flex-col items-center justify-center relative z-10" v-if="id">
+  <div class="max-w-3xl py-6 mx-auto h-screen flex flex-col items-center justify-center relative z-10" v-if="id">
     <div v-if="campaignValid">
       <!-- Campaign Header (Unified) -->
-      <div v-if="voucherCampaign && ['coupon', 'quiz', 'redemption'].includes(currentStep)" class="w-full max-w-md mx-auto mb-4 bg-yellow-50 p-4 rounded-lg border border-yellow-200 text-center">
+      <div v-if="voucherCampaign && ['coupon', 'quiz', 'redemption'].includes(currentStep)" class="w-full max-w-md mx-auto mb-4 bg-white p-4 rounded-lg border border-black shadow-lg text-center">
         <h2 class="text-xl font-bold text-gray-800 mb-1">{{ voucherCampaign.campaign_name }}</h2>
         <p class="text-gray-600 text-sm">{{ voucherCampaign.campaign_description }}</p>
       </div>
+      
+      <!-- Voucher Status Counts Ribbon -->
+      <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon' && couponsUsed && couponsUsed.length" class="bg-gray-100 rounded-lg shadow-sm flex flex-col items-center justify-center p-4 w-full max-w-md mx-auto mt-4 mb-4">
+        <h5 class="text-xl font-bold text-gray-800 mb-1">Campaign Usage Stats</h5>
+        <div class="flex flex-wrap justify-center gap-2 w-full">
+          <div class="bg-gray-200 rounded-md px-3 py-1 text-sm text-gray-700">
+            Redeemed: {{ redeemedCouponsCount }}
+          </div>
+          <div class="bg-gray-200 rounded-md px-3 py-1 text-sm text-gray-700">
+            Payout Requested: {{ payoutRequestedCouponsCount }}
+          </div>
+          <div class="bg-gray-200 rounded-md px-3 py-1 text-sm text-gray-700">
+            Blocked: {{ blockedCouponsCount }}
+          </div>
+          <div class="bg-gray-200 rounded-md px-3 py-1 text-sm text-gray-700">
+            Denied Payment: {{ deniedPaymentCouponsCount }}
+          </div>
+        </div>
+      </div>
     <!-- Show coupon input after tour completion -->
-    <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon'" class="bg-white rounded-lg shadow-lg flex flex-col items-center justify-center p-6 w-full max-w-md mx-auto space-y-2">
+    <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon'" class=" bg-yellow-50 rounded-lg shadow-lg flex border-yellow-200 flex-col items-center justify-center p-6 py-4 w-full max-w-md mx-auto space-y-2">
           <div class="text-center mb-4">
             <h3 class="text-xl font-bold mb-2 text-gray-700">
               Welcome {{ profileData.customer_name }}
@@ -134,6 +153,7 @@
         :customer-profile-data="customerProfileData"
         :voucher-campaign="voucherCampaign"
         :customer-types="customerTypes"
+        :indian-states="indianStates"
         :creating-profile="creatingProfile"
         @submit="createProfile"
       />
@@ -161,8 +181,8 @@
 </template>
 
 <script setup>
-import { Dialog, Alert, Button, Input, Select, call, createDocumentResource } from "frappe-ui"
-import { ref, watch, onMounted } from "vue"
+import { Dialog, Alert, Button, Input, Select, call, createDocumentResource,createListResource } from "frappe-ui"
+import { ref, watch, onMounted, computed } from "vue"
 import { session } from "../data/session"
 import GuidedTour from '@/components/GuidedTour.vue'
 import ProfileOnboarding from '@/components/ProfileOnboarding.vue';
@@ -173,7 +193,8 @@ const props = defineProps({
   id: { type: String, default: null }
 })
 
-const showDialog = ref(false)
+const mainAlertShow = ref(false)
+const mainAlertMessage = ref('')
 // State management
 const showTour = ref(false)
 const voucherCampaign = ref(null)
@@ -186,6 +207,16 @@ const validationSuccess = ref(false)
 const creatingProfile = ref(false)
 const currentVoucher = ref({name:'',doctype:'',amount:0.00})
 const customerTypes = ['Consumer', 'Retailer', 'Wholesaler', 'Distributor']
+const indianStates = [
+  'Andhra Pradesh', 'Arunachal Pradesh', 'Assam', 'Bihar', 'Chhattisgarh',
+  'Goa', 'Gujarat', 'Haryana', 'Himachal Pradesh', 'Jharkhand',
+  'Karnataka', 'Kerala', 'Madhya Pradesh', 'Maharashtra', 'Manipur',
+  'Meghalaya', 'Mizoram', 'Nagaland', 'Odisha', 'Punjab',
+  'Rajasthan', 'Sikkim', 'Tamil Nadu', 'Telangana', 'Tripura',
+  'Uttar Pradesh', 'Uttarakhand', 'West Bengal',
+  'Andaman and Nicobar Islands', 'Chandigarh', 'Dadra and Nagar Haveli and Daman and Diu',
+  'Lakshadweep', 'Delhi', 'Puducherry', 'Jammu and Kashmir', 'Ladakh'
+]
 const customerProfileData = ref({
   customer_name: '',
   customer_type: '',
@@ -193,7 +224,9 @@ const customerProfileData = ref({
     address_line1: '',
     locality: '',
     city: '',
-    pincode: ''
+    pincode: '',
+    state: '',
+    country: 'India'
   }
 })
 // Reactive variable to store profile data (single declaration)
@@ -204,6 +237,28 @@ const showRedemption = ref(false) // Controls Redemption visibility
 const redemptionComplete = ref(false) // Tracks redemption completion
 const campaignValid = ref(true) // Tracks campaign validity
 const campaignError = ref('') // Stores campaign error message
+const couponsUsed = ref(null)
+
+// Computed properties for voucher status counts
+const blockedCouponsCount = computed(() => {
+  if (!couponsUsed.value) return 0
+  return couponsUsed.value.filter(voucher => voucher.voucher_status === 'Blocked').length
+})
+
+const payoutRequestedCouponsCount = computed(() => {
+  if (!couponsUsed.value) return 0
+  return couponsUsed.value.filter(voucher => voucher.voucher_status === 'Payout Requested').length
+})
+
+const redeemedCouponsCount = computed(() => {
+  if (!couponsUsed.value) return 0
+  return couponsUsed.value.filter(voucher => voucher.voucher_status === 'Redeemed').length
+})
+
+const deniedPaymentCouponsCount = computed(() => {
+  if (!couponsUsed.value) return 0
+  return couponsUsed.value.filter(voucher => voucher.voucher_status === 'Denied Payment').length
+})
 
 // Create document resource for current user
 const userResource = createDocumentResource({
@@ -215,12 +270,18 @@ const userResource = createDocumentResource({
     // console.log("User details fetched:", data)
   }
 })
-
+onMounted(() => {
+  if(!props.id){
+    mainAlertShow.value = true
+    mainAlertMessage.value = 'You need to navigate here with a valid url by scanning from QR or from a link shared by your sales person'
+    // mainAlertMessage.value = 'Hello Dickhead'
+  }
+})
 // Create document resource for voucher campaign
-const voucherResource = createDocumentResource({
+const voucherCampaignResource = createDocumentResource({
   doctype: "Voucher Campaign",
   name: props.id,
-  fields: ["name", "start_date", "end_date","campaign_status", "campaign_name", "campaign_target","instructions.*", "quiz.*"],
+  fields: ["name","start_date","target_uniqueness","voucher_retries", "unique_audience_redeem_limit", "start_date", "end_date","campaign_status", "campaign_name", "campaign_target","instructions.*", "quiz.*"],
   auto: true,
   onSuccess(data) {
     if (data) {
@@ -260,7 +321,8 @@ async function completeTour() {
         }).then(profile => {
           if (profile) {
             profileData.value = profile
-            currentStep.value = 'coupon' // Show coupon form
+            loadCouponCodeForm()
+            // currentStep.value = 'coupon' // Show coupon form
           } else {
             currentStep.value = 'profile' // Show profile form
           }
@@ -302,7 +364,7 @@ async function validateCoupon() {
       profile: profileData.value
     })
     if (result.valid == true) {
-      sessionStorage.setItem('voucher_trail_id', result.trail.trail_id)
+      // sessionStorage.setItem('voucher_trail_id', result.trail.trail_id)
       currentVoucher.value = {'name':result.coupon_details.voucher_name,'doctype':result.coupon_details.doctype,'amount': result.coupon_details.voucher_base_amount}
       
       // Check if there's quiz data
@@ -330,8 +392,16 @@ async function validateCoupon() {
 
 async function createProfile() {
   // Basic validation
-  if (!customerProfileData.value.customer_name || !customerProfileData.value.customer_type || !customerProfileData.value.address.address_line1 || !customerProfileData.value.address.locality || !customerProfileData.value.address.city || !customerProfileData.value.address.pincode) {
+  if (!customerProfileData.value.customer_name || !customerProfileData.value.customer_type || !customerProfileData.value.address.address_line1 || !customerProfileData.value.address.locality || !customerProfileData.value.address.city || !customerProfileData.value.address.pincode || !customerProfileData.value.address.state || !customerProfileData.value.address.country) {
     validationMessage.value = 'Please fill all required fields.'
+    validationSuccess.value = false
+    return
+  }
+  
+  // Validate pincode is exactly 6 digits
+  const pincodeRegex = /^\d{6}$/
+  if (!pincodeRegex.test(customerProfileData.value.address.pincode)) {
+    validationMessage.value = 'Pincode must be exactly 6 digits.'
     validationSuccess.value = false
     return
   }
@@ -346,7 +416,8 @@ async function createProfile() {
     })
     profileData.value = newProfile // Store profile data
     // Transition to coupon input after profile creation
-    currentStep.value = 'coupon'
+    // currentStep.value = 'coupon'
+    loadCouponCodeForm()
 
     if (newProfile) {
       validationSuccess.value = true
@@ -411,23 +482,28 @@ function hideSpinner(spinner) {
   }
 }
 
-// Updated step transition function with spinner animation
-function nextStep() {
-  const spinner = showSpinner();
-  
-  setTimeout(() => {
-    if (currentStep.value === 'onboarding') {
-      currentStep.value = 'coupon';
-    } else if (currentStep.value === 'coupon') {
-      currentStep.value = 'quiz';
-    } else if (currentStep.value === 'quiz') {
-      currentStep.value = 'redemption';
-    }
+function loadCouponCodeForm(){
+  mainAlertShow.value=false
+  mainAlertMessage.value=''
+  const filters = []
+  // console.log(profileData.value.name)
+  filters.push(['voucher_status','in',['Blocked','Payout Requested','Redeemed','Denied Payment']])
+  if(voucherCampaign.value.target_uniqueness =='Profile'){
+    filters.push(['beneficiary_type','=',profileData.value.doctype])
+    filters.push(['beneficiary','=',profileData.value.name])
+  }
+  if(voucherCampaign.value.target_uniqueness =='Mobile'){
+    filters.push(['blocked_by_user','=',session.user])
+  }
     
-    hideSpinner(spinner);
-  }, 500);
+  const couponResource = createListResource({
+    doctype:'Gift Voucher',fields:["*"],filters:filters,onSuccess: (data) => {
+      couponsUsed.value = data
+    }
+  })
+  couponResource.fetch()
+  currentStep.value = 'coupon'
 }
-
 </script>
 <style scoped>
 /* Rewards raining animation */
