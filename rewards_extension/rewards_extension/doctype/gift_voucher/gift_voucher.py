@@ -64,12 +64,13 @@ def validate_coupon_code_and_create_trail(coupon_code, user, campaign_id, profil
 				"voucher_base_amount":voucher_doc.voucher_base_amount,
 			}
 		}
-	if voucher_doc.voucher_status == "Blocked" and voucher_doc.voucher_trails <= campaign_doc.voucher_retries:
+	if (voucher_doc.voucher_status == "Blocked") and (voucher_doc.voucher_trails <= campaign_doc.voucher_retries):
 		comment = f"{user} has retried for - {voucher_doc.name} voucher. Time: {now()}"
 		voucher_doc.add_comment("Info", comment)
 		# voucher_doc.blocked_by_user = user
 		voucher_doc.voucher_trails = voucher_doc.voucher_trails + 1
 		voucher_doc.save(ignore_permissions=True)
+		frappe.db.commit()
 		if voucher_doc.blocked_by_user == user:
 			return {
 				"valid": True,
@@ -92,7 +93,7 @@ def validate_coupon_code_and_create_trail(coupon_code, user, campaign_id, profil
 	else:
 		return {
 			"valid": False,
-			"message": 'Voucher has been tried too many times.'
+			"message": 'Voucher hasm been tried too many times. And Blocked. Try another Coupon'
 		}
 @frappe.whitelist()
 def fraud_analysis(beneficiary_type,beneficiary,user):

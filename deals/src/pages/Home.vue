@@ -42,6 +42,48 @@
     </div>
   </div>
 
+  <!-- Voucher Status Counts Widget -->
+  <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon' && couponsUsed && couponsUsed.length" class="fixed top-1/2 right-4 transform -translate-y-1/2 bg-white rounded-lg border border-gray-300 shadow-xl z-20 transition-all duration-300 ease-in-out" :class="isWidgetMinimized ? 'w-12 h-12' : 'w-64 p-4'">
+    <!-- Minimized View -->
+    <div v-if="isWidgetMinimized" class="h-full w-full flex items-center justify-center">
+      <button @click="isWidgetMinimized = !isWidgetMinimized" class="absolute -right-8 top-1/2 transform -translate-y-1/2 w-8 h-8 rounded-full bg-white border border-gray-300 shadow-md flex items-center justify-center hover:bg-gray-50 transition-colors">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7" />
+        </svg>
+      </button>
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-gray-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+      </svg>
+    </div>
+    
+    <!-- Maximized View -->
+    <div v-else class="flex flex-col items-center">
+      <div class="flex justify-between items-center w-full mb-3">
+        <h5 class="text-lg font-bold text-gray-800 text-center flex-grow">Campaign Usage Stats</h5>
+        <button @click="isWidgetMinimized = !isWidgetMinimized" class="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center hover:bg-gray-200 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 text-gray-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+          </svg>
+        </button>
+      </div>
+      <div class="flex flex-col gap-2 w-full">
+        <div class="bg-gray-100 rounded-full px-3 py-2 text-xs text-gray-700 text-center">
+          Redeemed: {{ redeemedCouponsCount }}
+        </div>
+        <div class="bg-gray-100 rounded-full px-3 py-2 text-xs text-gray-700 text-center">
+          Payout Requested: {{ payoutRequestedCouponsCount }}
+        </div>
+        <div class="bg-gray-100 rounded-full px-3 py-2 text-xs text-gray-700 text-center">
+          Blocked: {{ blockedCouponsCount }}
+        </div>
+        <div class="bg-gray-100 rounded-full px-3 py-2 text-xs text-gray-700 text-center">
+          Denied Payment: {{ deniedPaymentCouponsCount }}
+        </div>
+      </div>
+      <div class="text-gray-500 text-xs mt-3 text-center">This Campaign allows only <b>{{ voucherCampaign.unique_audience_redeem_limit }} Coupons </b>per each {{ voucherCampaign.target_uniqueness }}</div>
+    </div>
+  </div>
+
   <div class="max-w-3xl py-12 mx-auto h-screen flex flex-col items-center justify-center relative z-10" v-if="mainAlertShow">
     <Alert>
         {{ mainAlertMessage }}
@@ -55,26 +97,8 @@
         <p class="text-gray-600 text-sm">{{ voucherCampaign.campaign_description }}</p>
       </div>
       
-      <!-- Voucher Status Counts Ribbon -->
-      <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon' && couponsUsed && couponsUsed.length" class="bg-gray-100 rounded-lg shadow-sm flex flex-col items-center justify-center p-4 w-full max-w-md mx-auto mt-4 mb-4">
-        <h5 class="text-xl font-bold text-gray-800 mb-1">Campaign Usage Stats</h5>
-        <div class="flex flex-wrap justify-center gap-2 w-full">
-          <div class="bg-gray-200 rounded-md px-3 py-1 text-sm text-gray-700">
-            Redeemed: {{ redeemedCouponsCount }}
-          </div>
-          <div class="bg-gray-200 rounded-md px-3 py-1 text-sm text-gray-700">
-            Payout Requested: {{ payoutRequestedCouponsCount }}
-          </div>
-          <div class="bg-gray-200 rounded-md px-3 py-1 text-sm text-gray-700">
-            Blocked: {{ blockedCouponsCount }}
-          </div>
-          <div class="bg-gray-200 rounded-md px-3 py-1 text-sm text-gray-700">
-            Denied Payment: {{ deniedPaymentCouponsCount }}
-          </div>
-        </div>
-      </div>
     <!-- Show coupon input after tour completion -->
-    <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon'" class=" bg-yellow-50 rounded-lg shadow-lg flex border-yellow-200 flex-col items-center justify-center p-6 py-4 w-full max-w-md mx-auto space-y-2">
+    <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon' && couponsUsed && (couponsUsed.length <= voucherCampaign.unique_audience_redeem_limit)" class=" bg-yellow-50 rounded-lg shadow-lg flex border-yellow-200 flex-col items-center justify-center p-6 py-4 w-full max-w-md mx-auto space-y-2">
           <div class="text-center mb-4">
             <h3 class="text-xl font-bold mb-2 text-gray-700">
               Welcome {{ profileData.customer_name }}
@@ -238,6 +262,7 @@ const redemptionComplete = ref(false) // Tracks redemption completion
 const campaignValid = ref(true) // Tracks campaign validity
 const campaignError = ref('') // Stores campaign error message
 const couponsUsed = ref(null)
+const isWidgetMinimized = ref(false) // Track widget minimize/maximize state
 
 // Computed properties for voucher status counts
 const blockedCouponsCount = computed(() => {
