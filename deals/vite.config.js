@@ -11,7 +11,7 @@ export default defineConfig({
 			jinjaBootData: true,
 			lucideIcons: true,
 			buildConfig: {
-				indexHtmlPath: "../<app-name>/www/deals.html",
+				indexHtmlPath: "../rewards_extension/www/deals.html",
 				emptyOutDir: true,
 				sourcemap: true,
 			},
@@ -20,7 +20,7 @@ export default defineConfig({
 	],
 	build: {
 		chunkSizeWarningLimit: 1500,
-		outDir: "../<app-name>/public/deals",
+		outDir: "../rewards_extension/public/deals",
 		emptyOutDir: true,
 		target: "es2015",
 		sourcemap: true,

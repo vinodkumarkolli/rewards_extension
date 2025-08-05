@@ -268,4 +268,4 @@ fixtures = [
     }
 ]
 
-# website_route_rules = [{'from_route': '/deals/<path:app_path>', 'to_route': 'deals'}, {'from_route': '/vouchers/<path:app_path>', 'to_route': 'vouchers'}, {'from_route': '/profiles/<path:app_path>', 'to_route': 'profiles'}]
+website_route_rules = [{'from_route': '/deals/<path:app_path>', 'to_route': 'deals'}]

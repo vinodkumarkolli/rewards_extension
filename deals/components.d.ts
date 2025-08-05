@@ -14,7 +14,6 @@ declare module 'vue' {
     Redemption: typeof import('./src/components/Redemption.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
-    SimpleCarousel: typeof import('./src/components/SimpleCarousel.vue')['default']
     Spinner: typeof import('./src/components/Spinner.vue')['default']
   }
 }
