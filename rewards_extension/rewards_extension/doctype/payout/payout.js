@@ -40,7 +40,7 @@ function uploadReceiptsPopup(frm){
                         callback:function(r){
                             if(!r.exc){
                                 //refresh_field('status');
-                                console.log(r.message);
+                                // console.log(r.message);
                             }
                         }
                     })
@@ -48,13 +48,13 @@ function uploadReceiptsPopup(frm){
                     // You can perform further actions here, e.g., update another field
                 },
                 reqd:1}],
-        primary_action_label: 'Upload and Approved',
+        primary_action_label: 'Upload and Approve',
         primary_action:function(){
             var transactionId = d.get_value('transaction_id');
             var transactionAmount = d.get_value('transaction_amount');
             var transactionDate = d.get_value('transaction_date');
             var transactionImage = d.get_value('transaction_image');
-            console.log(transactionImage)
+            // console.log(transactionImage)
             frappe.call({
             method:'rewards_extension.rewards_extension.doctype.payout.payout.approve_payout',
             args:{
@@ -67,7 +67,8 @@ function uploadReceiptsPopup(frm){
             callback:function(r){
                 if(!r.exc){
                     //refresh_field('status');
-                    console.log(r.message);
+                    // console.log(r.message);
+                    d.hide()
                 }
             }
             })

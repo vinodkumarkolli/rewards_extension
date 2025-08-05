@@ -93,7 +93,7 @@ def validate_coupon_code_and_create_trail(coupon_code, user, campaign_id, profil
 	else:
 		return {
 			"valid": False,
-			"message": 'Voucher hasm been tried too many times. And Blocked. Try another Coupon'
+			"message": 'Voucher has been tried too many times. And Blocked. Try another Coupon'
 		}
 @frappe.whitelist()
 def fraud_analysis(beneficiary_type,beneficiary,user):

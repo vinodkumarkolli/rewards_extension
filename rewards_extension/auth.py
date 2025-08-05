@@ -21,9 +21,10 @@ def send_login_otp(mobile_no: str):
 	"""
 	if not mobile_no:
 		frappe.throw(_("Mobile number is required."))
-
+	# Check if there is any active session for the user with this mobile_no
 	# Find user by mobile number
 	user = frappe.db.get_value("User", {"mobile_no": mobile_no, "enabled": 1}, "name")
+	role_profile = frappe.db.get_value("User", {"mobile_no": mobile_no, "enabled": 1}, "role_profile_name")
 
 	if not user:
 		# Instead of throwing error, return specific status for frontend handling
@@ -43,12 +44,19 @@ def send_login_otp(mobile_no: str):
 	expiration = time.time() + 300  # 5 minutes
 	SESSION_CACHE[tmp_id] = {"token": token, "expiration": expiration}
 
-	# Send OTP via WhatsApp
-	if not send_whatsapp_otp(mobile_no, otp, "login"):
-		frappe.log_error(f"Failed to send WhatsApp OTP to {mobile_no}", "WhatsApp OTP Error")
-
-	# Send the temporary ID back to the client
-	return {"status": "success", "tmp_id": tmp_id, "message": "OTP sent successfully."}
+	if role_profile:
+		if role_profile != "Consumer Profile":
+			# Send OTP via WhatsApp
+			if not send_whatsapp_otp(mobile_no, otp, "login"):
+				frappe.log_error(f"Failed to send WhatsApp OTP to {mobile_no}", "WhatsApp OTP Error")
+		else:
+			#Send OTP via Telegram Group
+			if not send_telegram_group_otp(mobile_no, otp, "login"):
+				frappe.log_error(f"Failed to send Telegram OTP to {mobile_no}", "Telegram OTP Error")
+		# Send the temporary ID back to the client
+		return {"status": "success", "tmp_id": tmp_id, "message": "OTP sent successfully."}
+	else:
+		return{"status":"failure","message":"Role Profile not found for this user"}
 
 @frappe.whitelist(allow_guest=True)
 @rate_limit(key="mobile_no", limit=5, seconds=60 * 5)
@@ -273,3 +281,16 @@ def send_whatsapp_otp(mobile_no, otp, purpose):
 			"WhatsApp API Error"
 		)
 		return False
+
+def send_telegram_group_otp(mobile_no,otp,purpose):
+	BOT_TOKEN = frappe.conf.get("telegram_bot_token")
+	CHAT_ID = frappe.conf.get("telegram_chat_id")
+	telegram_api_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
+	message_text = f"OTP generated for {mobile_no}: {otp} - {purpose}"
+	payload = {
+        "chat_id": CHAT_ID,
+        "text": message_text
+    }
+	response = requests.post(telegram_api_url, data=payload)
+	response.raise_for_status()
+	return True

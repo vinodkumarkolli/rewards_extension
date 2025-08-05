@@ -133,7 +133,8 @@
    "allow_on_submit": 1,
    "fieldname": "redeemed_date",
    "fieldtype": "Date",
-   "label": "Redeemed Date"
+   "label": "Redeemed Date",
+   "read_only": 1
   },
   {
    "allow_on_submit": 1,
@@ -146,7 +147,8 @@
    "allow_on_submit": 1,
    "fieldname": "payment_held_date",
    "fieldtype": "Date",
-   "label": "Payment Held Date"
+   "label": "Payment Held Date",
+   "read_only": 1
   },
   {
    "fieldname": "redeem_info_tab",
@@ -283,7 +285,7 @@
    "link_fieldname": "payout_source_link"
   }
  ],
- "modified": "2025-08-04 20:38:01.699077",
+ "modified": "2025-08-05 00:15:33.412133",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Gift Voucher",
