@@ -85,3 +85,10 @@ function completeTour() {
   emit('complete')
 }
 </script>
+
+<style scoped>
+.prose {
+  max-height: 300px;
+  overflow-y: auto;
+}
+</style>
