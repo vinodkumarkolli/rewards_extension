@@ -1,6 +1,6 @@
 {
  "actions": [],
- "autoname": "format:{2390980######}",
+ "autoname": "format:2390980-{######}",
  "creation": "2025-07-18 21:51:28.359369",
  "doctype": "DocType",
  "engine": "InnoDB",
@@ -285,7 +285,7 @@
    "link_fieldname": "payout_source_link"
   }
  ],
- "modified": "2025-08-05 00:15:33.412133",
+ "modified": "2025-08-05 20:31:30.913876",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Gift Voucher",
