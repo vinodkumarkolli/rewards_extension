@@ -5,9 +5,9 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "postinstall": "cd coupons && yarn install",
-    "dev": "cd coupons && yarn dev",
-    "build": "cd coupons && yarn build"
+    "postinstall": "cd deals && yarn install",
+    "dev": "cd deals && yarn dev",
+    "build": "cd deals && yarn build"
   },
   "keywords": [],
   "author": "",
