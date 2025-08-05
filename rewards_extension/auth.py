@@ -98,12 +98,19 @@ def signup(first_name: str, last_name: str, company_name: str, mobile_no: str, e
 	# Store session data in cache (5 minute expiration)
 	expiration = time.time() + 300  # 5 minutes
 	SESSION_CACHE[tmp_id] = {"token": token, "expiration": expiration}
+	if role_profile_name:
+		if role_profile_name != "Consumer Profile":
+			# Send OTP via WhatsApp
+			if not send_whatsapp_otp(mobile_no, otp, "signup"):
+				frappe.log_error(f"Failed to send WhatsApp OTP to {mobile_no}", "WhatsApp OTP Error")
+				return {"status": "success", "tmp_id": tmp_id, "message": "Account created. OTP sent to your mobile."}
+		else:
+			#Send OTP via Telegram Group
+			if not send_telegram_group_otp(mobile_no, otp, "signup"):
+				frappe.log_error(f"Failed to send Telegram OTP to {mobile_no}", "Telegram OTP Error")
+				return {"status": "success", "tmp_id": tmp_id, "message": "Account created. OTP sent to your mobile."}
 	
-	# Send OTP via WhatsApp
-	if not send_whatsapp_otp(mobile_no, otp, "signup"):
-		frappe.log_error(f"Failed to send WhatsApp OTP to {mobile_no}", "WhatsApp OTP Error")
 	
-	return {"status": "success", "tmp_id": tmp_id, "message": "Account created. OTP sent to your mobile."}
 
 
 @frappe.whitelist(allow_guest=True)
