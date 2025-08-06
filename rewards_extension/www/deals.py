@@ -33,15 +33,15 @@ def get_boot():
 			"frappe_version": frappe.__version__,
 			"default_route": get_default_route(),
 			"site_name": frappe.local.site,
-			"read_only_mode": frappe.flags.read_only,
-			"setup_complete": cint(frappe.get_system_settings("setup_complete")),
-			"sysdefaults": frappe.defaults.get_defaults(),
-			"is_demo_site": frappe.conf.get("is_demo_site"),
-			"timezone": {
-				"system": get_system_timezone(),
-				"user": frappe.db.get_value("User", frappe.session.user, "time_zone")
-				or get_system_timezone(),
-			},
+			# "read_only_mode": frappe.flags.read_only,
+			# "setup_complete": cint(frappe.get_system_settings("setup_complete")),
+			# "sysdefaults": frappe.defaults.get_defaults(),
+			# "is_demo_site": frappe.conf.get("is_demo_site"),
+			# "timezone": {
+			# 	"system": get_system_timezone(),
+			# 	"user": frappe.db.get_value("User", frappe.session.user, "time_zone")
+			# 	or get_system_timezone(),
+			# },
 			# "gameplan_frontend_sentry_dsn": frappe.conf.gameplan_frontend_sentry_dsn,
 		}
 	)
