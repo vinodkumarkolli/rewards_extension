@@ -19,44 +19,48 @@ def send_login_otp(mobile_no: str):
 	"""
 	Sends an OTP to the user's mobile number for passwordless login.
 	"""
-	if not mobile_no:
-		frappe.throw(_("Mobile number is required."))
-	# Check if there is any active session for the user with this mobile_no
-	# Find user by mobile number
-	user = frappe.db.get_value("User", {"mobile_no": mobile_no, "enabled": 1}, "name")
-	role_profile = frappe.db.get_value("User", {"mobile_no": mobile_no, "enabled": 1}, "role_profile_name")
+	try:
+		if not mobile_no:
+			frappe.throw(_("Mobile number is required."))
+		# Check if there is any active session for the user with this mobile_no
+		# Find user by mobile number
+		user = frappe.db.get_value("User", {"mobile_no": mobile_no, "enabled": 1}, "name")
+		role_profile = frappe.db.get_value("User", {"mobile_no": mobile_no, "enabled": 1}, "role_profile_name")
 
-	if not user:
-		# Instead of throwing error, return specific status for frontend handling
-		return {"status": "user_not_found", "message": "User with this mobile number not found."}
+		if not user:
+			# Instead of throwing error, return specific status for frontend handling
+			return {"status": "user_not_found", "message": "User with this mobile number not found."}
 
-	# Generate a 6-digit OTP
-	otp = ''.join(random.choices('0123456789', k=6))
+		# Generate a 6-digit OTP
+		otp = ''.join(random.choices('0123456789', k=6))
 
-	# Generate a temporary ID to link this request with the verification request
-	tmp_id = frappe.generate_hash(length=12)
+		# Generate a temporary ID to link this request with the verification request
+		tmp_id = frappe.generate_hash(length=12)
 
-	# Generate HMAC-signed token
-	token_data = {"user": user, "otp": otp}
-	token = generate_hmac_token(token_data)
-	
-	# Store session data in cache (5 minute expiration)
-	expiration = time.time() + 300  # 5 minutes
-	SESSION_CACHE[tmp_id] = {"token": token, "expiration": expiration}
+		# Generate HMAC-signed token
+		token_data = {"user": user, "otp": otp}
+		token = generate_hmac_token(token_data)
+		
+		# Store session data in cache (5 minute expiration)
+		expiration = time.time() + 300  # 5 minutes
+		SESSION_CACHE[tmp_id] = {"token": token, "expiration": expiration}
 
-	if role_profile:
-		if role_profile != "Consumer Profile":
-			# Send OTP via WhatsApp
-			if not send_whatsapp_otp(mobile_no, otp, "login"):
-				frappe.log_error(f"Failed to send WhatsApp OTP to {mobile_no}", "WhatsApp OTP Error")
+		if role_profile:
+			if role_profile != "Consumer Profile":
+				# Send OTP via WhatsApp
+				if not send_whatsapp_otp(mobile_no, otp, "login"):
+					frappe.log_error(f"Failed to send WhatsApp OTP to {mobile_no}", "WhatsApp OTP Error")
+			else:
+				#Send OTP via Telegram Group
+				if not send_telegram_group_otp(mobile_no, otp, "login"):
+					frappe.log_error(f"Failed to send Telegram OTP to {mobile_no}", "Telegram OTP Error")
+			# Send the temporary ID back to the client
+			return {"status": "success", "tmp_id": tmp_id, "message": "OTP sent successfully."}
 		else:
-			#Send OTP via Telegram Group
-			if not send_telegram_group_otp(mobile_no, otp, "login"):
-				frappe.log_error(f"Failed to send Telegram OTP to {mobile_no}", "Telegram OTP Error")
-		# Send the temporary ID back to the client
-		return {"status": "success", "tmp_id": tmp_id, "message": "OTP sent successfully."}
-	else:
-		return{"status":"failure","message":"Role Profile not found for this user"}
+			return{"status":"failure","message":"Role Profile not found for this user"}
+	except Exception as e:
+		frappe.log_error(f"Error in send_login_otp: {str(e)}", "send_login_otp Error")
+		return {"status": "error", "message": str(e)}
 
 @frappe.whitelist(allow_guest=True)
 @rate_limit(key="mobile_no", limit=5, seconds=60 * 5)
@@ -124,37 +128,41 @@ def verify_login_otp(tmp_id: str, otp: str):
     Verifies the OTP and logs the user in if it's correct.
     Allows multiple attempts without invalidating the session.
     """
-    if not (tmp_id and otp):
-        frappe.throw(_("Temporary ID and OTP are required."))
+    try:
+        if not (tmp_id and otp):
+            frappe.throw(_("Temporary ID and OTP are required."))
 
-    # Retrieve token from cache
-    if tmp_id not in SESSION_CACHE or time.time() > SESSION_CACHE[tmp_id]["expiration"]:
-        frappe.throw(_("Login request expired. Please try again."))
-    
-    token = SESSION_CACHE[tmp_id]["token"]
-    cached_data = verify_hmac_token(token)
+        # Retrieve token from cache
+        if tmp_id not in SESSION_CACHE or time.time() > SESSION_CACHE[tmp_id]["expiration"]:
+            frappe.throw(_("Login request expired. Please try again."))
+        
+        token = SESSION_CACHE[tmp_id]["token"]
+        cached_data = verify_hmac_token(token)
 
-    # Only clean up cache on success
-    if str(cached_data.get("otp")) != str(otp):
-        frappe.throw(_("Invalid OTP. Please try again."))
+        # Only clean up cache on success
+        if str(cached_data.get("otp")) != str(otp):
+            frappe.throw(_("Invalid OTP. Please try again."))
 
-    # OTP is correct, log the user in
-    frappe.local.login_manager = LoginManager()
-    frappe.local.login_manager.login_as(cached_data.get("user"))
+        # OTP is correct, log the user in
+        frappe.local.login_manager = LoginManager()
+        frappe.local.login_manager.login_as(cached_data.get("user"))
 
-    # Clean up cache on success
-    if tmp_id in SESSION_CACHE:
-        del SESSION_CACHE[tmp_id]
+        # Clean up cache on success
+        if tmp_id in SESSION_CACHE:
+            del SESSION_CACHE[tmp_id]
 
-    # Get user details to include in response
-    user_doc = frappe.get_doc("User", cached_data.get("user"))
-    return {
-        "status": "success",
-        "message": "Login successful.",
-        "first_name": user_doc.first_name,
-        "mobile_no": user_doc.mobile_no,
-        "default_route": "/"
-    }
+        # Get user details to include in response
+        user_doc = frappe.get_doc("User", cached_data.get("user"))
+        return {
+            "status": "success",
+            "message": "Login successful.",
+            "first_name": user_doc.first_name,
+            "mobile_no": user_doc.mobile_no,
+            "default_route": "/"
+        }
+    except Exception as e:
+        frappe.log_error(f"Error in verify_login_otp: {str(e)}", "verify_login_otp Error")
+        return {"status": "error", "message": str(e)}
 
 def generate_hmac_token(data: dict) -> str:
 	"""Generate HMAC-signed token for session storage"""
