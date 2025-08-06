@@ -73,20 +73,22 @@ def signup(first_name: str, last_name: str, company_name: str, mobile_no: str, e
 	
 	if frappe.db.exists("User", {"email": email}):
 		frappe.throw(_("User with this email already exists."))
-	
-	# Create new user
-	user = frappe.get_doc({
-		"doctype": "User",
-		"first_name": first_name,
-		"last_name": last_name,
-		"company_name": company_name,
-		"mobile_no": mobile_no,
-		"email": email,
-		"enabled": 1,
-		"send_welcome_email": 0,
-		"role_profile_name":role_profile_name
-	})
-	user.insert(ignore_permissions=True)
+	try:
+		# Create new user
+		user = frappe.get_doc({
+			"doctype": "User",
+			"first_name": first_name,
+			"last_name": last_name,
+			"company_name": company_name,
+			"mobile_no": mobile_no,
+			"email": email,
+			"enabled": 1,
+			"send_welcome_email": 0,
+			"role_profile_name":role_profile_name
+		})
+		user.insert(ignore_permissions=True)
+	except Exception as e:
+		frappe.log_error(f"Error creating user: {str(e)}", "User Creation Error")
 	
 	# Generate and send OTP
 	otp = ''.join(random.choices('0123456789', k=6))

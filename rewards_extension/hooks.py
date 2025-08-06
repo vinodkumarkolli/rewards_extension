@@ -24,8 +24,8 @@ website_path_resolver = "rewards_extension.utils.path_resolver"
 # Includes in <head>
 # ------------------
 # App configuration
-app_include_js = ["rewards_extension.bundle.js"]
-app_include_css = ["rewards_extension.bundle.css"]
+# app_include_js = ["rewards_extension.bundle.js"]
+# app_include_css = ["rewards_extension.bundle.css"]
 # include js, css files in header of desk.html
 # app_include_css = "/assets/rewards_extension/css/rewards_extension.css"
 # app_include_js = "/assets/rewards_extension/js/rewards_extension.js"
