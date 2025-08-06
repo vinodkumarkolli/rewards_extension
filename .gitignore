@@ -6,3 +6,5 @@ tags
 node_modules
 __pycache__
 .env.*
+rewards_extension/public/deals/*
+yarn.lock
