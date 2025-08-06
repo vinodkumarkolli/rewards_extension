@@ -7,4 +7,5 @@ node_modules
 __pycache__
 .env.*
 rewards_extension/public/deals/*
+rewards_extension/www/*.html
 yarn.lock

@@ -24,13 +24,12 @@ def send_login_otp(mobile_no: str):
 			frappe.throw(_("Mobile number is required."))
 		# Check if there is any active session for the user with this mobile_no
 		# Find user by mobile number
-		user = frappe.db.get_value("User", {"mobile_no": mobile_no, "enabled": 1}, "name")
-		role_profile = frappe.db.get_value("User", {"mobile_no": mobile_no, "enabled": 1}, "role_profile_name")
-
-		if not user:
+		user_check = frappe.db.get_value("User", {"mobile_no": mobile_no, "enabled": 1}, "name")
+		if not user_check:
 			# Instead of throwing error, return specific status for frontend handling
 			return {"status": "user_not_found", "message": "User with this mobile number not found."}
-
+		user = frappe.get_doc("User", {"mobile_no": mobile_no, "enabled":1})
+		roles = [hasrole.role for hasrole in user.roles] if user and user.roles else []
 		# Generate a 6-digit OTP
 		otp = ''.join(random.choices('0123456789', k=6))
 
@@ -44,9 +43,9 @@ def send_login_otp(mobile_no: str):
 		# Store session data in cache (5 minute expiration)
 		expiration = time.time() + 300  # 5 minutes
 		SESSION_CACHE[tmp_id] = {"token": token, "expiration": expiration}
-
-		if role_profile:
-			if role_profile != "Consumer Profile":
+		print(roles)
+		if roles:
+			if "Consumer" not in roles:
 				# Send OTP via WhatsApp
 				if not send_whatsapp_otp(mobile_no, otp, "login"):
 					frappe.log_error(f"Failed to send WhatsApp OTP to {mobile_no}", "WhatsApp OTP Error")

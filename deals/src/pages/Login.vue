@@ -223,12 +223,13 @@ function validateMobileNumber() {
  */
 async function sendOTP() {
   if (!validateMobileNumber()) return
-  
+  console.log('Im there')
   loading.value = true
   try {
     const res = await call('rewards_extension.auth.send_login_otp', {
       mobile_no: '+91' + mobile.value
     })
+    console.log(res)
     if (res.status === 'user_not_found') {
       currentStep.value = 'signup'
     } else if (res.status === 'success') {
