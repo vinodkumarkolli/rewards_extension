@@ -9,7 +9,7 @@ from frappe.utils import nowdate
 
 
 class VoucherCampaign(Document):
-	def on_save(self):
+	def before_submit(self):
 		for instruction in frappe.get_all("Campaign Instruction", filters={"parent": self.name, "parenttype": "Voucher Campaign"}, fields=["instruction_thumbnail"]):
 			if instruction.instruction_thumbnail:
 				filename = instruction.instruction_thumbnail.split("/")[-1]
