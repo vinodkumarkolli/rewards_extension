@@ -43,8 +43,8 @@ def send_login_otp(mobile_no: str):
 		# Store session data in cache (5 minute expiration)
 		expiration = time.time() + 300  # 5 minutes
 		SESSION_CACHE[tmp_id] = {"token": token, "expiration": expiration}
-		frappe.logger("rewards_extension").debug(f"Stored tmp_id: {tmp_id} with expiration: {expiration} in SESSION_CACHE")
-		frappe.logger("rewards_extension").debug(f"SESSION_CACHE: {SESSION_CACHE}")
+		frappe.logger("rewards_extension").info(f"Stored tmp_id: {tmp_id} with expiration: {expiration} in SESSION_CACHE")
+		frappe.logger("rewards_extension").info(f"SESSION_CACHE: {SESSION_CACHE}")
 		if roles:
 			if "Consumer" not in roles:
 				# Send OTP via WhatsApp
@@ -104,8 +104,8 @@ def signup(first_name: str, last_name: str, company_name: str, mobile_no: str, e
 	# Store session data in cache (5 minute expiration)
 	expiration = time.time() + 300  # 5 minutes
 	SESSION_CACHE[tmp_id] = {"token": token, "expiration": expiration}
-	frappe.logger("rewards_extension").debug(f"Stored tmp_id: {tmp_id} with expiration: {expiration} in SESSION_CACHE (signup)")
-	frappe.logger("rewards_extension").debug(f"SESSION_CACHE: {SESSION_CACHE} (signup)")
+	frappe.logger("rewards_extension").info(f"Stored tmp_id: {tmp_id} with expiration: {expiration} in SESSION_CACHE (signup)")
+	frappe.logger("rewards_extension").info(f"SESSION_CACHE: {SESSION_CACHE} (signup)")
 	if role_profile_name:
 		if role_profile_name != "Consumer Profile":
 			# Send OTP via WhatsApp
@@ -135,9 +135,9 @@ def verify_login_otp(tmp_id: str, otp: str):
             frappe.throw(_("Temporary ID and OTP are required."))
 
         # Retrieve token from cache
-        frappe.logger("rewards_extension").debug(f"SESSION_CACHE: {SESSION_CACHE}")
+        frappe.logger("rewards_extension").info(f"SESSION_CACHE: {SESSION_CACHE}")
         if tmp_id in SESSION_CACHE:
-            frappe.logger("rewards_extension").debug(f"Expiration time: {SESSION_CACHE[tmp_id]['expiration']}, Current time: {time.time()}")
+            frappe.logger("rewards_extension").info(f"Expiration time: {SESSION_CACHE[tmp_id]['expiration']}, Current time: {time.time()}")
         if tmp_id not in SESSION_CACHE or time.time() > SESSION_CACHE[tmp_id]["expiration"]:
             frappe.throw(_("Login request expired. Please try again."))
         token = SESSION_CACHE[tmp_id]["token"]
