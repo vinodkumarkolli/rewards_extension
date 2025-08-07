@@ -11,8 +11,8 @@ import base64
 import time
 import requests  # Added for WhatsApp API
 
-# Simple in-memory session storage as fallback for guest users
-SESSION_CACHE = {}
+# Session prefix for Redis storage
+SESSION_PREFIX = "login_session"
 @frappe.whitelist(allow_guest=True)
 @rate_limit(key="mobile_no", limit=5, seconds=60 * 5)  # Rate limit to 5 requests per 5 mins per mobile number
 def send_login_otp(mobile_no: str):
@@ -40,11 +40,12 @@ def send_login_otp(mobile_no: str):
 		token_data = {"user": user.name, "otp": otp}
 		token = generate_hmac_token(token_data)
 		
-		# Store session data in cache (5 minute expiration)
+		# Store session data in Redis cache (5 minute expiration)
 		expiration = time.time() + 300  # 5 minutes
-		SESSION_CACHE[tmp_id] = {"token": token, "expiration": expiration}
-		print(f"Stored tmp_id: {tmp_id} with expiration: {expiration} in SESSION_CACHE")
-		print(f"SESSION_CACHE: {SESSION_CACHE}")
+		session_data = {"token": token, "expiration": expiration}
+		frappe.cache().set_value(f"{SESSION_PREFIX}:{tmp_id}", session_data, expires_in_sec=300)
+		print(f"Stored tmp_id: {tmp_id} with expiration: {expiration} in Redis cache")
+		frappe.log_error(f"Stored session data for tmp_id: {tmp_id} in Redis", "send_login_otp Debug")
 		if roles:
 			if "Consumer" not in roles:
 				# Send OTP via WhatsApp
@@ -101,11 +102,12 @@ def signup(first_name: str, last_name: str, company_name: str, mobile_no: str, e
 	token_data = {"user": user.name, "otp": otp}
 	token = generate_hmac_token(token_data)
 	
-	# Store session data in cache (5 minute expiration)
+	# Store session data in Redis cache (5 minute expiration)
 	expiration = time.time() + 300  # 5 minutes
-	SESSION_CACHE[tmp_id] = {"token": token, "expiration": expiration}
-	print(f"Stored tmp_id: {tmp_id} with expiration: {expiration} in SESSION_CACHE (signup)")
-	print(f"SESSION_CACHE: {SESSION_CACHE} (signup)")
+	session_data = {"token": token, "expiration": expiration}
+	frappe.cache().set_value(f"{SESSION_PREFIX}:{tmp_id}", session_data, expires_in_sec=300)
+	print(f"Stored tmp_id: {tmp_id} with expiration: {expiration} in Redis cache (signup)")
+	frappe.log_error(f"Stored session data for tmp_id: {tmp_id} in Redis (signup)", "signup Debug")
 	if role_profile_name:
 		if role_profile_name != "Consumer Profile":
 			# Send OTP via WhatsApp
@@ -134,13 +136,18 @@ def verify_login_otp(tmp_id: str, otp: str):
         if not (tmp_id and otp):
             frappe.throw(_("Temporary ID and OTP are required."))
 
-        # Retrieve token from cache
-        print(f"SESSION_CACHE: {SESSION_CACHE}")
-        if tmp_id in SESSION_CACHE:
-            print(f"Expiration time: {SESSION_CACHE[tmp_id]['expiration']}, Current time: {time.time()}")
-        if tmp_id not in SESSION_CACHE or time.time() > SESSION_CACHE[tmp_id]["expiration"]:
+        # Retrieve token from Redis cache
+        session_data = frappe.cache().get_value(f"{SESSION_PREFIX}:{tmp_id}")
+        print(f"Retrieved session_data for tmp_id {tmp_id}: {session_data}")
+        if session_data:
+            print(f"Expiration time: {session_data['expiration']}, Current time: {time.time()}")
+        else:
+            frappe.log_error(f"Session data not found for tmp_id: {tmp_id}", "verify_login_otp Error")
+            frappe.throw(_("Login request expired or invalid. Please try again."))
+        if time.time() > session_data["expiration"]:
+            frappe.log_error(f"Session expired for tmp_id: {tmp_id}", "verify_login_otp Error")
             frappe.throw(_("Login request expired. Please try again."))
-        token = SESSION_CACHE[tmp_id]["token"]
+        token = session_data["token"]
         cached_data = verify_hmac_token(token)
 
         # Only clean up cache on success
@@ -156,9 +163,8 @@ def verify_login_otp(tmp_id: str, otp: str):
             frappe.log_error("No user found in cached_data", "Login Error")
             frappe.throw(_("Invalid login data. Please try again."))
 
-        # Clean up cache on success
-        if tmp_id in SESSION_CACHE:
-            del SESSION_CACHE[tmp_id]
+        # Clean up Redis cache on success
+        frappe.cache().delete_value(f"{SESSION_PREFIX}:{tmp_id}")
 
         # Get user details to include in response
         user_doc = frappe.get_doc("User", cached_data.get("user"))
