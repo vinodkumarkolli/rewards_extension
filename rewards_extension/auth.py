@@ -132,9 +132,11 @@ def verify_login_otp(tmp_id: str, otp: str):
             frappe.throw(_("Temporary ID and OTP are required."))
 
         # Retrieve token from cache
+        frappe.logger().debug(f"SESSION_CACHE: {SESSION_CACHE}")
+        if tmp_id in SESSION_CACHE:
+            frappe.logger().debug(f"Expiration time: {SESSION_CACHE[tmp_id]['expiration']}, Current time: {time.time()}")
         if tmp_id not in SESSION_CACHE or time.time() > SESSION_CACHE[tmp_id]["expiration"]:
             frappe.throw(_("Login request expired. Please try again."))
-        
         token = SESSION_CACHE[tmp_id]["token"]
         cached_data = verify_hmac_token(token)
 

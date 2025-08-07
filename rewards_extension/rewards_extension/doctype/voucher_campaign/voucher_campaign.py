@@ -9,7 +9,18 @@ from frappe.utils import nowdate
 
 
 class VoucherCampaign(Document):
-	pass
+	def on_save(self):
+		for instruction in frappe.get_all("Campaign Instruction", filters={"parent": self.name, "parenttype": "Voucher Campaign"}, fields=["instruction_thumbnail"]):
+			if instruction.instruction_thumbnail:
+				filename = instruction.instruction_thumbnail.split("/")[-1]
+				target_folder = "Home/Voucher Templates/Instruction Thumbnails"
+				target_path = f"{target_folder}/{filename}"
+				
+				if not instruction.instruction_thumbnail.startswith(target_folder):
+					file_doc = frappe.get_doc("File", {"file_url": instruction.instruction_thumbnail})
+					file_doc.folder = target_folder
+					file_doc.save()
+					frappe.db.set_value("Campaign Instruction", instruction.name, "instruction_thumbnail", target_path)
 @frappe.whitelist()
 def change_campaign_status(campaign:str,status:str):
     doc = frappe.get_doc("Voucher Campaign",campaign)
