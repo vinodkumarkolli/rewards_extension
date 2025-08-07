@@ -45,7 +45,7 @@ def send_login_otp(mobile_no: str):
 		session_data = {"token": token, "expiration": expiration}
 		frappe.cache().set_value(f"{SESSION_PREFIX}:{tmp_id}", session_data, expires_in_sec=300)
 		print(f"Stored tmp_id: {tmp_id} with expiration: {expiration} in Redis cache")
-		frappe.log_error(f"Stored session data for tmp_id: {tmp_id} in Redis", "send_login_otp Debug")
+		# Debug logging removed for production
 		if roles:
 			if "Consumer" not in roles:
 				# Send OTP via WhatsApp
@@ -106,8 +106,8 @@ def signup(first_name: str, last_name: str, company_name: str, mobile_no: str, e
 	expiration = time.time() + 300  # 5 minutes
 	session_data = {"token": token, "expiration": expiration}
 	frappe.cache().set_value(f"{SESSION_PREFIX}:{tmp_id}", session_data, expires_in_sec=300)
-	print(f"Stored tmp_id: {tmp_id} with expiration: {expiration} in Redis cache (signup)")
-	frappe.log_error(f"Stored session data for tmp_id: {tmp_id} in Redis (signup)", "signup Debug")
+	# print(f"Stored tmp_id: {tmp_id} with expiration: {expiration} in Redis cache (signup)")
+	# Debug logging removed for production
 	if role_profile_name:
 		if role_profile_name != "Consumer Profile":
 			# Send OTP via WhatsApp
@@ -142,10 +142,10 @@ def verify_login_otp(tmp_id: str, otp: str):
         if session_data:
             print(f"Expiration time: {session_data['expiration']}, Current time: {time.time()}")
         else:
-            frappe.log_error(f"Session data not found for tmp_id: {tmp_id}", "verify_login_otp Error")
+            # Session data not found
             frappe.throw(_("Login request expired or invalid. Please try again."))
         if time.time() > session_data["expiration"]:
-            frappe.log_error(f"Session expired for tmp_id: {tmp_id}", "verify_login_otp Error")
+            # Session expired
             frappe.throw(_("Login request expired. Please try again."))
         token = session_data["token"]
         cached_data = verify_hmac_token(token)
