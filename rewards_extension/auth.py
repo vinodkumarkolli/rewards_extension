@@ -43,7 +43,7 @@ def send_login_otp(mobile_no: str):
 		# Store session data in cache (5 minute expiration)
 		expiration = time.time() + 300  # 5 minutes
 		SESSION_CACHE[tmp_id] = {"token": token, "expiration": expiration}
-		print(roles)
+		# print(roles)
 		if roles:
 			if "Consumer" not in roles:
 				# Send OTP via WhatsApp
