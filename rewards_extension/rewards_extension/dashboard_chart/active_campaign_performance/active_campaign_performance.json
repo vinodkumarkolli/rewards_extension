@@ -1,0 +1,55 @@
+{
+ "chart_name": "Active Campaign Performance",
+ "chart_type": "Report",
+ "creation": "2025-08-07 21:30:37.532594",
+ "currency": "INR",
+ "docstatus": 0,
+ "doctype": "Dashboard Chart",
+ "document_type": "Payout",
+ "dynamic_filters_json": "{}",
+ "filters_json": "{\"campaign\":\"\",\"beneficiary\":\"\",\"campaign_status\":\"Active\",\"from_date\":\"2025-08-01\",\"to_date\":\"2025-08-31\"}",
+ "group_by_type": "Count",
+ "idx": 0,
+ "is_public": 1,
+ "is_standard": 1,
+ "modified": "2025-08-07 21:30:37.532594",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Active Campaign Performance",
+ "number_of_groups": 0,
+ "owner": "Administrator",
+ "report_name": "Payouts per Campaign",
+ "roles": [
+  {
+   "role": "Campaign Manager"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
+ "show_values_over_chart": 1,
+ "time_interval": "Yearly",
+ "timeseries": 0,
+ "timespan": "Last Year",
+ "type": "Bar",
+ "use_report_chart": 0,
+ "x_field": "campaign_name",
+ "y_axis": [
+  {
+   "color": "#c72626",
+   "y_field": "payout_amount"
+  },
+  {
+   "color": "#EC864B",
+   "y_field": "underprocess_amount"
+  },
+  {
+   "color": "#857979",
+   "y_field": "withheld_amount"
+  },
+  {
+   "color": "#29CD42",
+   "y_field": "settled_amount"
+  }
+ ]
+}

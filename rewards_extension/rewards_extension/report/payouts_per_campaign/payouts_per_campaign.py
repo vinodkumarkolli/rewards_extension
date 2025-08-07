@@ -21,6 +21,8 @@ def execute(filters=None):
 		conditions.append("p.payout_date >= %(from_date)s")
 	if filters.get("to_date"):
 		conditions.append("p.payout_date <= %(to_date)s")
+	if filters.get("campaign_status"):
+		conditions.append("vc.campaign_status=%(campaign_status)s")
 	
 	where_condition = "WHERE " + " AND ".join(conditions) if conditions else ""
 	

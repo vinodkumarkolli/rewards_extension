@@ -1,0 +1,21 @@
+{
+ "cards": [],
+ "charts": [
+  {
+   "chart": "Active Campaign Performance",
+   "width": "Half"
+  }
+ ],
+ "creation": "2025-08-07 21:31:04.851957",
+ "dashboard_name": "Campaign Performance",
+ "docstatus": 0,
+ "doctype": "Dashboard",
+ "idx": 0,
+ "is_default": 0,
+ "is_standard": 1,
+ "modified": "2025-08-07 21:31:04.851957",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Campaign Performance",
+ "owner": "Administrator"
+}
