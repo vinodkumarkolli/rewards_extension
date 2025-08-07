@@ -37,7 +37,7 @@ def send_login_otp(mobile_no: str):
 		tmp_id = frappe.generate_hash(length=12)
 
 		# Generate HMAC-signed token
-		token_data = {"user": user, "otp": otp}
+		token_data = {"user": user.name, "otp": otp}
 		token = generate_hmac_token(token_data)
 		
 		# Store session data in cache (5 minute expiration)
@@ -144,7 +144,12 @@ def verify_login_otp(tmp_id: str, otp: str):
 
         # OTP is correct, log the user in
         frappe.local.login_manager = LoginManager()
-        frappe.local.login_manager.login_as(cached_data.get("user"))
+        user = cached_data.get("user")
+        if user:
+            frappe.local.login_manager.login_as(user)
+        else:
+            frappe.log_error("No user found in cached_data", "Login Error")
+            frappe.throw(_("Invalid login data. Please try again."))
 
         # Clean up cache on success
         if tmp_id in SESSION_CACHE:
