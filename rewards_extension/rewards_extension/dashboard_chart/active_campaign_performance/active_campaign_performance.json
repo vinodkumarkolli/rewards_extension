@@ -1,5 +1,5 @@
 {
- "chart_name": "Active Campaign Performance",
+ "chart_name": "Active Campaign Amount Tally",
  "chart_type": "Report",
  "creation": "2025-08-07 21:30:37.532594",
  "currency": "INR",
@@ -15,7 +15,7 @@
  "modified": "2025-08-07 21:30:37.532594",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
- "name": "Active Campaign Performance",
+ "name": "Active Campaign Amount Tally",
  "number_of_groups": 0,
  "owner": "Administrator",
  "report_name": "Payouts per Campaign",

@@ -30,6 +30,8 @@ def execute(filters=None):
 		SELECT
 			gv.campaign AS campaign,
 			vc.campaign_name AS campaign_name,
+			vc.campaign_status AS campaign_status,
+			vc.base_voucher_price * vc.voucher_count AS campaign_budget,
 			p.beneficiary_type AS beneficiary_type,
 			p.beneficiary AS beneficiary,
 			SUM(p.payout_amount) AS payout_amount,
@@ -63,6 +65,18 @@ def get_columns(filters):
 			'label':'Campaign Name',
 			'fieldtype':'Data',
 			'default': ''
+		},
+		{
+			'fieldname':'campaign_status',
+			'label':'Campaign Status',
+			'fieldtype':'Data',
+			'default': ''
+		},
+		{
+			'fieldname':'campaign_budget',
+			'label':'Campaign Budget',
+			'fieldtype':'Float',
+			'default':0.00
 		},
 		{
 		"fieldname": "beneficiary_type",

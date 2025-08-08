@@ -2,7 +2,7 @@
  "cards": [],
  "charts": [
   {
-   "chart": "Active Campaign Performance",
+   "chart": "Active Campaign Amount Tally",
    "width": "Half"
   }
  ],
@@ -13,7 +13,7 @@
  "idx": 0,
  "is_default": 0,
  "is_standard": 1,
- "modified": "2025-08-07 21:31:04.851957",
+ "modified": "2025-08-08 22:40:38.116431",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Campaign Performance",
