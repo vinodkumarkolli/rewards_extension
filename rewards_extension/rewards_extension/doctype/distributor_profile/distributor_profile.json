@@ -6,7 +6,8 @@
  "doctype": "DocType",
  "engine": "InnoDB",
  "field_order": [
-  "distributor_name"
+  "distributor_name",
+  "item_conversion_table"
  ],
  "fields": [
   {
@@ -16,33 +17,49 @@
    "label": "Distributor Name",
    "reqd": 1,
    "unique": 1
+  },
+  {
+   "fieldname": "item_conversion_table",
+   "fieldtype": "Table",
+   "label": "Item Conversion Table",
+   "options": "Distributor Item Conversion"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "links": [
   {
+   "group": "Sales",
    "link_doctype": "Sales Person Profile",
    "link_fieldname": "distributor"
   },
   {
+   "group": "Redemption",
    "link_doctype": "Gift Voucher",
    "link_fieldname": "beneficiary"
   },
   {
+   "group": "Redemption",
    "link_doctype": "Payout",
    "link_fieldname": "beneficiary"
   },
   {
+   "group": "Bank",
    "link_doctype": "Bank Account",
    "link_fieldname": "account_holder_profile"
   },
   {
+   "group": "Quiz",
    "link_doctype": "Quiz Transcript",
    "link_fieldname": "quizzer"
+  },
+  {
+   "group": "Sales",
+   "link_doctype": "Sales Record",
+   "link_fieldname": "distributor"
   }
  ],
- "modified": "2025-07-21 17:04:19.437485",
+ "modified": "2025-08-09 00:05:18.949333",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Distributor Profile",

@@ -1,0 +1,103 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-08-08 23:48:04.803009",
+ "doctype": "DocType",
+ "engine": "InnoDB",
+ "field_order": [
+  "section_break_7akj",
+  "amended_from",
+  "distributor",
+  "column_break_huxm",
+  "sales_date",
+  "invoice",
+  "agent_code",
+  "items_section",
+  "table_sfpd"
+ ],
+ "fields": [
+  {
+   "fieldname": "section_break_7akj",
+   "fieldtype": "Section Break"
+  },
+  {
+   "fieldname": "amended_from",
+   "fieldtype": "Link",
+   "label": "Amended From",
+   "no_copy": 1,
+   "options": "Sales Record",
+   "print_hide": 1,
+   "read_only": 1,
+   "search_index": 1
+  },
+  {
+   "fieldname": "distributor",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Distributor",
+   "options": "Distributor Profile",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_huxm",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "sales_date",
+   "fieldtype": "Date",
+   "in_list_view": 1,
+   "label": "Sales Date",
+   "reqd": 1
+  },
+  {
+   "fieldname": "invoice",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Invoice",
+   "reqd": 1
+  },
+  {
+   "fieldname": "agent_code",
+   "fieldtype": "Data",
+   "label": "Agent Code"
+  },
+  {
+   "fieldname": "items_section",
+   "fieldtype": "Section Break",
+   "label": "Items"
+  },
+  {
+   "fieldname": "table_sfpd",
+   "fieldtype": "Table",
+   "options": "Sales Record Line Item"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "is_submittable": 1,
+ "links": [],
+ "modified": "2025-08-09 00:03:55.013537",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Sales Record",
+ "owner": "Administrator",
+ "permissions": [
+  {
+   "create": 1,
+   "delete": 1,
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "System Manager",
+   "share": 1,
+   "submit": 1,
+   "write": 1
+  }
+ ],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

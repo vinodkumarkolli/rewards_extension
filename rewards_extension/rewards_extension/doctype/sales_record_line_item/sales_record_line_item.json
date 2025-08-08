@@ -1,0 +1,84 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-08-08 23:59:43.978420",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_name",
+  "item_quantity",
+  "item_rate",
+  "column_break_roro",
+  "company_item",
+  "conversion_rate",
+  "converted_quantity",
+  "converted_rate"
+ ],
+ "fields": [
+  {
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "item_quantity",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Item Quantity",
+   "non_negative": 1,
+   "reqd": 1
+  },
+  {
+   "fieldname": "item_rate",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Item Rate",
+   "reqd": 1
+  },
+  {
+   "fieldname": "column_break_roro",
+   "fieldtype": "Column Break"
+  },
+  {
+   "fieldname": "company_item",
+   "fieldtype": "Link",
+   "label": "Company Item",
+   "options": "Company Item"
+  },
+  {
+   "fieldname": "conversion_rate",
+   "fieldtype": "Float",
+   "label": "Conversion Rate",
+   "precision": "2"
+  },
+  {
+   "fieldname": "converted_quantity",
+   "fieldtype": "Float",
+   "label": "Converted Quantity",
+   "precision": "2"
+  },
+  {
+   "fieldname": "converted_rate",
+   "fieldtype": "Float",
+   "label": "Converted Rate",
+   "precision": "2"
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-08-09 00:03:04.591381",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Sales Record Line Item",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}

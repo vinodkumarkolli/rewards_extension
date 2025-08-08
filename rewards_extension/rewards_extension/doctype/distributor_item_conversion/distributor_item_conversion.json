@@ -1,0 +1,56 @@
+{
+ "actions": [],
+ "allow_rename": 1,
+ "creation": "2025-08-08 23:53:27.866582",
+ "doctype": "DocType",
+ "editable_grid": 1,
+ "engine": "InnoDB",
+ "field_order": [
+  "item_name",
+  "company_item",
+  "conversion_rate"
+ ],
+ "fields": [
+  {
+   "description": "Name registered in Distributor Sales Records of Uploaded Files",
+   "fieldname": "item_name",
+   "fieldtype": "Data",
+   "in_list_view": 1,
+   "label": "Item Name",
+   "reqd": 1
+  },
+  {
+   "description": "A Standardised name of item that normalises to Company Identified SKU",
+   "fieldname": "company_item",
+   "fieldtype": "Link",
+   "in_list_view": 1,
+   "label": "Company Item",
+   "options": "Company Item",
+   "reqd": 1
+  },
+  {
+   "description": "One pc of Distributor Item Name is equivalent to how many pcs of Company Item",
+   "fieldname": "conversion_rate",
+   "fieldtype": "Float",
+   "in_list_view": 1,
+   "label": "Conversion Rate",
+   "non_negative": 1,
+   "precision": "2",
+   "reqd": 1
+  }
+ ],
+ "grid_page_length": 50,
+ "index_web_pages_for_search": 1,
+ "istable": 1,
+ "links": [],
+ "modified": "2025-08-08 23:57:31.922922",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Distributor Item Conversion",
+ "owner": "Administrator",
+ "permissions": [],
+ "row_format": "Dynamic",
+ "sort_field": "creation",
+ "sort_order": "DESC",
+ "states": []
+}
