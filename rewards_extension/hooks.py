@@ -9,7 +9,9 @@ app_license = "mit"
 # ------------------
 website_path_resolver = "rewards_extension.utils.path_resolver"
 # required_apps = []
-
+website_context = {
+    "splash_image": "/assets/rewards_extension/images/quadra.png"
+}
 # Each item in the list will be shown as an app in the apps page
 # add_to_apps_screen = [
 # 	{
@@ -86,7 +88,7 @@ website_path_resolver = "rewards_extension.utils.path_resolver"
 
 # before_install = "rewards_extension.install.before_install"
 after_install = "rewards_extension.install.after_install"
-
+after_migrate = "rewards_extension.utils.add_app_name"
 # Uninstallation
 # ------------
 

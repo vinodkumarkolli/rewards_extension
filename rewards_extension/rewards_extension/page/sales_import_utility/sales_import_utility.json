@@ -1,0 +1,27 @@
+{
+ "content": null,
+ "creation": "2025-08-08 23:20:17.767442",
+ "docstatus": 0,
+ "doctype": "Page",
+ "icon": "hard-drive",
+ "idx": 0,
+ "modified": "2025-08-08 23:20:17.767442",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "sales-import-utility",
+ "owner": "Administrator",
+ "page_name": "sales-import-utility",
+ "roles": [
+  {
+   "role": "Accounts Manager"
+  },
+  {
+   "role": "Accounts User"
+  }
+ ],
+ "script": null,
+ "standard": "Yes",
+ "style": null,
+ "system_page": 0,
+ "title": "Sales Import Utility"
+}

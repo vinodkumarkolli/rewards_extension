@@ -7,6 +7,9 @@ def path_resolver(path:str):
     #frappe.redirect("https://www.google.com");
     return original_resolve_path(path)
 @frappe.whitelist()
+def add_app_name():
+	frappe.db.set_value('System Settings', None, 'app_name', 'Quadra')
+@frappe.whitelist()
 def move_file(file_path, target_folder):
 		if not file_path or file_path.startswith(target_folder):
 			return file_path
