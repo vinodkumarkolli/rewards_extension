@@ -23,7 +23,7 @@
    "label": "Loyalty Points Earning"
   },
   {
-   "description": "Each Loyalty Point is equal to how many \u20b9",
+   "description": "One Loyalty Point earned is equal to how many \u20b9",
    "fieldname": "loyalty_point_value",
    "fieldtype": "Float",
    "in_list_view": 1,
@@ -86,10 +86,10 @@
  "index_web_pages_for_search": 1,
  "issingle": 1,
  "links": [],
- "modified": "2025-07-21 14:43:03.260116",
+ "modified": "2025-08-10 23:47:20.187977",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
- "name": "Reward and Profiler Settings",
+ "name": "Reward and Loyalty Settings",
  "owner": "Administrator",
  "permissions": [
   {

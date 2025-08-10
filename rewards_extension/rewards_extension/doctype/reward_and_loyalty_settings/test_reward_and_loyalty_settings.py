@@ -5,5 +5,5 @@
 from frappe.tests.utils import FrappeTestCase
 
 
-class TestRewardandProfilerSettings(FrappeTestCase):
+class TestRewardandLoyaltySettings(FrappeTestCase):
 	pass
