@@ -65,8 +65,8 @@ def get_preview_from_template(doc):
 	if not column_to_field_map:
 		for i, header in enumerate(headers):
 			# Map to standard fields if they match
-			if header.lower() in ["item_name", "item_quantity", "item_rate", "sales_date", "invoice", "outlet_name"]:
-				if header.lower() in ["item_name", "item_quantity", "item_rate"]:
+			if header.lower() in ["item_name", "item_quantity", "item_rate", "free_quantity", "sales_date", "invoice", "outlet_name"]:
+				if header.lower() in ["item_name", "item_quantity", "item_rate", "free_quantity"]:
 					# For line item fields, use the prefixed name
 					column_to_field_map[str(i)] = f"{table_field_name}.{header.lower()}"
 				else:
@@ -366,6 +366,20 @@ def import_sales_records(sales_records_import_job):
 			sales_record.insert()
 			sales_record.submit()
 			
+			# Update retailer's first and last purchase dates
+			if sales_date and retailer_profile:
+				# Update first purchase date if sales_date is earlier
+				if not retailer_profile.first_purchase_date or sales_date < retailer_profile.first_purchase_date:
+					retailer_profile.first_purchase_date = sales_date
+				
+				# Update last purchase date if sales_date is later
+				if not retailer_profile.last_purchase_date or sales_date > retailer_profile.last_purchase_date:
+					retailer_profile.last_purchase_date = sales_date
+				
+				# Save the retailer profile if any changes were made
+				if retailer_profile.first_purchase_date or retailer_profile.last_purchase_date:
+					retailer_profile.save()
+			
 			# Log success
 			import_logs.append({
 				"row_number": row_index + 2,
@@ -479,6 +493,7 @@ def create_sales_record_line_items(row, field_to_column_index, table_field_name,
 	item_names = get_field_value(row, field_to_column_index, f"{table_field_name}.item_name")
 	item_quantities = get_field_value(row, field_to_column_index, f"{table_field_name}.item_quantity")
 	item_rates = get_field_value(row, field_to_column_index, f"{table_field_name}.item_rate")
+	free_quantities = get_field_value(row, field_to_column_index, f"{table_field_name}.free_quantity", 0)
 	
 	# For simplicity, assuming these are single values for now
 	# In a real implementation, you might need to handle multiple line items per row
@@ -490,6 +505,8 @@ def create_sales_record_line_items(row, field_to_column_index, table_field_name,
 			item_quantities = [item_quantities]
 		if not isinstance(item_rates, list):
 			item_rates = [item_rates]
+		if not isinstance(free_quantities, list):
+			free_quantities = [free_quantities]
 		
 		# Process each item
 		for i in range(len(item_names)):
@@ -497,6 +514,7 @@ def create_sales_record_line_items(row, field_to_column_index, table_field_name,
 				item_name = item_names[i]
 				item_quantity = float(item_quantities[i]) if item_quantities[i] else 0
 				item_rate = float(item_rates[i]) if item_rates[i] else 0
+				free_quantity = float(free_quantities[i]) if i < len(free_quantities) and free_quantities[i] else 0
 				
 				# Check if item_name exists in conversion map
 				if item_name not in item_conversion_map:
@@ -508,6 +526,7 @@ def create_sales_record_line_items(row, field_to_column_index, table_field_name,
 				line_item.item_name = item_name
 				line_item.item_quantity = item_quantity
 				line_item.item_rate = item_rate
+				line_item.free_quantity = free_quantity
 				line_item.line_item_amount = item_quantity * item_rate
 				
 				# Apply item conversion if available
