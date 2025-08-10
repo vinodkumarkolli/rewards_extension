@@ -8,6 +8,9 @@
   "section_break_7akj",
   "amended_from",
   "distributor",
+  "outlet_name",
+  "outlet_code",
+  "retailer",
   "column_break_huxm",
   "sales_date",
   "invoice",
@@ -70,13 +73,30 @@
    "fieldname": "table_sfpd",
    "fieldtype": "Table",
    "options": "Sales Record Line Item"
+  },
+  {
+   "fieldname": "retailer",
+   "fieldtype": "Link",
+   "label": "Retailer",
+   "options": "Master Retail Profile"
+  },
+  {
+   "fieldname": "outlet_name",
+   "fieldtype": "Data",
+   "label": "Outlet Name",
+   "reqd": 1
+  },
+  {
+   "fieldname": "outlet_code",
+   "fieldtype": "Data",
+   "label": "Outlet Code"
   }
  ],
  "grid_page_length": 50,
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-09 00:03:55.013537",
+ "modified": "2025-08-10 15:08:46.670280",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Sales Record",
