@@ -41,6 +41,13 @@ def get_preview_from_template(doc):
 	headers = rows[0]
 	data = rows[1:6]  # First 5 rows of data
 	
+	# Get the table field name dynamically
+	try:
+		table_fields = frappe.get_meta("Sales Record").get_table_fields()
+		table_field_name = table_fields[0].fieldname if table_fields else "table_field_name"  # fallback to default
+	except:
+		table_field_name = "table_field_name"  # fallback to default
+	
 	# Prepare column mapping
 	column_to_field_map = {}
 	
@@ -68,13 +75,6 @@ def get_preview_from_template(doc):
 	
 	# Generate warnings based on column mapping
 	warnings = []
-	
-	# Get the table field name dynamically
-	try:
-		table_fields = frappe.get_meta("Sales Record").get_table_fields()
-		table_field_name = table_fields[0].fieldname if table_fields else "table_sfpd"  # fallback to default
-	except:
-		table_field_name = "table_sfpd"  # fallback to default
 	
 	# Define mandatory fields for Sales Record Line Item
 	# Note: item_rate is mandatory (reqd: 1 in Sales Record Line Item doctype)
@@ -252,9 +252,9 @@ def import_sales_records(sales_records_import_job):
 	# Get the table field name dynamically
 	try:
 		table_fields = frappe.get_meta("Sales Record").get_table_fields()
-		table_field_name = table_fields[0].fieldname if table_fields else "table_sfpd"  # fallback to default
+		table_field_name = table_fields[0].fieldname if table_fields else "table_field_name"  # fallback to default
 	except:
-		table_field_name = "table_sfpd"  # fallback to default
+		table_field_name = "table_field_name"  # fallback to default
 	
 	# Prepare headers and data
 	headers = rows[0]
@@ -266,11 +266,38 @@ def import_sales_records(sales_records_import_job):
 	# Get item conversion map for the distributor
 	item_conversion_map = get_item_conversion_map(sales_records_import_job.distributor)
 	
+	# Group rows by common fields: sales_date, distributor, outlet_name, outlet_code, retailer, invoice
+	grouped_rows = {}
+	for row_index, row in enumerate(data_rows):
+		# Extract common fields for grouping
+		outlet_name = get_field_value(row, field_to_column_index, "outlet_name")
+		outlet_code = get_field_value(row, field_to_column_index, "outlet_code", "")
+		sales_date_str = get_field_value(row, field_to_column_index, "sales_date")
+		sales_date = parse_date_string(sales_date_str) if sales_date_str else None
+		invoice = get_field_value(row, field_to_column_index, "invoice")
+		
+		# Create a key for grouping
+		group_key = (sales_date, sales_records_import_job.distributor, outlet_name, outlet_code, invoice)
+		
+		# Add row to the appropriate group
+		if group_key not in grouped_rows:
+			grouped_rows[group_key] = {
+				"row_data": row,
+				"row_index": row_index,
+				"line_items": []
+			}
+		# Add the row to the line_items list for this group
+		grouped_rows[group_key]["line_items"].append((row, row_index))
+	
 	# Initialize import log
 	import_logs = []
 	
-	# Process each row
-	for row_index, row in enumerate(data_rows):
+	# Process each group
+	for group_key, group_data in grouped_rows.items():
+		row = group_data["row_data"]
+		row_index = group_data["row_index"]
+		line_items_data = group_data["line_items"]
+		
 		try:
 			# Create or get Master Retail Profile
 			outlet_name = get_field_value(row, field_to_column_index, "outlet_name")
@@ -316,12 +343,15 @@ def import_sales_records(sales_records_import_job):
 			if agent_code:
 				sales_record.agent_code = agent_code
 			
-			# Create Sales Record Line Items
-			line_items = create_sales_record_line_items(row, field_to_column_index, table_field_name, item_conversion_map)
+			# Create Sales Record Line Items for all rows in this group
+			all_line_items = []
+			for line_item_row, line_item_row_index in line_items_data:
+				line_items = create_sales_record_line_items(line_item_row, field_to_column_index, table_field_name, item_conversion_map)
+				all_line_items.extend(line_items)
 			
-			# If no valid line items, skip this row
-			if not line_items:
-				error_msg = f"Row {row_index + 2}: No valid line items found or item names don't match distributor conversion records"
+			# If no valid line items, skip this group
+			if not all_line_items:
+				error_msg = f"Group with invoice {sales_record.invoice}: No valid line items found or item names don't match distributor conversion records"
 				import_logs.append({
 					"row_number": row_index + 2,
 					"success": False,
@@ -330,7 +360,7 @@ def import_sales_records(sales_records_import_job):
 				frappe.log_error(error_msg)
 				continue
 			
-			sales_record.set("table_sfpd", line_items)
+			sales_record.set(table_field_name, all_line_items)
 			
 			# Save and submit the sales record
 			sales_record.insert()
@@ -340,11 +370,11 @@ def import_sales_records(sales_records_import_job):
 			import_logs.append({
 				"row_number": row_index + 2,
 				"success": True,
-				"message": f"Sales Record {sales_record.name} created successfully"
+				"message": f"Sales Record {sales_record.name} created successfully with {len(all_line_items)} line items"
 			})
 			
 		except Exception as e:
-			error_msg = f"Error processing row {row_index + 2}: {str(e)}"
+			error_msg = f"Error processing group with invoice {get_field_value(row, field_to_column_index, 'invoice')}: {str(e)}"
 			import_logs.append({
 				"row_number": row_index + 2,
 				"success": False,
