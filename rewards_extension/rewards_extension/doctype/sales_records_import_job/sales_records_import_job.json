@@ -131,13 +131,14 @@
    "allow_on_submit": 1,
    "fieldname": "status",
    "fieldtype": "Data",
-   "label": "Status"
+   "label": "Status",
+   "read_only": 1
   },
   {
+   "allow_on_submit": 1,
    "fieldname": "import_log",
    "fieldtype": "Code",
    "hidden": 1,
-   "allow_on_submit": 1,
    "label": "Import Log",
    "options": "JSON"
   }
@@ -146,7 +147,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-10 17:31:21.251252",
+ "modified": "2025-08-11 09:11:50.913764",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Sales Records Import Job",
