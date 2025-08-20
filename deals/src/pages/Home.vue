@@ -512,6 +512,7 @@ function loadCouponCodeForm(){
   mainAlertMessage.value=''
   const filters = []
   // console.log(profileData.value.name)
+  filters.push(['campaign','=',voucherCampaign.value.name])
   filters.push(['voucher_status','in',['Blocked','Payout Requested','Redeemed','Denied Payment']])
   if(voucherCampaign.value.target_uniqueness =='Profile'){
     filters.push(['beneficiary_type','=',profileData.value.doctype])
