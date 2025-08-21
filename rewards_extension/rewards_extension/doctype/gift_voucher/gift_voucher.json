@@ -36,9 +36,7 @@
   "quiz",
   "column_break_seqz",
   "redeemed_date",
-  "payment_held_date",
-  "quiz_transcript_section",
-  "transcript"
+  "payment_held_date"
  ],
  "fields": [
   {
@@ -227,23 +225,13 @@
    "fieldname": "beneficiary_bank_account",
    "fieldtype": "Link",
    "label": "Beneficiary Bank Account",
-   "options": "Bank Account"
+   "options": "Bank Account",
+   "read_only": 1
   },
   {
    "fieldname": "beneficiary_bank_account_html",
    "fieldtype": "HTML",
    "label": "Beneficiary Bank Account HTML"
-  },
-  {
-   "fieldname": "quiz_transcript_section",
-   "fieldtype": "Section Break",
-   "label": "Quiz Transcript"
-  },
-  {
-   "fetch_from": "quiz.transcript",
-   "fieldname": "transcript",
-   "fieldtype": "Long Text",
-   "label": "Transcript"
   },
   {
    "fieldname": "successful_redemption_section",
@@ -284,7 +272,7 @@
    "link_fieldname": "payout_source_link"
   }
  ],
- "modified": "2025-08-21 14:29:24.734906",
+ "modified": "2025-08-21 20:27:38.904855",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Gift Voucher",
