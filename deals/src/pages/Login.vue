@@ -233,6 +233,8 @@ async function sendOTP() {
     } else if (res.status === 'success') {
       tmpId.value = res.tmp_id
       currentStep.value = 'otp'
+    } else if (res.status === 'user_blocked') {
+      mobileError.value = 'This user is blocked.'
     }
   } catch (error) {
     console.error('OTP send error:', error)

@@ -24,6 +24,9 @@ def send_login_otp(mobile_no: str):
 			frappe.throw(_("Mobile number is required."))
 		# Check if there is any active session for the user with this mobile_no
 		# Find user by mobile number
+		disabled_user_check = frappe.db.get_value("User", {"mobile_no": mobile_no, "enabled": 0}, "name")
+		if disabled_user_check:
+			return {"status": "user_blocked", "message": "This user is blocked."}
 		user_check = frappe.db.get_value("User", {"mobile_no": mobile_no, "enabled": 1}, "name")
 		if not user_check:
 			# Instead of throwing error, return specific status for frontend handling
