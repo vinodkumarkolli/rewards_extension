@@ -32,5 +32,19 @@ def reject_payout(payout_id):
 	pass
 
 @frappe.whitelist()
-def hold_payout(payout_id):
-	pass
+def hold_payout(payout_id,reason):
+	payout_doc = frappe.get_doc("Payout",payout_id)
+	payout_doc.transaction_id = 'WITHHELD'
+	payout_doc.transaction_amount = 0
+	payout_doc.payout_status = "Withheld"
+	payout_doc.payout_notes = reason
+	payout_doc.save(ignore_permissions=True)
+	payout_doc.add_comment('Comment', f'Payout has been withheld on {now()}')
+	frappe.db.commit()
+	source_doc = frappe.get_doc(payout_doc.payout_source_type,payout_doc.payout_source_link)
+	source_doc.voucher_status = "Denied Payment"
+	source_doc.payment_held_date = now()
+	source_doc.save(ignore_permissions=True)
+	source_doc.add_comment('Comment', f'A Payout {payout_doc.name} for Voucher is withheld on {now()}')
+	frappe.db.commit()
+	return "Success"

@@ -4,11 +4,47 @@
 frappe.ui.form.on("Payout", {
 	refresh(frm) {
         frm.add_custom_button(__('Upload Receipts'),function(){
-                uploadReceiptsPopup(frm)
-        })
+            uploadReceiptsPopup(frm)
+        },__('Approvals'))
         frm.add_custom_button(__('Generate Reports'),function(){},__('Reports'))
+        if(frm.doc.payout_status ==='Under Process'){
+            frm.add_custom_button(__('Withhold Payment'),function(){
+                withholdPaymentPopup(frm)
+            },__('Approvals'))
+        }
+        
 	},
 });
+function withholdPaymentPopup(frm){
+    d = new frappe.ui.Dialog({
+        'title':__('Withold Payment Detail'),
+        'fields':[
+            {fieldname:'reason',
+            label:'Withhold Reason',
+            fieldtype:'Small Text',
+            reqd:1}
+        ],
+        primary_action_label: 'Deny Payment',
+        primary_action:function(){
+            var reason = d.get_value('reason')
+            frappe.call({
+            method:'rewards_extension.rewards_extension.doctype.payout.payout.hold_payout',
+            args:{
+                payout_id:frm.doc.name,
+                reason:reason
+            },
+            callback:function(r){
+                if(!r.exc){
+                    //refresh_field('status');
+                    // console.log(r.message);
+                    d.hide()
+                }
+            }
+            })
+        }
+    })
+    d.show()
+}
 function uploadReceiptsPopup(frm){
     d = new frappe.ui.Dialog({
         'title': __('Upload Payment Details'),
