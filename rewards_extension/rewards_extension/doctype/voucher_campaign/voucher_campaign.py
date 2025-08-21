@@ -52,7 +52,7 @@ def create_voucher_batch(campaign:str,count:int):
             created_on=row.created_on,
             valid_till=campaign_doc.end_date,
             voucher_status='Generated',
-            secret_code=generate_code(),
+            secret_code=generate_unique_code_for_campaign(campaign),
             status='Active'
         )
         voucher.insert(ignore_permissions=True)
@@ -62,6 +62,33 @@ def generate_code(length=6):
   """Generates a random code of specified length with uppercase letters and digits."""
   characters = string.ascii_uppercase + string.digits
   return ''.join(random.choice(characters) for _ in range(length))
+
+def is_code_unique_in_campaign(code, campaign):
+  """Check if the generated code is unique within the specified campaign."""
+  existing_vouchers = frappe.get_all("Gift Voucher",
+                                      filters={"secret_code": code, "campaign": campaign},
+                                      limit=1)
+  return len(existing_vouchers) == 0
+
+def generate_unique_code_for_campaign(campaign, length=6, max_attempts=100):
+  """Generate a unique code for the specified campaign.
+  
+  Args:
+      campaign (str): The campaign name to check uniqueness against
+      length (int): Length of the code to generate
+      max_attempts (int): Maximum number of attempts to generate a unique code
+      
+  Returns:
+      str: A unique code for the campaign
+      
+  Raises:
+      Exception: If unable to generate a unique code within max_attempts
+  """
+  for _ in range(max_attempts):
+      code = generate_code(length)
+      if is_code_unique_in_campaign(code, campaign):
+          return code
+  raise Exception(f"Unable to generate a unique code for campaign {campaign} after {max_attempts} attempts")
 
 #Enable gift vouchers
 def enable_gift_vouchers(voucher_list:list):

@@ -176,8 +176,7 @@
    "fieldtype": "Data",
    "in_list_view": 1,
    "label": "Secret Code",
-   "reqd": 1,
-   "unique": 1
+   "reqd": 1
   },
   {
    "fieldname": "campaign_target",
@@ -285,7 +284,7 @@
    "link_fieldname": "payout_source_link"
   }
  ],
- "modified": "2025-08-05 20:31:30.913876",
+ "modified": "2025-08-21 11:30:58.528314",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Gift Voucher",
