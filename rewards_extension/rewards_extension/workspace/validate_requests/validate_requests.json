@@ -1,0 +1,59 @@
+{
+ "app": "rewards_extension",
+ "charts": [],
+ "content": "[{\"id\":\"9osvlKWWuv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mobile Search\",\"col\":3}},{\"id\":\"ziphqUN1XX\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Invoice Search\",\"col\":3}}]",
+ "creation": "2025-08-21 23:23:44.265650",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "unhide",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Validate Requests",
+ "link_type": "DocType",
+ "links": [],
+ "modified": "2025-08-21 23:34:08.424347",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Validate Requests",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "Campaign Viewer"
+  },
+  {
+   "role": "Campaign Manager"
+  },
+  {
+   "role": "System Manager"
+  }
+ ],
+ "sequence_id": 23.0,
+ "shortcuts": [
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Mobile Search",
+   "link_to": "Mobile Search",
+   "report_ref_doctype": "Gift Voucher",
+   "type": "Report"
+  },
+  {
+   "color": "Grey",
+   "doc_view": "List",
+   "label": "Invoice Search",
+   "link_to": "Invoice Search",
+   "report_ref_doctype": "Quiz Transcript",
+   "type": "Report"
+  }
+ ],
+ "title": "Validate Requests",
+ "type": "Workspace"
+}
