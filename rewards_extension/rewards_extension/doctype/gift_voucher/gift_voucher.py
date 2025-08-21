@@ -100,6 +100,39 @@ def fraud_analysis(beneficiary_type,beneficiary,user):
 	pass
 
 @frappe.whitelist()
+def get_all_customer_profiles():
+	"""
+	Fetches all Customer Profile documents with their name and customer_name fields.
+	Returns a list of Customer Profile documents.
+	"""
+	profiles = frappe.get_all("Customer Profile", fields=["name", "customer_name", "modified"])
+	return profiles
+
+@frappe.whitelist()
+def link_customer_profile_to_user(profile_name, user):
+	"""
+	Links a Customer Profile to a User by adding the user to the profile's User Mapping table.
+	"""
+	try:
+		profile = frappe.get_doc("Customer Profile", profile_name)
+		
+		# Check if user is already linked to this profile
+		for user_mapping in profile.users:
+			if user_mapping.user == user:
+				return {"success": True, "message": "User already linked to this profile", "profile": profile.as_dict()}
+		
+		# Add user to the profile's User Mapping table
+		profile.append("users", {
+			"user": user
+		})
+		profile.save(ignore_permissions=True)
+		
+		return {"success": True, "message": "Profile linked successfully", "profile": profile.as_dict()}
+	except Exception as e:
+		frappe.log_error(f"Error linking profile {profile_name} to user {user}: {str(e)}")
+		return {"success": False, "message": str(e)}
+
+@frappe.whitelist()
 def search_customer_profile_for_contact(user):
 	"""
 	Searches for a Customer Profile linked to the given user via the 'User Mapping' child table.

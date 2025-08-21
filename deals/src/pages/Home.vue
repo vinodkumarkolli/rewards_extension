@@ -171,8 +171,6 @@
     
     <!-- Customer Profile Form -->
     <div v-if="tourCompleted && !profileData" class="bg-white rounded-lg shadow-lg p-6 w-full max-w-md mx-auto flex flex-col items-center justify-center relative z-10">
-      <h3 class="text-xl font-bold mb-4 text-gray-700">Create Your Profile</h3>
-      <p class="text-sm text-gray-500 mb-6">We couldn't find an existing profile. Please provide your details to continue.</p>
       <ProfileOnboarding
         :customer-profile-data="customerProfileData"
         :voucher-campaign="voucherCampaign"
@@ -180,6 +178,7 @@
         :indian-states="indianStates"
         :creating-profile="creatingProfile"
         @submit="createProfile"
+        @profile-linked="handleProfileLinked"
       />
     </div>
     </div>
@@ -529,6 +528,11 @@ function loadCouponCodeForm(){
   })
   couponResource.fetch()
   currentStep.value = 'coupon'
+}
+
+function handleProfileLinked(profile) {
+  profileData.value = profile
+  loadCouponCodeForm()
 }
 </script>
 <style scoped>

@@ -81,7 +81,7 @@
    "link_fieldname": "quizzer"
   }
  ],
- "modified": "2025-08-04 20:44:16.781154",
+ "modified": "2025-08-21 12:15:16.424236",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Customer Profile",
@@ -99,6 +99,15 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Consumer",
+   "share": 1
   }
  ],
  "row_format": "Dynamic",
