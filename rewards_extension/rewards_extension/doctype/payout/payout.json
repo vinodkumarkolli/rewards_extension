@@ -165,7 +165,7 @@
  "index_web_pages_for_search": 1,
  "is_submittable": 1,
  "links": [],
- "modified": "2025-08-21 14:29:58.668357",
+ "modified": "2025-08-22 10:48:29.962129",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Payout",
@@ -193,6 +193,16 @@
    "read": 1,
    "report": 1,
    "role": "Campaign Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Campaign Viewer",
    "share": 1,
    "write": 1
   }
