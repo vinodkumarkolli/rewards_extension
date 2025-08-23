@@ -1,7 +1,7 @@
 {
  "app": "rewards_extension",
  "charts": [],
- "content": "[{\"id\":\"9osvlKWWuv\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Mobile Search\",\"col\":3}},{\"id\":\"ziphqUN1XX\",\"type\":\"shortcut\",\"data\":{\"shortcut_name\":\"Invoice Search\",\"col\":3}}]",
+ "content": "[{\"id\":\"7K9Nddv9cI\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2025-08-21 23:23:44.265650",
  "custom_blocks": [],
  "docstatus": 0,
@@ -14,8 +14,38 @@
  "is_hidden": 0,
  "label": "Validate Requests",
  "link_type": "DocType",
- "links": [],
- "modified": "2025-08-21 23:34:08.424347",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Mobile Search",
+   "link_count": 0,
+   "link_to": "Mobile Search",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Invoice Search",
+   "link_count": 0,
+   "link_to": "Invoice Search",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-08-22 11:25:06.587017",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Validate Requests",
@@ -36,24 +66,7 @@
   }
  ],
  "sequence_id": 23.0,
- "shortcuts": [
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Mobile Search",
-   "link_to": "Mobile Search",
-   "report_ref_doctype": "Gift Voucher",
-   "type": "Report"
-  },
-  {
-   "color": "Grey",
-   "doc_view": "List",
-   "label": "Invoice Search",
-   "link_to": "Invoice Search",
-   "report_ref_doctype": "Quiz Transcript",
-   "type": "Report"
-  }
- ],
+ "shortcuts": [],
  "title": "Validate Requests",
  "type": "Workspace"
 }

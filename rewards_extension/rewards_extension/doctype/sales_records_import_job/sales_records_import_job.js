@@ -15,8 +15,23 @@ frappe.ui.form.on("Sales Records Import Job", {
 	refresh: function(frm) {
 		frm.trigger("update_indicators");
 		frm.trigger("sales_records_file");
-		frm.trigger("show_import_log");
 		frm.trigger("show_import_warnings");
+		frm.trigger("show_import_log");
+		
+		// Add Export Errored Rows button if there are failed logs
+		if (frm.doc.import_log) {
+			try {
+				let logs = JSON.parse(frm.doc.import_log);
+				let failed_logs = logs.filter(log => !log.success);
+				if (failed_logs.length > 0) {
+					frm.add_custom_button(__("Export Errored Rows"), function() {
+						frm.events.export_errored_rows(frm);
+					});
+				}
+			} catch (e) {
+				console.error("Error parsing import log:", e);
+			}
+		}
 		// Set default values for from_date and to_date to last month's start and end dates
 		if (!frm.doc.from_date) {
 			frm.set_value("from_date", moment().subtract(1, 'months').startOf('month').format("YYYY-MM-DD"));
@@ -499,7 +514,7 @@ frappe.ui.form.on("Sales Records Import Job", {
 				).join("")}
 			</tbody>
 		</table>`).appendTo(wrapper);
-	},
+},
 	
 	start_import: function(frm) {
 		frappe.call({
@@ -565,6 +580,47 @@ frappe.ui.form.on("Sales Records Import Job", {
 		}
 		
 		return true;
+	},
+
+	export_errored_rows: function(frm) {
+		const dialog = new frappe.ui.Dialog({
+			title: __("Export Errored Rows"),
+			fields: [
+				{
+					fieldname: "file_format",
+					label: __("File Format"),
+					fieldtype: "Select",
+					options: ["Excel", "CSV"],
+					default: "Excel",
+					reqd: 1
+				}
+			],
+			primary_action_label: __("Export"),
+			primary_action: (values) => {
+				frappe.call({
+					method: "rewards_extension.rewards_extension.doctype.sales_records_import_job.sales_records_import_job.export_errored_rows",
+					args: {
+						doc: frm.doc,
+						file_type: values.file_format
+					},
+					callback: function(r) {
+						if (r.message) {
+							const D = new frappe.ui.Dialog({
+								title: "Export Successful",
+								primary_action_label: "Download",
+								primary_action: () => {
+									window.open(r.message.file_url);
+									D.hide();
+								}
+							});
+							D.show();
+						}
+					}
+				});
+				dialog.hide();
+			}
+		});
+		dialog.show();
 	}
 });
 // Helper functions for column mapping

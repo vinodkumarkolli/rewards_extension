@@ -539,3 +539,77 @@ def create_sales_record_line_items(row, field_to_column_index, table_field_name,
 				line_items.append(line_item)
 	
 	return line_items
+
+
+@frappe.whitelist()
+def export_errored_rows(doc, file_type="Excel"):
+	"""Export errored rows to an Excel or CSV file"""
+	from frappe.utils.xlsxutils import make_xlsx
+	from io import StringIO, BytesIO
+	import csv
+
+	doc = frappe.parse_json(doc)
+	srij = frappe.get_doc("Sales Records Import Job", doc.name)
+	srij.check_permission("read")
+
+	if not srij.import_log:
+		frappe.msgprint("No import log found.")
+		return
+
+	logs = json.loads(srij.import_log)
+	failed_logs = [log for log in logs if not log.get("success")]
+
+	if not failed_logs:
+		frappe.msgprint("No errored rows to export.")
+		return
+
+	# Read the original imported file
+	file_doc = frappe.get_doc("File", {"file_url": srij.sales_records_file})
+	content = file_doc.get_content()
+	if isinstance(content, bytes):
+		content = content.decode('utf-8')
+
+	rows = read_csv_content(content)
+	headers = rows[0]
+	data_rows = rows[1:]
+
+	errored_data = []
+	errored_data.append(headers + ["Error"])
+	for log in failed_logs:
+		row_number = log.get("row_number")
+		if row_number and (row_number - 2) >= 0 and (row_number - 2) < len(data_rows):
+			row_data = list(data_rows[row_number - 2]) # Get a copy
+			row_data.append(log.get("message", "Unknown error"))
+			errored_data.append(row_data)
+
+	if len(errored_data) <= 1:
+		frappe.msgprint("Could not retrieve data for errored rows.")
+		return
+
+	# Generate the file
+	if file_type == "Excel":
+		xlsx_file = make_xlsx(errored_data[1:], errored_data[0])
+		file_content = xlsx_file.getvalue()
+		file_extension = "xlsx"
+	else:  # CSV
+		output = StringIO()
+		writer = csv.writer(output)
+		for row in errored_data:
+			writer.writerow(row)
+		file_content = output.getvalue().encode('utf-8')
+		file_extension = "csv"
+
+	# Create a new File document
+	file_name = f"errored_rows_{srij.name}.{file_extension}"
+	new_file = frappe.new_doc("File")
+	new_file.file_name = file_name
+	new_file.attached_to_doctype = "Sales Records Import Job"
+	new_file.attached_to_name = srij.name
+	new_file.content = file_content
+	new_file.is_private = 1
+	new_file.save()
+
+	frappe.response["message"] = {
+		"file_name": new_file.file_name,
+		"file_url": new_file.file_url
+	}
