@@ -6,12 +6,65 @@ from frappe.model.document import Document
 from frappe.utils.csvutils import read_csv_content
 from frappe.utils import cint
 import json
+import re
 from datetime import datetime
 
 
 class SalesRecordsImportJob(Document):
 	def validate(self):
 		pass
+
+	def on_cancel(self):
+		"""Cancel all imported Sales Records when this job is cancelled"""
+		self.cancel_imported_sales_records()
+
+	def cancel_imported_sales_records(self):
+		"""Cancel and delete all Sales Records imported in this job"""
+		if not self.import_log:
+			return
+		
+		try:
+			import_logs = json.loads(self.import_log)
+		except json.JSONDecodeError:
+			frappe.log_error(f"Invalid JSON in import_log for Sales Records Import Job {self.name}")
+			return
+		
+		# Get all successfully imported Sales Records
+		# Import log structure:
+		# Successful log: {"row_number": X, "success": True, "message": "Sales Record XXXX created successfully with Y line items"}
+		# Failed log: {"row_number": X, "success": False, "message": "Error message"}
+		successful_logs = [log for log in import_logs if log.get("success") and "Sales Record" in log.get("message", "")]
+		
+		cancelled_records = []
+		for log in successful_logs:
+			try:
+				# Extract Sales Record name from log message
+				# Message format: "Sales Record XXXX created successfully with Y line items"
+				message = log.get("message", "")
+				# Use regex to extract the Sales Record name more reliably
+				match = re.search(r"Sales Record ([^\s]+) created successfully", message)
+				if match:
+					sales_record_name = match.group(1)
+					
+					# Check if Sales Record exists
+					if frappe.db.exists("Sales Record", sales_record_name):
+						sales_record = frappe.get_doc("Sales Record", sales_record_name)
+						# Cancel and delete the Sales Record
+						if sales_record.docstatus == 1:  # Submitted
+							sales_record.cancel()
+						# Delete the Sales Record
+						frappe.delete_doc("Sales Record", sales_record_name)
+						cancelled_records.append(sales_record_name)
+			except Exception as e:
+				frappe.log_error(f"Error cancelling Sales Record from import job {self.name}: {str(e)}")
+				continue
+		
+		# Clear the import log
+		self.db_set("import_log", None)
+		
+		# Add a comment to the import job about cancelled records
+		if cancelled_records:
+			frappe.msgprint(f"Cancelled and deleted {len(cancelled_records)} Sales Records: {', '.join(cancelled_records)}")
 
 
 @frappe.whitelist()
