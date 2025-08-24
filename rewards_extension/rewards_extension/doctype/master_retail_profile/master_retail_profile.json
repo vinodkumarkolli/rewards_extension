@@ -46,17 +46,20 @@
   {
    "fieldname": "loyalty_points",
    "fieldtype": "Float",
-   "label": "Loyalty Points"
+   "label": "Loyalty Points",
+   "read_only": 1
   },
   {
    "fieldname": "redeemed_points",
    "fieldtype": "Float",
-   "label": "Redeemed Points"
+   "label": "Redeemed Points",
+   "read_only": 1
   },
   {
    "fieldname": "expired_points",
    "fieldtype": "Float",
-   "label": "Expired Points"
+   "label": "Expired Points",
+   "read_only": 1
   },
   {
    "description": "This is also a kind of profile creation date",
@@ -125,7 +128,7 @@
    "link_fieldname": "retailer"
   }
  ],
- "modified": "2025-08-22 10:50:02.683881",
+ "modified": "2025-08-24 16:17:39.334774",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Master Retail Profile",

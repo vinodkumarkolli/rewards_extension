@@ -472,7 +472,7 @@ def create_or_get_retailer_profile(outlet_name, outlet_code, sales_date, distrib
 		return frappe.get_doc("Master Retail Profile", retailer_profiles[0].name)
 	
 	# Check if a Master Retail Profile already exists with this outlet name as retailer_name
-	retailer_profiles = frappe.get_all("Master Retail Profile", filters={"retailer_name": outlet_name})
+	retailer_profiles = frappe.get_all("Master Retail Profile", filters={"retailer_name": outlet_name,"distributor":["=",distributor],"outlet_code":["=",outlet_code]})
 	
 	if retailer_profiles:
 		# Retailer profile exists, update alias_names and return
