@@ -128,7 +128,7 @@
    "link_fieldname": "retailer"
   }
  ],
- "modified": "2025-08-24 22:28:28.660654",
+ "modified": "2025-08-24 23:52:22.440118",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Master Retail Profile",
@@ -146,6 +146,25 @@
    "role": "System Manager",
    "share": 1,
    "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Campaign Manager",
+   "share": 1,
+   "write": 1
+  },
+  {
+   "email": 1,
+   "export": 1,
+   "print": 1,
+   "read": 1,
+   "report": 1,
+   "role": "Campaign Viewer",
+   "share": 1
   }
  ],
  "row_format": "Dynamic",
