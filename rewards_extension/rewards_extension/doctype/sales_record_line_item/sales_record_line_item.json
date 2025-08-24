@@ -29,7 +29,6 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Item Quantity",
-   "non_negative": 1,
    "reqd": 1
   },
   {
@@ -38,6 +37,7 @@
    "fieldtype": "Float",
    "in_list_view": 1,
    "label": "Item Rate",
+   "non_negative": 1,
    "reqd": 1
   },
   {
@@ -66,8 +66,7 @@
    "fieldname": "free_quantity",
    "fieldtype": "Float",
    "in_list_view": 1,
-   "label": "Free Quantity",
-   "non_negative": 1
+   "label": "Free Quantity"
   },
   {
    "fieldname": "line_item_amount",
@@ -80,7 +79,7 @@
  "index_web_pages_for_search": 1,
  "istable": 1,
  "links": [],
- "modified": "2025-08-10 20:11:20.307749",
+ "modified": "2025-08-24 15:56:19.755358",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Sales Record Line Item",

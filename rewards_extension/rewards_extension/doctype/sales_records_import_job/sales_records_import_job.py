@@ -465,7 +465,7 @@ def get_field_value(row, field_to_column_index, field_name, default=None):
 def create_or_get_retailer_profile(outlet_name, outlet_code, sales_date, distributor):
 	"""Create or get Master Retail Profile based on outlet name"""
 	# Check if a Master Retail Profile already exists with this outlet name in alias_names
-	retailer_profiles = frappe.get_all("Master Retail Profile", filters={"alias_names": ["like", f"%{outlet_name}%"]})
+	retailer_profiles = frappe.get_all("Master Retail Profile", filters={"alias_names": ["like", f"%{outlet_name}%"],"distributor":["=",distributor],"outlet_code":["=",outlet_code]})
 	
 	if retailer_profiles:
 		# Retailer profile exists, return the first one
