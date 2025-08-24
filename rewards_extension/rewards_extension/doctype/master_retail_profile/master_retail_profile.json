@@ -128,7 +128,7 @@
    "link_fieldname": "retailer"
   }
  ],
- "modified": "2025-08-24 16:17:39.334774",
+ "modified": "2025-08-24 22:28:28.660654",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Master Retail Profile",
@@ -151,5 +151,6 @@
  "row_format": "Dynamic",
  "sort_field": "modified",
  "sort_order": "DESC",
- "states": []
+ "states": [],
+ "title_field": "retailer_name"
 }

@@ -19,7 +19,7 @@
    "hidden": 0,
    "is_query_report": 0,
    "label": "Reports",
-   "link_count": 2,
+   "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -43,9 +43,19 @@
    "link_type": "Report",
    "onboard": 0,
    "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Check Sales for Retailer",
+   "link_count": 0,
+   "link_to": "Sales Records for Retailer",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
   }
  ],
- "modified": "2025-08-22 11:25:06.587017",
+ "modified": "2025-08-24 23:21:39.111247",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Validate Requests",
