@@ -41,6 +41,11 @@ def get_columns() -> list[dict]:
 				"fieldtype":"Data"
 			},
 			{
+				"label": _("Agents"),
+				"fieldname":"agents",
+				"fieldtype":"Data"
+			},
+			{
 				"label": _("Last Ordered Date"),
 				"fieldname":"last_ordered_date",
 				"fieldtype":"Date"
@@ -94,6 +99,7 @@ def get_data(filters) -> list[list]:
 			sr.retailer as retailer,
 			mrp.retailer_name as retailer_name,
 			mrp.outlet_code as outlet_code,
+			GROUP_CONCAT(DISTINCT sr.agent_code) as agents,
 			MAX(sr.sales_date) as last_ordered_date,
 			DATEDIFF(CURDATE(), MAX(sr.sales_date)) as last_order_since_days,
 			COUNT(DISTINCT sr.name) as orders_till_now,
@@ -157,6 +163,7 @@ def get_data(filters) -> list[list]:
 			row.retailer,
 			row.retailer_name,
 			row.outlet_code,
+			row.agents,
 			row.last_ordered_date,
 			row.last_order_since_days,
 			row.orders_till_now,
