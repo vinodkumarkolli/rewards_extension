@@ -60,6 +60,11 @@ def get_columns() -> list[dict]:
 				"fieldname":"avg_order_value",
 				"fieldtype":"Float",
 				"precision":2
+			},
+			{
+				"label": _("Average Order Days"),
+				"fieldname":"avg_order_days",
+				"fieldtype":"Int"
 			}
 		]
 	return columns
@@ -92,7 +97,8 @@ def get_data(filters) -> list[list]:
 			MAX(sr.sales_date) as last_ordered_date,
 			DATEDIFF(CURDATE(), MAX(sr.sales_date)) as last_order_since_days,
 			COUNT(DISTINCT sr.name) as orders_till_now,
-			AVG(order_totals.total_value) as avg_order_value
+			AVG(order_totals.total_value) as avg_order_value,
+			COALESCE(AVG(order_intervals.days_between_orders), 0) as avg_order_days
 		FROM
 			`tabSales Record` sr
 		INNER JOIN
@@ -103,7 +109,7 @@ def get_data(filters) -> list[list]:
 			(
 				SELECT
 					parent,
-					SUM(line_item_amount) as total_value
+					SUM(item_quantity * item_rate) as total_value
 				FROM
 					`tabSales Record Line Item`
 				WHERE
@@ -111,6 +117,27 @@ def get_data(filters) -> list[list]:
 				GROUP BY
 					parent
 			) as order_totals ON sr.name = order_totals.parent
+		LEFT JOIN
+			(
+				SELECT
+					retailer,
+					AVG(DATEDIFF(sales_date, prev_sales_date)) as days_between_orders
+				FROM
+					(
+						SELECT
+							retailer,
+							sales_date,
+							LAG(sales_date) OVER (PARTITION BY retailer ORDER BY sales_date) as prev_sales_date
+						FROM
+							`tabSales Record`
+						WHERE
+							sales_date IS NOT NULL
+					) as ordered_sales
+				WHERE
+					prev_sales_date IS NOT NULL
+				GROUP BY
+					retailer
+			) as order_intervals ON sr.retailer = order_intervals.retailer
 		WHERE
 			srli.item_quantity > 0
 			{conditions}
@@ -133,7 +160,8 @@ def get_data(filters) -> list[list]:
 			row.last_ordered_date,
 			row.last_order_since_days,
 			row.orders_till_now,
-			row.avg_order_value
+			row.avg_order_value,
+			row.avg_order_days
 		])
 	
 	return result
