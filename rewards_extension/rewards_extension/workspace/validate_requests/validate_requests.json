@@ -49,13 +49,13 @@
    "is_query_report": 1,
    "label": "Check Sales for Retailer",
    "link_count": 0,
-   "link_to": "Sales Records for Retailer",
-   "link_type": "Report",
+   "link_to": "Sales Record",
+   "link_type": "DocType",
    "onboard": 0,
    "type": "Link"
   }
  ],
- "modified": "2025-08-24 23:21:39.111247",
+ "modified": "2025-08-25 00:46:24.366294",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Validate Requests",
