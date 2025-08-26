@@ -1,7 +1,7 @@
 {
  "app": "rewards_extension",
  "charts": [],
- "content": "[{\"id\":\"7K9Nddv9cI\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"7K9Nddv9cI\",\"type\":\"card\",\"data\":{\"card_name\":\"Retailer Reports\",\"col\":4}},{\"id\":\"z5XzCqpsJb\",\"type\":\"card\",\"data\":{\"card_name\":\"Distributor Reports\",\"col\":4}}]",
  "creation": "2025-08-21 23:23:44.265650",
  "custom_blocks": [],
  "docstatus": 0,
@@ -18,7 +18,7 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Reports",
+   "label": "Retailer Reports",
    "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
@@ -49,13 +49,32 @@
    "is_query_report": 1,
    "label": "Check Sales for Retailer",
    "link_count": 0,
-   "link_to": "Sales Record",
+   "link_to": "Sales Records for Retailer",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Distributor Reports",
+   "link_count": 1,
    "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Distributor Performance",
+   "link_count": 0,
+   "link_to": "Last Order since Days",
+   "link_type": "Report",
    "onboard": 0,
    "type": "Link"
   }
  ],
- "modified": "2025-08-25 00:46:24.366294",
+ "modified": "2025-08-26 13:51:48.525648",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Validate Requests",
