@@ -1,7 +1,7 @@
 {
  "app": "rewards_extension",
  "charts": [],
- "content": "[{\"id\":\"AqzqfGz8wq\",\"type\":\"header\",\"data\":{\"text\":\"<span class=\\\"h4\\\">Payouts</span>\",\"col\":12}}]",
+ "content": "[{\"id\":\"VWBswIAki-\",\"type\":\"card\",\"data\":{\"card_name\":\"Reports\",\"col\":4}}]",
  "creation": "2025-08-21 23:40:20.773579",
  "custom_blocks": [],
  "docstatus": 0,
@@ -14,8 +14,28 @@
  "is_hidden": 0,
  "label": "Payouts",
  "link_type": "DocType",
- "links": [],
- "modified": "2025-08-23 12:20:02.737389",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Reports",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Campaign Payouts",
+   "link_count": 0,
+   "link_to": "Payouts per Campaign",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-08-26 22:04:09.227354",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Payouts",
