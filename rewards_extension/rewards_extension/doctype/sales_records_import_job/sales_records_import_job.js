@@ -18,6 +18,16 @@ frappe.ui.form.on("Sales Records Import Job", {
 		frm.trigger("show_import_warnings");
 		frm.trigger("show_import_log");
 		
+		// Listen for real-time updates
+		if (!frm.is_new() && frappe.socket) {
+			frappe.socket.on("sales_records_import_progress", function(data) {
+				if (data.status === "Completed" || data.status === "Failed") {
+					// Refresh the form to show updated status and import log
+					frm.reload_doc();
+				}
+			});
+		}
+		
 		// Add Export Errored Rows button if there are failed logs
 		if (frm.doc.import_log) {
 			try {
@@ -51,9 +61,30 @@ frappe.ui.form.on("Sales Records Import Job", {
 			}
 		}
 		
+		// Override standard cancel behavior and add custom cancel button for submitted documents
+		if (!frm.is_new() && frm.doc.docstatus === 1) {
+			// Remove standard cancel button
+			frm.page.clear_secondary_action();
+			
+			// Add custom cancel button
+			frm.page.set_secondary_action(__("Cancel"), function() {
+				frm.trigger("custom_cancel");
+			});
+		}
+		
 		// Make scheduled_time and job_completion_time read-only
 		frm.set_df_property("scheduled_time", "read_only", 1);
 		frm.set_df_property("job_completion_time", "read_only", 1);
+		
+		// Listen for real-time updates for cancel process
+		if (!frm.is_new() && frappe.socket) {
+			frappe.socket.on("sales_records_cancel_progress", function(data) {
+				if (data.status === "Completed" || data.status === "Failed") {
+					// Refresh the form to show updated status
+					frm.reload_doc();
+				}
+			});
+		}
 	},
 	
 	sales_records_file: function(frm) {
@@ -493,6 +524,30 @@ frappe.ui.form.on("Sales Records Import Job", {
 		frm.trigger("show_import_log");
 	},
 	
+	custom_cancel: function(frm) {
+		frappe.confirm(
+			"Are you sure you want to cancel this import job? This will cancel and delete all imported Sales Records.",
+			function() {
+				// Call the standard cancel method which will trigger on_cancel
+				frm.page.btn_secondary.prop('disabled', true);
+				frappe.call({
+					method: "frappe.client.cancel",
+					args: {
+						doctype: frm.doc.doctype,
+						name: frm.doc.name
+					},
+					callback: function(r) {
+						if (r.exc) {
+							frm.page.btn_secondary.prop('disabled', false);
+						} else {
+							frm.refresh();
+						}
+					}
+				});
+			}
+		);
+	},
+	
 	render_import_log: function(frm, logs) {
 		let wrapper = frm.get_field("import_log_preview").$wrapper.empty();
 		
@@ -524,6 +579,7 @@ frappe.ui.form.on("Sales Records Import Job", {
 			},
 			callback: function(r) {
 				if (r.message) {
+					// Refresh the form to show the updated status
 					frm.reload_doc();
 				}
 			}
@@ -730,13 +786,17 @@ function update_other_dropdowns(dialog, current_field_index, selected_value, all
 				});
 				
 				// Update the field options
-				field.set_data([
+				let options = [
 					{
 						label: __("Don't Import"),
 						value: "Don't Import",
 					},
 					...filtered_options
-				]);
+				];
+				
+				// Set the options for the field
+				field.df.options = options;
+				field.refresh();
 			}
 		}
 	}

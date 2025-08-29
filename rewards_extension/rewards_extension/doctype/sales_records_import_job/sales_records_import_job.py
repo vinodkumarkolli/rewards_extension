@@ -2,69 +2,34 @@
 # For license information, please see license.txt
 
 import frappe
+from frappe import enqueue
+import frappe
 from frappe.model.document import Document
 from frappe.utils.csvutils import read_csv_content
 from frappe.utils import cint
 import json
 import re
 from datetime import datetime
+from datetime import datetime
 
 
 class SalesRecordsImportJob(Document):
-	def validate(self):
-		pass
-
 	def on_cancel(self):
 		"""Cancel all imported Sales Records when this job is cancelled"""
-		self.cancel_imported_sales_records()
+		# Set status to Queued
+		self.db_set("status", "Queued")
+		
+		# Queue the actual cancel process as a background job
+		enqueue(
+			"rewards_extension.rewards_extension.doctype.sales_records_import_job.sales_records_import_job.cancel_imported_sales_records_job",
+			queue="long",
+			timeout=3600,  # 1 hour timeout
+			job_name=f"Cancel Sales Records for Job {self.name}",
+			sales_records_import_job=self
+		)
+		
+		frappe.msgprint("Cancel process has been queued and will run in the background.")
 
-	def cancel_imported_sales_records(self):
-		"""Cancel and delete all Sales Records imported in this job"""
-		if not self.import_log:
-			return
-		
-		try:
-			import_logs = json.loads(self.import_log)
-		except json.JSONDecodeError:
-			frappe.log_error(f"Invalid JSON in import_log for Sales Records Import Job {self.name}")
-			return
-		
-		# Get all successfully imported Sales Records
-		# Import log structure:
-		# Successful log: {"row_number": X, "success": True, "message": "Sales Record XXXX created successfully with Y line items"}
-		# Failed log: {"row_number": X, "success": False, "message": "Error message"}
-		successful_logs = [log for log in import_logs if log.get("success") and "Sales Record" in log.get("message", "")]
-		
-		cancelled_records = []
-		for log in successful_logs:
-			try:
-				# Extract Sales Record name from log message
-				# Message format: "Sales Record XXXX created successfully with Y line items"
-				message = log.get("message", "")
-				# Use regex to extract the Sales Record name more reliably
-				match = re.search(r"Sales Record ([^\s]+) created successfully", message)
-				if match:
-					sales_record_name = match.group(1)
-					
-					# Check if Sales Record exists
-					if frappe.db.exists("Sales Record", sales_record_name):
-						sales_record = frappe.get_doc("Sales Record", sales_record_name)
-						# Cancel and delete the Sales Record
-						if sales_record.docstatus == 1:  # Submitted
-							sales_record.cancel()
-						# Delete the Sales Record
-						frappe.delete_doc("Sales Record", sales_record_name)
-						cancelled_records.append(sales_record_name)
-			except Exception as e:
-				frappe.log_error(f"Error cancelling Sales Record from import job {self.name}: {str(e)}")
-				continue
-		
-		# Clear the import log
-		self.db_set("import_log", None)
-		
-		# Add a comment to the import job about cancelled records
-		if cancelled_records:
-			frappe.msgprint(f"Cancelled and deleted {len(cancelled_records)} Sales Records: {', '.join(cancelled_records)}")
 
 
 @frappe.whitelist()
@@ -255,203 +220,321 @@ def start_import(doc):
 	# Implement the logic directly here instead of calling the class method
 	# Set scheduled time to now
 	sales_records_import_job.scheduled_time = frappe.utils.now_datetime()
+	sales_records_import_job.db_set("status", "Queued")
 	
 	# Save and submit the document
 	sales_records_import_job.save()
 	sales_records_import_job.submit()
 	
-	# Start the actual import process
-	try:
-		import_sales_records(sales_records_import_job)
-		sales_records_import_job.db_set("status", "Completed")
-		sales_records_import_job.db_set("job_completion_time", frappe.utils.now_datetime())
-		frappe.msgprint("Import process completed successfully")
-	except Exception as e:
-		sales_records_import_job.db_set("status", "Failed")
-		sales_records_import_job.db_set("job_completion_time", frappe.utils.now_datetime())
-		frappe.log_error(f"Sales Records Import Job {sales_records_import_job.name} failed: {str(e)}")
-		frappe.msgprint(f"Import process failed: {str(e)}")
+	# Queue the actual import process as a background job
+	enqueue(
+		"rewards_extension.rewards_extension.doctype.sales_records_import_job.sales_records_import_job.import_sales_records",
+		queue="long",
+		timeout=3600,  # 1 hour timeout
+		job_name=f"Import Sales Records for Job {sales_records_import_job.name}",
+		sales_records_import_job=sales_records_import_job
+	)
+	
+	frappe.msgprint("Import process has been queued and will run in the background.")
 	
 	return True
 
 
+
+
+def cancel_imported_sales_records_job(sales_records_import_job):
+	"""Cancel and delete all Sales Records imported in this job - runs in background"""
+	try:
+		# Reload the document to get the latest state
+		sales_records_import_job = frappe.get_doc("Sales Records Import Job", sales_records_import_job.name)
+		sales_records_import_job.db_set("status", "In Progress")
+		
+		if not sales_records_import_job.import_log:
+			return
+		
+		try:
+			import_logs = json.loads(sales_records_import_job.import_log)
+		except json.JSONDecodeError:
+			frappe.log_error(f"Invalid JSON in import_log for Sales Records Import Job {sales_records_import_job.name}")
+			return
+		
+		# Get all successfully imported Sales Records
+		# Import log structure:
+		# Successful log: {"row_number": X, "success": True, "message": "Sales Record XXXX created successfully with Y line items"}
+		# Failed log: {"row_number": X, "success": False, "message": "Error message"}
+		successful_logs = [log for log in import_logs if log.get("success") and "Sales Record" in log.get("message", "")]
+		
+		cancelled_records = []
+		for log in successful_logs:
+			try:
+				# Extract Sales Record name from log message
+				# Message format: "Sales Record XXXX created successfully with Y line items"
+				message = log.get("message", "")
+				# Use regex to extract the Sales Record name more reliably
+				match = re.search(r"Sales Record ([^\s]+) created successfully", message)
+				if match:
+					sales_record_name = match.group(1)
+					
+					# Check if Sales Record exists
+					if frappe.db.exists("Sales Record", sales_record_name):
+						sales_record = frappe.get_doc("Sales Record", sales_record_name)
+						# Cancel and delete the Sales Record
+						if sales_record.docstatus == 1:  # Submitted
+							sales_record.cancel()
+						# Delete the Sales Record
+						frappe.delete_doc("Sales Record", sales_record_name)
+						cancelled_records.append(sales_record_name)
+			except Exception as e:
+				frappe.log_error(f"Error cancelling Sales Record from import job {sales_records_import_job.name}: {str(e)}")
+				continue
+		
+		# Clear the import log
+		sales_records_import_job.db_set("import_log", None)
+		
+		# Set status to Cancelled
+		sales_records_import_job.db_set("status", "Cancelled")
+		
+		# Add a comment to the import job about cancelled records
+		if cancelled_records:
+			frappe.msgprint(f"Cancelled and deleted {len(cancelled_records)} Sales Records: {', '.join(cancelled_records)}")
+		
+		# Publish realtime update
+		frappe.publish_realtime(
+			"sales_records_cancel_progress",
+			{"message": f"Cancel completed. Cancelled and deleted {len(cancelled_records)} Sales Records", "status": "Completed"},
+			user=frappe.session.user
+		)
+		
+	except Exception as e:
+		# Handle any errors that occurred during the cancel process
+		frappe.log_error(f"Sales Records Cancel Job {sales_records_import_job.name} failed: {str(e)}")
+		sales_records_import_job.db_set("status", "Failed")
+		
+		# Publish realtime update
+		frappe.publish_realtime(
+			"sales_records_cancel_progress",
+			{"message": f"Cancel failed: {str(e)}", "status": "Failed"},
+			user=frappe.session.user
+		)
+		
+		# Re-raise the exception so it's properly handled by the job queue
+		raise e
+
+
 def import_sales_records(sales_records_import_job):
 	"""Import sales records from the uploaded CSV file"""
-	if not sales_records_import_job.sales_records_file:
-		frappe.throw("No sales records file attached")
-	
-	# Read the uploaded file
-	file_doc = frappe.get_doc("File", {"file_url": sales_records_import_job.sales_records_file})
-	content = file_doc.get_content()
-	
-	if isinstance(content, bytes):
-		content = content.decode('utf-8')
-	
-	rows = read_csv_content(content)
-	
-	if not rows:
-		frappe.throw("No data found in the uploaded file")
-	
-	# Get column mapping from template_warnings
-	column_to_field_map = {}
-	if hasattr(sales_records_import_job, 'template_warnings') and sales_records_import_job.template_warnings:
-		try:
-			template_warnings_data = json.loads(sales_records_import_job.template_warnings)
-			if isinstance(template_warnings_data, dict) and "column_to_field_map" in template_warnings_data:
-				column_to_field_map = template_warnings_data.get("column_to_field_map", {})
-		except json.JSONDecodeError:
-			pass
-	
-	# Get the table field name dynamically
 	try:
-		table_fields = frappe.get_meta("Sales Record").get_table_fields()
-		table_field_name = table_fields[0].fieldname if table_fields else "table_field_name"  # fallback to default
-	except:
-		table_field_name = "table_field_name"  # fallback to default
-	
-	# Prepare headers and data
-	headers = rows[0]
-	data_rows = rows[1:]
-	
-	# Create a mapping from field names to column indices
-	field_to_column_index = {field_name: int(col_index) for col_index, field_name in column_to_field_map.items()}
-	
-	# Get item conversion map for the distributor
-	item_conversion_map = get_item_conversion_map(sales_records_import_job.distributor)
-	
-	# Group rows by common fields: sales_date, distributor, outlet_name, outlet_code, retailer, invoice
-	grouped_rows = {}
-	for row_index, row in enumerate(data_rows):
-		# Extract common fields for grouping
-		outlet_name = get_field_value(row, field_to_column_index, "outlet_name")
-		outlet_code = get_field_value(row, field_to_column_index, "outlet_code", "")
-		sales_date_str = get_field_value(row, field_to_column_index, "sales_date")
-		sales_date = parse_date_string(sales_date_str) if sales_date_str else None
-		invoice = get_field_value(row, field_to_column_index, "invoice")
+		# Reload the document to get the latest state
+		sales_records_import_job = frappe.get_doc("Sales Records Import Job", sales_records_import_job.name)
+		sales_records_import_job.db_set("status", "In Progress")
 		
-		# Create a key for grouping
-		group_key = (sales_date, sales_records_import_job.distributor, outlet_name, outlet_code, invoice)
+		# Publish realtime update
+		frappe.publish_realtime(
+			"sales_records_import_progress",
+			{"message": "Import started", "status": "In Progress"},
+			user=frappe.session.user
+		)
 		
-		# Add row to the appropriate group
-		if group_key not in grouped_rows:
-			grouped_rows[group_key] = {
-				"row_data": row,
-				"row_index": row_index,
-				"line_items": []
-			}
-		# Add the row to the line_items list for this group
-		grouped_rows[group_key]["line_items"].append((row, row_index))
-	
-	# Initialize import log
-	import_logs = []
-	
-	# Process each group
-	for group_key, group_data in grouped_rows.items():
-		row = group_data["row_data"]
-		row_index = group_data["row_index"]
-		line_items_data = group_data["line_items"]
+		if not sales_records_import_job.sales_records_file:
+			frappe.throw("No sales records file attached")
 		
+		# Read the uploaded file
+		file_doc = frappe.get_doc("File", {"file_url": sales_records_import_job.sales_records_file})
+		content = file_doc.get_content()
+		
+		if isinstance(content, bytes):
+			content = content.decode('utf-8')
+		
+		rows = read_csv_content(content)
+		
+		if not rows:
+			frappe.throw("No data found in the uploaded file")
+		
+		# Get column mapping from template_warnings
+		column_to_field_map = {}
+		if hasattr(sales_records_import_job, 'template_warnings') and sales_records_import_job.template_warnings:
+			try:
+				template_warnings_data = json.loads(sales_records_import_job.template_warnings)
+				if isinstance(template_warnings_data, dict) and "column_to_field_map" in template_warnings_data:
+					column_to_field_map = template_warnings_data.get("column_to_field_map", {})
+			except json.JSONDecodeError:
+				pass
+		
+		# Get the table field name dynamically
 		try:
-			# Create or get Master Retail Profile
+			table_fields = frappe.get_meta("Sales Record").get_table_fields()
+			table_field_name = table_fields[0].fieldname if table_fields else "table_field_name"  # fallback to default
+		except:
+			table_field_name = "table_field_name"  # fallback to default
+		
+		# Prepare headers and data
+		headers = rows[0]
+		data_rows = rows[1:]
+		
+		# Create a mapping from field names to column indices
+		field_to_column_index = {field_name: int(col_index) for col_index, field_name in column_to_field_map.items()}
+		
+		# Get item conversion map for the distributor
+		item_conversion_map = get_item_conversion_map(sales_records_import_job.distributor)
+		
+		# Group rows by common fields: sales_date, distributor, outlet_name, outlet_code, retailer, invoice
+		grouped_rows = {}
+		for row_index, row in enumerate(data_rows):
+			# Extract common fields for grouping
 			outlet_name = get_field_value(row, field_to_column_index, "outlet_name")
 			outlet_code = get_field_value(row, field_to_column_index, "outlet_code", "")
 			sales_date_str = get_field_value(row, field_to_column_index, "sales_date")
 			sales_date = parse_date_string(sales_date_str) if sales_date_str else None
+			invoice = get_field_value(row, field_to_column_index, "invoice")
 			
-			# Validate that we have a proper date
-			if sales_date_str and not sales_date:
-				error_msg = f"Row {row_index + 2}: Invalid date format {sales_date_str}"
-				import_logs.append({
-					"row_number": row_index + 2,
-					"success": False,
-					"message": error_msg
-				})
-				frappe.log_error(error_msg)
-				continue
+			# Create a key for grouping
+			group_key = (sales_date, sales_records_import_job.distributor, outlet_name, outlet_code, invoice)
 			
-			if not outlet_name:
-				error_msg = f"Row {row_index + 2}: Missing outlet name"
-				import_logs.append({
-					"row_number": row_index + 2,
-					"success": False,
-					"message": error_msg
-				})
-				frappe.log_error(error_msg)
-				continue
+			# Add row to the appropriate group
+			if group_key not in grouped_rows:
+				grouped_rows[group_key] = {
+					"row_data": row,
+					"row_index": row_index,
+					"line_items": []
+				}
+			# Add the row to the line_items list for this group
+			grouped_rows[group_key]["line_items"].append((row, row_index))
+		
+		# Initialize import log
+		import_logs = []
+		
+		# Process each group
+		for group_key, group_data in grouped_rows.items():
+			row = group_data["row_data"]
+			row_index = group_data["row_index"]
+			line_items_data = group_data["line_items"]
 			
-			retailer_profile = create_or_get_retailer_profile(outlet_name, outlet_code, sales_date, sales_records_import_job.distributor)
-			
-			# Create Sales Record
-			sales_record = frappe.new_doc("Sales Record")
-			sales_record.distributor = sales_records_import_job.distributor
-			if sales_date:
-				sales_record.sales_date = sales_date
-			sales_record.invoice = get_field_value(row, field_to_column_index, "invoice")
-			sales_record.outlet_name = outlet_name
-			sales_record.outlet_code = outlet_code
-			sales_record.retailer = retailer_profile.name
-			
-			# Set other optional fields if they exist in the mapping
-			agent_code = get_field_value(row, field_to_column_index, "agent_code")
-			if agent_code:
-				sales_record.agent_code = agent_code
-			
-			# Create Sales Record Line Items for all rows in this group
-			all_line_items = []
-			for line_item_row, line_item_row_index in line_items_data:
-				line_items = create_sales_record_line_items(line_item_row, field_to_column_index, table_field_name, item_conversion_map)
-				all_line_items.extend(line_items)
-			
-			# If no valid line items, skip this group
-			if not all_line_items:
-				error_msg = f"Group with invoice {sales_record.invoice}: No valid line items found or item names don't match distributor conversion records"
-				import_logs.append({
-					"row_number": row_index + 2,
-					"success": False,
-					"message": error_msg
-				})
-				frappe.log_error(error_msg)
-				continue
-			
-			sales_record.set(table_field_name, all_line_items)
-			
-			# Save and submit the sales record
-			sales_record.insert()
-			sales_record.submit()
-			
-			# Update retailer's first and last purchase dates
-			if sales_date and retailer_profile:
-				# Update first purchase date if sales_date is earlier
-				if not retailer_profile.first_purchase_date or sales_date < retailer_profile.first_purchase_date:
-					retailer_profile.first_purchase_date = sales_date
+			try:
+				# Create or get Master Retail Profile
+				outlet_name = get_field_value(row, field_to_column_index, "outlet_name")
+				outlet_code = get_field_value(row, field_to_column_index, "outlet_code", "")
+				sales_date_str = get_field_value(row, field_to_column_index, "sales_date")
+				sales_date = parse_date_string(sales_date_str) if sales_date_str else None
 				
-				# Update last purchase date if sales_date is later
-				if not retailer_profile.last_purchase_date or sales_date > retailer_profile.last_purchase_date:
-					retailer_profile.last_purchase_date = sales_date
+				# Validate that we have a proper date
+				if sales_date_str and not sales_date:
+					error_msg = f"Row {row_index + 2}: Invalid date format {sales_date_str}"
+					import_logs.append({
+						"row_number": row_index + 2,
+						"success": False,
+						"message": error_msg
+					})
+					frappe.log_error(error_msg)
+					continue
 				
-				# Save the retailer profile if any changes were made
-				if retailer_profile.first_purchase_date or retailer_profile.last_purchase_date:
-					retailer_profile.save()
-			
-			# Log success
-			import_logs.append({
-				"row_number": row_index + 2,
-				"success": True,
-				"message": f"Sales Record {sales_record.name} created successfully with {len(all_line_items)} line items"
-			})
-			
-		except Exception as e:
-			error_msg = f"Error processing group with invoice {get_field_value(row, field_to_column_index, 'invoice')}: {str(e)}"
-			import_logs.append({
-				"row_number": row_index + 2,
-				"success": False,
-				"message": error_msg
-			})
-			frappe.log_error(error_msg)
-			continue
-	
-	# Save import logs to the document
-	sales_records_import_job.db_set("import_log", json.dumps(import_logs))
+				if not outlet_name:
+					error_msg = f"Row {row_index + 2}: Missing outlet name"
+					import_logs.append({
+						"row_number": row_index + 2,
+						"success": False,
+						"message": error_msg
+					})
+					frappe.log_error(error_msg)
+					continue
+				
+				retailer_profile = create_or_get_retailer_profile(outlet_name, outlet_code, sales_date, sales_records_import_job.distributor)
+				
+				# Create Sales Record
+				sales_record = frappe.new_doc("Sales Record")
+				sales_record.distributor = sales_records_import_job.distributor
+				if sales_date:
+					sales_record.sales_date = sales_date
+				sales_record.invoice = get_field_value(row, field_to_column_index, "invoice")
+				sales_record.outlet_name = outlet_name
+				sales_record.outlet_code = outlet_code
+				sales_record.retailer = retailer_profile.name
+				
+				# Set other optional fields if they exist in the mapping
+				agent_code = get_field_value(row, field_to_column_index, "agent_code")
+				if agent_code:
+					sales_record.agent_code = agent_code
+				
+				# Create Sales Record Line Items for all rows in this group
+				all_line_items = []
+				for line_item_row, line_item_row_index in line_items_data:
+					line_items = create_sales_record_line_items(line_item_row, field_to_column_index, table_field_name, item_conversion_map)
+					all_line_items.extend(line_items)
+				
+				# If no valid line items, skip this group
+				if not all_line_items:
+					error_msg = f"Group with invoice {sales_record.invoice}: No valid line items found or item names don't match distributor conversion records"
+					import_logs.append({
+						"row_number": row_index + 2,
+						"success": False,
+						"message": error_msg
+					})
+					frappe.log_error(error_msg)
+					continue
+				
+				sales_record.set(table_field_name, all_line_items)
+				
+				# Save and submit the sales record
+				sales_record.insert()
+				sales_record.submit()
+				
+				# Update retailer's first and last purchase dates
+				if sales_date and retailer_profile:
+					# Update first purchase date if sales_date is earlier
+					if not retailer_profile.first_purchase_date or sales_date < retailer_profile.first_purchase_date:
+						retailer_profile.first_purchase_date = sales_date
+					
+					# Update last purchase date if sales_date is later
+					if not retailer_profile.last_purchase_date or sales_date > retailer_profile.last_purchase_date:
+						retailer_profile.last_purchase_date = sales_date
+					
+					# Save the retailer profile if any changes were made
+					if retailer_profile.first_purchase_date or retailer_profile.last_purchase_date:
+						retailer_profile.save()
+				
+				# Log success
+				import_logs.append({
+					"row_number": row_index + 2,
+					"success": True,
+					"message": f"Sales Record {sales_record.name} created successfully with {len(all_line_items)} line items"
+				})
+				
+			except Exception as e:
+				error_msg = f"Error processing group with invoice {get_field_value(row, field_to_column_index, 'invoice')}: {str(e)}"
+				import_logs.append({
+					"row_number": row_index + 2,
+					"success": False,
+					"message": error_msg
+				})
+				frappe.log_error(error_msg)
+				continue
+		
+		# Save import logs to the document
+		sales_records_import_job.db_set("import_log", json.dumps(import_logs))
+		sales_records_import_job.db_set("status", "Completed")
+		sales_records_import_job.db_set("job_completion_time", frappe.utils.now_datetime())
+		
+		# Publish realtime update
+		frappe.publish_realtime(
+			"sales_records_import_progress",
+			{"message": "Import completed", "status": "Completed", "import_log": json.dumps(import_logs)},
+			user=frappe.session.user
+		)
+		
+	except Exception as e:
+		# Handle any errors that occurred during the import process
+		frappe.log_error(f"Sales Records Import Job {sales_records_import_job.name} failed: {str(e)}")
+		sales_records_import_job.db_set("status", "Failed")
+		sales_records_import_job.db_set("job_completion_time", frappe.utils.now_datetime())
+		
+		# Publish realtime update
+		frappe.publish_realtime(
+			"sales_records_import_progress",
+			{"message": f"Import failed: {str(e)}", "status": "Failed"},
+			user=frappe.session.user
+		)
+		
+		# Re-raise the exception so it's properly handled by the job queue
+		raise e
 
 
 def get_field_value(row, field_to_column_index, field_name, default=None):
