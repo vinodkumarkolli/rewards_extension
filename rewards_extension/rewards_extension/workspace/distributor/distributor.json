@@ -37,8 +37,37 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Time Series Reports",
+   "label": "Shortcuts",
    "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Retailer Profiles",
+   "link_count": 0,
+   "link_to": "Master Retail Profile",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Distributor Profiles",
+   "link_count": 0,
+   "link_to": "Distributor Profile",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Time Series Reports",
+   "link_count": 3,
    "link_type": "DocType",
    "onboard": 0,
    "type": "Card Break"
@@ -65,35 +94,16 @@
   },
   {
    "hidden": 0,
-   "is_query_report": 0,
-   "label": "Shortcuts",
-   "link_count": 2,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Retailer Profiles",
+   "is_query_report": 1,
+   "label": "Retailer Sales Analysis",
    "link_count": 0,
-   "link_to": "Master Retail Profile",
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
-   "label": "Distributor Profiles",
-   "link_count": 0,
-   "link_to": "Distributor Profile",
-   "link_type": "DocType",
+   "link_to": "Distributor Sales Overview by Retailer",
+   "link_type": "Report",
    "onboard": 0,
    "type": "Link"
   }
  ],
- "modified": "2025-08-30 14:31:12.519801",
+ "modified": "2025-08-30 16:51:42.370774",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Distributor",
