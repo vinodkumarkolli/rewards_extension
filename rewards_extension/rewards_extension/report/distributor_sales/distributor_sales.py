@@ -79,7 +79,8 @@ def get_columns(filters: dict | None = None) -> list[dict]:
 					"label": _(month_label),
 					"fieldname": current.strftime("%Y-%m"),
 					"fieldtype": fieldtype,
-					"width": 120
+					"width": 120,
+					"precision": 2 if fieldtype == "Float" else None
 				})
 				if current.month == 12:
 					current = current.replace(year=current.year + 1, month=1)
@@ -101,7 +102,8 @@ def get_columns(filters: dict | None = None) -> list[dict]:
 					"label": _(quarter_label),
 					"fieldname": fieldname,
 					"fieldtype": fieldtype,
-					"width": 150
+					"width": 150,
+					"precision": 2 if fieldtype == "Float" else None
 				})
 	
 	elif aggregate_option == "Yearly":
@@ -119,16 +121,19 @@ def get_columns(filters: dict | None = None) -> list[dict]:
 					"label": _(year_label),
 					"fieldname": fieldname,
 					"fieldtype": fieldtype,
-					"width": 150
+					"width": 150,
+					"precision": 2 if fieldtype == "Float" else None
 				})
 	
-	# Add total column
-	columns.append({
-		"label": _("Total"),
-		"fieldname": "total",
-		"fieldtype": fieldtype,
-		"width": 150
-	})
+	# Add total column if aggregation_fact is not "Avg Order Value" and not "Customer Count"
+	if aggregation_fact != "Avg Order Value" and aggregation_fact != "Customer Count":
+		columns.append({
+			"label": _("Total"),
+			"fieldname": "total",
+			"fieldtype": fieldtype,
+			"width": 150,
+			"precision": 2 if fieldtype == "Float" else None
+		})
 	
 	return columns
 
@@ -299,8 +304,8 @@ def get_monthly_data(conditions, values, filters):
 	sql_query = f"""
 		SELECT
 			{select_fields},
-			{', '.join(month_sums)},
-			{aggregation_field} as total
+			{', '.join(month_sums)}
+			{f", SUM({aggregation_field}) as total" if aggregation_fact != 'Avg Order Value' and aggregation_fact != 'Customer Count' else ""}
 		FROM
 			`tabSales Record` sr
 		INNER JOIN
@@ -400,8 +405,8 @@ def get_quarterly_data(conditions, values, filters):
 	sql_query = f"""
 		SELECT
 			{select_fields},
-			{', '.join(quarter_sums)},
-			{aggregation_field} as total
+			{', '.join(quarter_sums)}
+			{f", SUM({aggregation_field}) as total" if aggregation_fact != 'Avg Order Value' and aggregation_fact != 'Customer Count' else ""}
 		FROM
 			`tabSales Record` sr
 		INNER JOIN
@@ -475,8 +480,8 @@ def get_yearly_data(conditions, values, filters):
 	sql_query = f"""
 		SELECT
 			{select_fields},
-			{', '.join(year_sums)},
-			{aggregation_field} as total
+			{', '.join(year_sums)}
+			{f", SUM({aggregation_field}) as total" if aggregation_fact != 'Avg Order Value' and aggregation_fact != 'Customer Count' else ""}
 		FROM
 			`tabSales Record` sr
 		INNER JOIN
