@@ -1,7 +1,7 @@
 {
  "app": "rewards_extension",
  "charts": [],
- "content": "[{\"id\":\"QNMr2OQESh\",\"type\":\"card\",\"data\":{\"card_name\":\"Campaign\",\"col\":4}},{\"id\":\"7K9Nddv9cI\",\"type\":\"card\",\"data\":{\"card_name\":\"Retailer Reports\",\"col\":4}},{\"id\":\"z5XzCqpsJb\",\"type\":\"card\",\"data\":{\"card_name\":\"Distributor Reports\",\"col\":4}}]",
+ "content": "[{\"id\":\"QNMr2OQESh\",\"type\":\"card\",\"data\":{\"card_name\":\"Campaign\",\"col\":4}},{\"id\":\"7K9Nddv9cI\",\"type\":\"card\",\"data\":{\"card_name\":\"Retailer Reports\",\"col\":4}}]",
  "creation": "2025-08-21 23:23:44.265650",
  "custom_blocks": [],
  "docstatus": 0,
@@ -57,45 +57,6 @@
   {
    "hidden": 0,
    "is_query_report": 0,
-   "label": "Distributor Reports",
-   "link_count": 3,
-   "link_type": "DocType",
-   "onboard": 0,
-   "type": "Card Break"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Distributor Order Performance",
-   "link_count": 0,
-   "link_to": "Last Order since Days",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Distributor Sales Analysis",
-   "link_count": 0,
-   "link_to": "Distributor Sales",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 1,
-   "label": "Agent Analysis",
-   "link_count": 0,
-   "link_to": "Agent Sales",
-   "link_type": "Report",
-   "onboard": 0,
-   "type": "Link"
-  },
-  {
-   "hidden": 0,
-   "is_query_report": 0,
    "label": "Campaign",
    "link_count": 1,
    "link_type": "DocType",
@@ -113,7 +74,7 @@
    "type": "Link"
   }
  ],
- "modified": "2025-08-30 14:12:10.368742",
+ "modified": "2025-08-30 14:32:00.578451",
  "modified_by": "Administrator",
  "module": "Rewards Extension",
  "name": "Validate Requests",

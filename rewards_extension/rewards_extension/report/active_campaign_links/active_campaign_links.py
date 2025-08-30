@@ -28,7 +28,7 @@ def get_columns() -> list[dict]:
 			"label": _("Campaign Name"),
 			"fieldname": "campaign_name",
 			"fieldtype": "Data",
-			"width": 600
+			"width": 350
 		},
 		{
 			"label": _("Start Date"),
@@ -52,7 +52,7 @@ def get_columns() -> list[dict]:
 			"label": _("URL"),
 			"fieldname": "url",
 			"fieldtype": "Data",
-			"width": 600
+			"width": 500
 		}
 	]
 

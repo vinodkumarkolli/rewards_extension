@@ -1,0 +1,117 @@
+{
+ "app": "rewards_extension",
+ "charts": [],
+ "content": "[{\"id\":\"xnxkASe-Bn\",\"type\":\"card\",\"data\":{\"card_name\":\"Order Performance Reports\",\"col\":4}},{\"id\":\"-H6hN3OGje\",\"type\":\"card\",\"data\":{\"card_name\":\"Time Series Reports\",\"col\":4}},{\"id\":\"T8FJfhnsyx\",\"type\":\"card\",\"data\":{\"card_name\":\"Shortcuts\",\"col\":4}}]",
+ "creation": "2025-08-30 14:16:41.296575",
+ "custom_blocks": [],
+ "docstatus": 0,
+ "doctype": "Workspace",
+ "for_user": "",
+ "hide_custom": 0,
+ "icon": "sort",
+ "idx": 0,
+ "indicator_color": "green",
+ "is_hidden": 0,
+ "label": "Distributor",
+ "link_type": "DocType",
+ "links": [
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Order Performance Reports",
+   "link_count": 1,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Distributor Order Performance",
+   "link_count": 0,
+   "link_to": "Last Order since Days",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Time Series Reports",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Distributor Sales Analysis",
+   "link_count": 0,
+   "link_to": "Distributor Sales",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 1,
+   "label": "Agent Sales Analysis",
+   "link_count": 0,
+   "link_to": "Agent Sales",
+   "link_type": "Report",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Shortcuts",
+   "link_count": 2,
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Card Break"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Retailer Profiles",
+   "link_count": 0,
+   "link_to": "Master Retail Profile",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  },
+  {
+   "hidden": 0,
+   "is_query_report": 0,
+   "label": "Distributor Profiles",
+   "link_count": 0,
+   "link_to": "Distributor Profile",
+   "link_type": "DocType",
+   "onboard": 0,
+   "type": "Link"
+  }
+ ],
+ "modified": "2025-08-30 14:31:12.519801",
+ "modified_by": "Administrator",
+ "module": "Rewards Extension",
+ "name": "Distributor",
+ "number_cards": [],
+ "owner": "Administrator",
+ "parent_page": "",
+ "public": 1,
+ "quick_lists": [],
+ "roles": [
+  {
+   "role": "System Manager"
+  },
+  {
+   "role": "Campaign Manager"
+  }
+ ],
+ "sequence_id": 25.0,
+ "shortcuts": [],
+ "title": "Distributor",
+ "type": "Workspace"
+}
