@@ -57,6 +57,7 @@ def create_voucher_batch(campaign:str,count:int):
         )
         voucher.insert(ignore_permissions=True)
         voucher.submit()
+        voucher.add_comment('Edit', 'Voucher Status is changed to <b>Generated</b>')
 #Generates SECRET CODE for the Vouchers
 def generate_code(length=6):
   """Generates a random code of specified length with uppercase letters and digits."""
@@ -94,20 +95,75 @@ def generate_unique_code_for_campaign(campaign, length=6, max_attempts=100):
 def enable_gift_vouchers(voucher_list:list):
     if not voucher_list:
         return []
-    frappe.db.set_value("Gift Voucher", {"name": ("in", voucher_list), "voucher_status": "Disabled"}, "voucher_status", "Active")
+    
+    # Get the list of vouchers that will actually be updated (those with voucher_status = "Disabled")
+    vouchers_to_update = frappe.get_all("Gift Voucher",
+                                       filters={"name": ("in", voucher_list), "voucher_status": "Disabled"},
+                                       pluck="name")
+    
+    # For each disabled voucher, find the previous status from comments and revert to it
+    for voucher_name in vouchers_to_update:
+        voucher_doc = frappe.get_doc("Gift Voucher", voucher_name)
+        
+        # Get the previous status by looking at comment history
+        previous_status = "Active"  # Default fallback
+        
+        # Get comments in chronological order (oldest first)
+        comments = frappe.get_all("Comment",
+                                 filters={"reference_doctype": "Gift Voucher", "reference_name": voucher_name, "comment_type": "Edit"},
+                                 fields=["content"],
+                                 order_by="creation asc")
+        
+        # Look for the last status change comment before the current "Disabled" status
+        for comment in reversed(comments):  # Check newest comments first
+            if "Voucher Status is changed to <b>Disabled</b>" in comment.content:
+                continue  # Skip the current "Disabled" comment
+            elif "Voucher Status is changed to <b>Active</b>" in comment.content:
+                previous_status = "Active"
+                break
+            elif "Voucher Status is changed to <b>Generated</b>" in comment.content:
+                previous_status = "Generated"
+                break
+        
+        # Update the voucher status to the previous status
+        voucher_doc.voucher_status = previous_status
+        voucher_doc.save()
+        frappe.db.commit()
+        # Add comment about the status change
+        voucher_doc.add_comment('Edit', f'Voucher Status is changed to <b>{previous_status}</b>')
+    
     return voucher_list
 
 #Disable gift vouchers
 def disable_gift_vouchers(voucher_list:list):
     if not voucher_list:
         return []
+    vouchers_to_update = frappe.get_all("Gift Voucher",
+                                       filters={"name": ("in", voucher_list), "voucher_status": ("in", ["Generated", "Active"])},
+                                       pluck="name")
     frappe.db.set_value("Gift Voucher", {"name": ("in", voucher_list), "voucher_status": ("in", ["Generated", "Active"])}, "voucher_status", "Disabled")
+    # Add comment to each Gift Voucher that was actually updated to "Disabled" status
+    for voucher_name in vouchers_to_update:
+        voucher_doc = frappe.get_doc("Gift Voucher", voucher_name)
+        voucher_doc.add_comment('Edit', 'Voucher Status is changed to <b>Disabled</b>')
     return voucher_list
 
 def activate_gift_vouchers(voucher_list:list):
     if not voucher_list:
         return []
+    # Get the list of vouchers that will actually be updated (those with voucher_status = "Generated")
+    vouchers_to_update = frappe.get_all("Gift Voucher",
+                                       filters={"name": ("in", voucher_list), "voucher_status": "Generated"},
+                                       pluck="name")
+    
+    # Update the vouchers
     frappe.db.set_value("Gift Voucher", {"name": ("in", voucher_list), "voucher_status": "Generated"}, {"voucher_status": "Active", "activated_on": nowdate()})
+    
+    # Add comment to each Gift Voucher that was actually updated to "Active" status
+    for voucher_name in vouchers_to_update:
+        voucher_doc = frappe.get_doc("Gift Voucher", voucher_name)
+        voucher_doc.add_comment('Edit', 'Voucher Status is changed to <b>Active</b>')
+    
     return voucher_list
 
 #Get all Batches pending activation

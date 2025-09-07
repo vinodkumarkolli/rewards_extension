@@ -43,8 +43,8 @@ frappe.ui.form.on("Voucher Campaign", {
 function addVoucherBatchButtons(frm){
     const now = moment();
     const endDate = moment(frm.doc.end_date);
-    const startDate = moment(frm.doc.start_date);
-    if(now.isBetween(startDate,endDate)){
+    // const startDate = moment(frm.doc.start_date);
+    if(now.isBefore(endDate)){
         frm.add_custom_button(__('Create a Batch'),function(){
             openBatchPopup(frm)
         },__('Voucher Batch'))
