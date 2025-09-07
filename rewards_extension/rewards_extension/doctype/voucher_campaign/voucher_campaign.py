@@ -218,3 +218,57 @@ def expire_old_campaigns():
         doc.add_comment('Edit', f"The Voucher Campaign expired on {today}")
         
     frappe.logger().info(f"Expired {len(expired_campaigns)} voucher campaigns")
+
+@frappe.whitelist()
+def can_delete_campaign(campaign):
+    """
+    Check if all associated Gift Vouchers are in 'Disabled' status
+    """
+    # Get all gift vouchers for this campaign
+    vouchers = frappe.get_all(
+        "Gift Voucher",
+        filters={"campaign": campaign},
+        fields=["voucher_status"]
+    )
+    
+    # Check if all vouchers are in 'Disabled' status
+    for voucher in vouchers:
+        if voucher.voucher_status != "Disabled":
+            return False
+    
+    return True
+
+@frappe.whitelist()
+def delete_campaign(campaign):
+    """
+    Delete a campaign and all associated data
+    """
+    # First check if all vouchers are disabled
+    if not can_delete_campaign(campaign):
+        frappe.throw(_("Cannot delete campaign. Some vouchers are still active."))
+    
+    # Get all gift vouchers for this campaign
+    voucher_names = frappe.get_all(
+        "Gift Voucher",
+        filters={"campaign": campaign},
+        pluck="name"
+    )
+    
+    # Cancel and delete all gift vouchers
+    for voucher_name in voucher_names:
+        voucher_doc = frappe.get_doc("Gift Voucher", voucher_name)
+        if voucher_doc.docstatus == 1:  # Submitted
+            voucher_doc.cancel()
+        frappe.delete_doc("Gift Voucher", voucher_name, ignore_permissions=True)
+    
+    # Get the campaign document
+    campaign_doc = frappe.get_doc("Voucher Campaign", campaign)
+    
+    # Cancel the campaign if it's submitted
+    if campaign_doc.docstatus == 1:  # Submitted
+        campaign_doc.cancel()
+    
+    # Delete the campaign itself (this will also delete associated voucher batches as they are child tables)
+    frappe.delete_doc("Voucher Campaign", campaign, ignore_permissions=True)
+    
+    return "Campaign deleted successfully"

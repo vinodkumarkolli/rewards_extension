@@ -14,6 +14,7 @@ frappe.ui.form.on("Voucher Campaign", {
             }
             if(frm.doc.campaign_status == 'Held'){
                 addActivateButton(frm)
+                addDeleteCampaignButton(frm)
                 // addVoucherBatchButtons(frm)
             }
         }
@@ -174,4 +175,55 @@ function addActivateButton(frm){
         // frm.set_value('campaign_status','Active')
         // frm.save()
     },__('Campaign Status'))
+}
+
+function addDeleteCampaignButton(frm){
+    // Check if all associated Gift Vouchers are in 'Disabled' status
+    frappe.call({
+        method: 'rewards_extension.rewards_extension.doctype.voucher_campaign.voucher_campaign.can_delete_campaign',
+        args: {
+            campaign: frm.doc.name
+        },
+        callback: function(r) {
+            if (r.message) {
+                // All vouchers are disabled, show the delete button
+                frm.add_custom_button(__('Delete Campaign'), function(){
+                    // Show danger prompt
+                    frappe.confirm(
+                        __('This action is irreversible and all associated data with the Campaign will be lost. Do you want to proceed?'),
+                        function(){
+                            // User clicked "Yes"
+                            frappe.call({
+                                method: 'rewards_extension.rewards_extension.doctype.voucher_campaign.voucher_campaign.delete_campaign',
+                                args: {
+                                    campaign: frm.doc.name
+                                },
+                                freeze: true,
+                                freeze_message: __('Deleting Campaign...'),
+                                callback: function(r) {
+                                    if (!r.exc) {
+                                        // Success - redirect to list view
+                                        frappe.show_alert({
+                                            message: __('Campaign deleted successfully'),
+                                            indicator: 'green'
+                                        });
+                                        frappe.set_route('List', 'Voucher Campaign');
+                                    } else {
+                                        // Error occurred
+                                        frappe.show_alert({
+                                            message: __('Error deleting campaign'),
+                                            indicator: 'red'
+                                        });
+                                    }
+                                }
+                            });
+                        },
+                        function(){
+                            // User clicked "No" - do nothing
+                        }
+                    );
+                }, __('Campaign Status'));
+            }
+        }
+    });
 }
