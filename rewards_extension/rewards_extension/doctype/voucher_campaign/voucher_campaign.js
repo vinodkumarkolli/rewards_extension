@@ -19,19 +19,6 @@ frappe.ui.form.on("Voucher Campaign", {
             }
         }
         frm.page.btn_secondary.hide();
-        // frm.add_custom_button(__('Temporary Button'),function(){
-        //     frappe.call({
-        //     // method:'rewards_extension.rewards_extension.doctype.gift_voucher.gift_voucher.expire_old_vouchers',
-        //     method:'rewards_extension.rewards_extension.doctype.voucher_campaign.voucher_campaign.expire_old_campaigns',
-        //     args:{},
-        //     callback:function(r){
-        //         if(!r.exc){
-        //             //refresh_field('status');
-        //             console.log(r.message);
-        //         }
-        //     }
-        //     })    
-        // })
     },
     base_voucher_price(frm) {
         frm.set_value("campaign_budget",frm.doc.base_voucher_price * frm.doc.voucher_count)
@@ -140,38 +127,102 @@ function openBatchPopup(frm){
 }
 function addHoldButton(frm){
     frm.add_custom_button(__('Disable Campaign'),function(){
+        // Get total number of vouchers for this campaign to set up progress bar
         frappe.call({
-            method:'rewards_extension.rewards_extension.doctype.voucher_campaign.voucher_campaign.change_campaign_status',
-            args:{
-                campaign:frm.doc.name,
-                status:'Held'
-            },
-            callback:function(r){
-                if(!r.exc){
-                    //refresh_field('status');
-                    d.hide();
+            method: 'frappe.client.get_count',
+            args: {
+                doctype: 'Gift Voucher',
+                filters: {
+                    campaign: frm.doc.name
                 }
+            },
+            callback: function(r) {
+                if (r.message) {
+                    var total_vouchers = r.message;
+                    // Show progress bar
+                    frappe.show_progress(__('Disabling Vouchers'), 0, total_vouchers, __('Please wait...'));
+                } else {
+                    // Fallback to a generic progress bar if we can't get the count
+                    frappe.show_progress(__('Disabling Vouchers'), 0, 100, __('Please wait...'));
+                }
+                
+                frappe.call({
+                    method:'rewards_extension.rewards_extension.doctype.voucher_campaign.voucher_campaign.change_campaign_status',
+                    args:{
+                        campaign:frm.doc.name,
+                        status:'Held'
+                    },
+                    callback:function(r){
+                        // Close progress bar
+                        frappe.hide_progress();
+                        if(!r.exc){
+                            //refresh_field('status');
+                            frappe.show_alert({
+                                message: __('Campaign disabled successfully'),
+                                indicator: 'green'
+                            });
+                            frm.reload_doc();
+                        } else {
+                            frappe.show_alert({
+                                message: __('Error disabling campaign'),
+                                indicator: 'red'
+                            });
+                        }
+                    }
+                })
             }
-        })
+        });
         // frm.set_value('campaign_status','Held')
         // frm.save()
     },__('Campaign Status'))
 }
 function addActivateButton(frm){
     frm.add_custom_button(__('Activate Campaign'),function(){
+        // Get total number of vouchers for this campaign to set up progress bar
         frappe.call({
-            method:'rewards_extension.rewards_extension.doctype.voucher_campaign.voucher_campaign.change_campaign_status',
-            args:{
-                campaign:frm.doc.name,
-                status:'Active'
-            },
-            callback:function(r){
-                if(!r.exc){
-                    //refresh_field('status');
-                    d.hide();
+            method: 'frappe.client.get_count',
+            args: {
+                doctype: 'Gift Voucher',
+                filters: {
+                    campaign: frm.doc.name
                 }
+            },
+            callback: function(r) {
+                if (r.message) {
+                    var total_vouchers = r.message;
+                    // Show progress bar
+                    frappe.show_progress(__('Activating Vouchers'), 0, total_vouchers, __('Please wait...'));
+                } else {
+                    // Fallback to a generic progress bar if we can't get the count
+                    frappe.show_progress(__('Activating Vouchers'), 0, 100, __('Please wait...'));
+                }
+                
+                frappe.call({
+                    method:'rewards_extension.rewards_extension.doctype.voucher_campaign.voucher_campaign.change_campaign_status',
+                    args:{
+                        campaign:frm.doc.name,
+                        status:'Active'
+                    },
+                    callback:function(r){
+                        // Close progress bar
+                        frappe.hide_progress();
+                        if(!r.exc){
+                            //refresh_field('status');
+                            frappe.show_alert({
+                                message: __('Campaign activated successfully'),
+                                indicator: 'green'
+                            });
+                            frm.reload_doc();
+                        } else {
+                            frappe.show_alert({
+                                message: __('Error activating campaign'),
+                                indicator: 'red'
+                            });
+                        }
+                    }
+                })
             }
-        })
+        });
         // frm.set_value('campaign_status','Active')
         // frm.save()
     },__('Campaign Status'))

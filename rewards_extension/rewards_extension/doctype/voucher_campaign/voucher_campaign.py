@@ -27,10 +27,12 @@ def change_campaign_status(campaign:str,status:str):
     doc.campaign_status=status
     doc.save()
     voucher_list = frappe.get_all("Gift Voucher", filters={"campaign": campaign}, pluck="name")
+    result = {}
     if status == 'Held' or status == 'Expired':
-        disable_gift_vouchers(voucher_list)
+        result = disable_gift_vouchers(voucher_list)
     if status == 'Active':
-        enable_gift_vouchers(voucher_list)
+        result = enable_gift_vouchers(voucher_list)
+    return result
 
 #Create a Voucher Batch and subsequent Vouchers
 @frappe.whitelist()
@@ -94,7 +96,7 @@ def generate_unique_code_for_campaign(campaign, length=6, max_attempts=100):
 #Enable gift vouchers
 def enable_gift_vouchers(voucher_list:list):
     if not voucher_list:
-        return []
+        return {"count": 0, "vouchers": []}
     
     # Get the list of vouchers that will actually be updated (those with voucher_status = "Disabled")
     vouchers_to_update = frappe.get_all("Gift Voucher",
@@ -132,12 +134,12 @@ def enable_gift_vouchers(voucher_list:list):
         # Add comment about the status change
         voucher_doc.add_comment('Edit', f'Voucher Status is changed to <b>{previous_status}</b>')
     
-    return voucher_list
+    return {"count": len(vouchers_to_update), "vouchers": vouchers_to_update}
 
 #Disable gift vouchers
 def disable_gift_vouchers(voucher_list:list):
     if not voucher_list:
-        return []
+        return {"count": 0, "vouchers": []}
     vouchers_to_update = frappe.get_all("Gift Voucher",
                                        filters={"name": ("in", voucher_list), "voucher_status": ("in", ["Generated", "Active"])},
                                        pluck="name")
@@ -146,7 +148,7 @@ def disable_gift_vouchers(voucher_list:list):
     for voucher_name in vouchers_to_update:
         voucher_doc = frappe.get_doc("Gift Voucher", voucher_name)
         voucher_doc.add_comment('Edit', 'Voucher Status is changed to <b>Disabled</b>')
-    return voucher_list
+    return {"count": len(vouchers_to_update), "vouchers": vouchers_to_update}
 
 def activate_gift_vouchers(voucher_list:list):
     if not voucher_list:
