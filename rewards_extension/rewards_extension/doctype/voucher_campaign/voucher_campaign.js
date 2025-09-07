@@ -108,7 +108,15 @@ function openBatchPopup(frm){
             'reqd':1,
         }],
         primary_action:function(){
+            //hide fields in the Dialog d, show frappe progress bar
             var count = d.get_value('count');
+            
+            // Hide all fields in the dialog
+            d.hide();
+            
+            // Show Frappe progress bar
+            frappe.show_progress(__('Creating Vouchers'), 0, count, __('Please wait...'));
+            
             frappe.call({
                 method:'rewards_extension.rewards_extension.doctype.voucher_campaign.voucher_campaign.create_voucher_batch',
                 args:{
@@ -117,11 +125,13 @@ function openBatchPopup(frm){
                 },
                 callback:function(r){
                     if(!r.exc){
+                        // Close progress bar
+                        frappe.hide_progress();
                         //refresh_field('status');
                         d.hide();
                     }
                 }
-            })
+            });
             // alert('Creating '+count+' vouchers')
         }
     })
