@@ -4,6 +4,7 @@
 import frappe
 import random
 import string
+from frappe import _
 from frappe.model.document import Document
 from frappe.utils import nowdate
 
