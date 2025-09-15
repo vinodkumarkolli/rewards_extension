@@ -98,7 +98,7 @@
       </div>
       
     <!-- Show coupon input after tour completion -->
-    <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon' && couponsUsed && (couponsUsed.length < voucherCampaign.unique_audience_redeem_limit)" class=" bg-yellow-50 rounded-lg shadow-lg flex border-yellow-200 flex-col items-center justify-center p-6 py-4 w-full max-w-md mx-auto space-y-2">
+    <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon' && redeemedCouponsCount && (redeemedCouponsCount.length < voucherCampaign.unique_audience_redeem_limit)" class=" bg-yellow-50 rounded-lg shadow-lg flex border-yellow-200 flex-col items-center justify-center p-6 py-4 w-full max-w-md mx-auto space-y-2">
           <div class="text-center mb-4">
             <h3 class="text-xl font-bold mb-2 text-gray-700">
               Welcome {{ profileData.customer_name }}
