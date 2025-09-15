@@ -98,7 +98,7 @@
       </div>
       
     <!-- Show coupon input after tour completion -->
-    <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon' && couponsUsed && (couponsUsed.length < voucherCampaign.unique_audience_redeem_limit)" class=" bg-yellow-50 rounded-lg shadow-lg flex border-yellow-200 flex-col items-center justify-center p-6 py-4 w-full max-w-md mx-auto space-y-2">
+    <div v-if="voucherCampaign && tourCompleted && profileData && currentStep === 'coupon' && couponsUsed && (redeemedCouponsCount < voucherCampaign.unique_audience_redeem_limit)" class=" bg-yellow-50 rounded-lg shadow-lg flex border-yellow-200 flex-col items-center justify-center p-6 py-4 w-full max-w-md mx-auto space-y-2">
           <div class="text-center mb-4">
             <h3 class="text-xl font-bold mb-2 text-gray-700">
               Welcome {{ profileData.customer_name }}
@@ -261,28 +261,12 @@ const redemptionComplete = ref(false) // Tracks redemption completion
 const campaignValid = ref(true) // Tracks campaign validity
 const campaignError = ref('') // Stores campaign error message
 const couponsUsed = ref(null)
+const blockedCouponsCount = ref(0)
+const payoutRequestedCouponsCount = ref(0)
+const redeemedCouponsCount = ref(0)
+const deniedPaymentCouponsCount = ref(0)
 const isWidgetMinimized = ref(false) // Track widget minimize/maximize state
 
-// Computed properties for voucher status counts
-const blockedCouponsCount = computed(() => {
-  if (!couponsUsed.value) return 0
-  return couponsUsed.value.filter(voucher => voucher.voucher_status === 'Blocked').length
-})
-
-const payoutRequestedCouponsCount = computed(() => {
-  if (!couponsUsed.value) return 0
-  return couponsUsed.value.filter(voucher => voucher.voucher_status === 'Payout Requested').length
-})
-
-const redeemedCouponsCount = computed(() => {
-  if (!couponsUsed.value) return 0
-  return couponsUsed.value.filter(voucher => voucher.voucher_status === 'Redeemed').length
-})
-
-const deniedPaymentCouponsCount = computed(() => {
-  if (!couponsUsed.value) return 0
-  return couponsUsed.value.filter(voucher => voucher.voucher_status === 'Denied Payment').length
-})
 
 // Create document resource for current user
 const userResource = createDocumentResource({
@@ -524,6 +508,19 @@ function loadCouponCodeForm(){
   const couponResource = createListResource({
     doctype:'Gift Voucher',fields:["*"],filters:filters,onSuccess: (data) => {
       couponsUsed.value = data
+      
+      // Set the ref variables for coupon counts
+      if (data) {
+        blockedCouponsCount.value = data.filter(voucher => voucher.voucher_status === 'Blocked').length
+        payoutRequestedCouponsCount.value = data.filter(voucher => voucher.voucher_status === 'Payout Requested').length
+        redeemedCouponsCount.value = data.filter(voucher => voucher.voucher_status === 'Redeemed').length
+        deniedPaymentCouponsCount.value = data.filter(voucher => voucher.voucher_status === 'Denied Payment').length
+      } else {
+        blockedCouponsCount.value = 0
+        payoutRequestedCouponsCount.value = 0
+        redeemedCouponsCount.value = 0
+        deniedPaymentCouponsCount.value = 0
+      }
     }
   })
   couponResource.fetch()
