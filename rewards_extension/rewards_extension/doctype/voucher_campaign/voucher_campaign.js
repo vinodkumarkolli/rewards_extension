@@ -45,7 +45,7 @@ function addVoucherBatchButtons(frm){
             callback:function(r){
                 if(!r.exc){
                     //refresh_field('status');
-                    console.log(r.message);
+                    // console.log(r.message);
                     if(r.message.length>0){
                         frm.add_custom_button(__('Activate Voucher Batch'),function(){
                             addBatchActivationForm(frm,r.message)
@@ -90,9 +90,15 @@ function openBatchPopup(frm){
     d = new frappe.ui.Dialog({
         'title': __('Create Voucher Batch'),
         'fields':[{
+            'fieldname': "my_note",
+            'fieldtype': "HTML", // Or "Text" if you just need plain text
+            'options': "<p>Create batch with less than or equal to 500 Vouchers</p>", // Your note text
+            'label': "Note" // Optional label for the note field
+        },
+        {
             'fieldname':'count',
             'fieldtype':'Int',
-            'label':'Number of vouchers to create',
+            'label':'No. of vouchers to create',
             'reqd':1,
         }],
         primary_action:function(){
@@ -115,8 +121,25 @@ function openBatchPopup(frm){
                     if(!r.exc){
                         // Close progress bar
                         frappe.hide_progress();
+                        // Show message that vouchers are being created in background
+                        if(r.message && r.message.status === "enqueued") {
+                            frappe.show_alert({
+                                message: __('Creating {0} vouchers in background. This may take a few minutes.', [r.message.count]),
+                                indicator: 'green'
+                            });
+                        } else {
+                            frappe.show_alert({
+                                message: __('Voucher batch created successfully'),
+                                indicator: 'green'
+                            });
+                        }
                         //refresh_field('status');
                         d.hide();
+                    } else {
+                        frappe.show_alert({
+                            message: __('Error creating voucher batch'),
+                            indicator: 'red'
+                        });
                     }
                 }
             });
