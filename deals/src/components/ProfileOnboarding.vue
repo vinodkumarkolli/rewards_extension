@@ -249,17 +249,21 @@ export default {
       this.currentStep = step;
     },
     selectLinkProfile() {
-      if (this.voucherCampaign?.campaign_target == 'Retailers' || this.voucherCampaign?.campaign_target == 'Consumers') {
+      if (this.voucherCampaign?.campaign_target == 'Retailers' || this.voucherCampaign?.campaign_target == 'Consumers' || this.voucherCampaign?.campaign_target == 'Wholesalers') {
         this.currentStep = 0.5;
       }
     },
     async fetchCustomerProfiles() {
       try {
         const profiles = await call('rewards_extension.rewards_extension.doctype.gift_voucher.gift_voucher.get_all_customer_profiles');
-        this.customerProfiles = profiles.sort((a, b) => new Date(b.modified) - new Date(a.modified)).map(profile => ({
-          label: profile.customer_name,
-          value: profile.name
-        }));
+        const targetType = this.voucherCampaign.campaign_target.slice(0, -1);
+        this.customerProfiles = profiles
+          .filter(profile => profile.customer_type === targetType)
+          .sort((a, b) => new Date(b.modified) - new Date(a.modified))
+          .map(profile => ({
+            label: profile.customer_name,
+            value: profile.name
+          }));
       } catch (error) {
         console.error('Error fetching customer profiles:', error);
       }

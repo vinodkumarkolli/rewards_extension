@@ -105,7 +105,7 @@ def get_all_customer_profiles():
 	Fetches all Customer Profile documents with their name and customer_name fields.
 	Returns a list of Customer Profile documents.
 	"""
-	profiles = frappe.get_all("Customer Profile", fields=["name", "customer_name", "modified"])
+	profiles = frappe.get_all("Customer Profile", fields=["name", "customer_name", "modified","customer_type"])
 	return profiles
 
 @frappe.whitelist()
