@@ -9,12 +9,13 @@ class Payout(Document):
 	pass
 
 @frappe.whitelist()
-def approve_payout(payout_id,trx_id,trx_amt,trx_date,trx_image):
+def approve_payout(payout_id,trx_id,trx_amt,trx_date,trx_image=None):
 	payout_doc = frappe.get_doc("Payout",payout_id)
 	payout_doc.transaction_id = trx_id
 	payout_doc.transaction_amount = trx_amt
 	payout_doc.transaction_date = trx_date
-	payout_doc.transaction_image = trx_image
+	if trx_image:
+		payout_doc.transaction_image = trx_image
 	payout_doc.payout_status = "Processed"
 	payout_doc.save(ignore_permissions=True)
 	frappe.db.commit()

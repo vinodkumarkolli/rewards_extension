@@ -83,7 +83,7 @@ function uploadReceiptsPopup(frm){
                     // console.log('Attached file:', file_name, file_url);
                     // You can perform further actions here, e.g., update another field
                 },
-                reqd:1}],
+                reqd:0}],
         primary_action_label: 'Upload and Approve',
         primary_action:function(){
             var transactionId = d.get_value('transaction_id');
@@ -91,22 +91,30 @@ function uploadReceiptsPopup(frm){
             var transactionDate = d.get_value('transaction_date');
             var transactionImage = d.get_value('transaction_image');
             // console.log(transactionImage)
-            frappe.call({
-            method:'rewards_extension.rewards_extension.doctype.payout.payout.approve_payout',
-            args:{
+            
+            // Prepare args object
+            var args = {
                 payout_id:frm.doc.name,
                 trx_id: transactionId,
                 trx_amt: transactionAmount,
-                trx_date: transactionDate,
-                trx_image: transactionImage
-            },
-            callback:function(r){
-                if(!r.exc){
-                    //refresh_field('status');
-                    // console.log(r.message);
-                    d.hide()
-                }
+                trx_date: transactionDate
+            };
+            
+            // Only include trx_image in args if transactionImage has a value
+            if (transactionImage) {
+                args.trx_image = transactionImage;
             }
+            
+            frappe.call({
+                method:'rewards_extension.rewards_extension.doctype.payout.payout.approve_payout',
+                args: args,
+                callback:function(r){
+                    if(!r.exc){
+                        //refresh_field('status');
+                        // console.log(r.message);
+                        d.hide()
+                    }
+                }
             })
             // alert('Creating '+count+' vouchers')
         }
