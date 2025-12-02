@@ -11,6 +11,9 @@ frappe.ui.form.on("Voucher Campaign", {
             if(frm.doc.campaign_status == 'Active'){
                 addHoldButton(frm)
                 addVoucherBatchButtons(frm)
+                frm.add_custom_button(__('Hard Activate Disabled Coupons'), function(){
+                    hardActivateDisabledCoupons(frm);
+                }, __('Campaign Status'));
             }
             if(frm.doc.campaign_status == 'Held'){
                 addActivateButton(frm)
@@ -300,4 +303,38 @@ function addDeleteCampaignButton(frm){
             }
         }
     });
+}
+function hardActivateDisabledCoupons(frm) {
+    // Show confirmation dialog
+    frappe.confirm(
+        __('This will enable the first 500 disabled coupons linked to this campaign. Do you want to proceed?'),
+        function() {
+            // User clicked "Proceed"
+            frappe.call({
+                method: 'rewards_extension.rewards_extension.doctype.voucher_campaign.voucher_campaign.hard_activate_disabled_coupons',
+                args: {
+                    campaign: frm.doc.name
+                },
+                freeze: true,
+                freeze_message: __('Activating coupons...'),
+                callback: function(r) {
+                    if (!r.exc) {
+                        frappe.show_alert({
+                            message: __('{0} coupons activated successfully', [r.message]),
+                            indicator: 'green'
+                        });
+                        frm.reload_doc();
+                    } else {
+                        frappe.show_alert({
+                            message: __('Error activating coupons'),
+                            indicator: 'red'
+                        });
+                    }
+                }
+            });
+        },
+        function() {
+            // User clicked "Cancel" - do nothing
+        }
+    );
 }

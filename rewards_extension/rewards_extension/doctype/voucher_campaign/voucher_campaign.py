@@ -275,3 +275,25 @@ def delete_campaign(campaign):
     frappe.delete_doc("Voucher Campaign", campaign, ignore_permissions=True)
     
     return "Campaign deleted successfully"
+
+@frappe.whitelist()
+def hard_activate_disabled_coupons(campaign):
+    """
+    Fetch first 500 disabled Gift Vouchers linked to the campaign and update their status to "Active"
+    """
+    # Get first 500 disabled Gift Vouchers linked to the campaign
+    vouchers = frappe.get_all(
+        "Gift Voucher",
+        filters={"campaign": campaign, "voucher_status": "Disabled"},
+        fields=["name"],
+        limit=500
+    )
+    
+    # Update voucher_status to "Active" for each voucher
+    for voucher in vouchers:
+        frappe.db.set_value("Gift Voucher", voucher.name, "voucher_status", "Active")
+        # Add comment to the voucher
+        voucher_doc = frappe.get_doc("Gift Voucher", voucher.name)
+        voucher_doc.add_comment('Edit', 'Voucher Status is changed to <b>Active</b>')
+    
+    return len(vouchers)
