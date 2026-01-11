@@ -88,7 +88,7 @@ website_context = {
 
 # before_install = "rewards_extension.install.before_install"
 after_install = "rewards_extension.install.after_install"
-after_migrate = "rewards_extension.utils.add_app_name"
+after_migrate = ["rewards_extension.utils.add_app_name", "rewards_extension.install.after_install"]
 # Uninstallation
 # ------------
 
