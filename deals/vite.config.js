@@ -20,7 +20,7 @@ export default defineConfig({
 	],
 	build: {
 		chunkSizeWarningLimit: 1500,
-		outDir: "../rewards_extension/public/deals",
+		outDir: "../rewards_extension/public/frontend",
 		emptyOutDir: true,
 		target: "es2015",
 		sourcemap: true,
