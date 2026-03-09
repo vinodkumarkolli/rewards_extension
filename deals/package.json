@@ -8,7 +8,7 @@
     "build": "vite build --base=/assets/rewards_extension/deals/ --debug && yarn copy-html-entry",
     "preview": "vite preview",
     "lint": "biome check --write .",
-    "copy-html-entry": "cp ../rewards_extension/public/deals/index.html ../rewards_extension/www/deals.html"
+    "copy-html-entry": "cp ../rewards_extension/public/frontend/index.html ../rewards_extension/www/deals.html"
   },
   "dependencies": {
     "feather-icons": "^4.29.2",
