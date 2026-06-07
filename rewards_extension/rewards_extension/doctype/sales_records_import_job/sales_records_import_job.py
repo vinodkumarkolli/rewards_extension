@@ -36,8 +36,13 @@ class SalesRecordsImportJob(Document):
 def get_preview_from_template(doc):
 	"""Get preview data from the uploaded template"""
 	doc = frappe.parse_json(doc)
-	sales_records_import_job = frappe.get_doc("Sales Records Import Job", doc.name)
-	sales_records_import_job.check_permission("read")
+	if doc.get("__islocal") or not doc.get("name") or not frappe.db.exists("Sales Records Import Job", doc.get("name")):
+		if not frappe.has_permission("Sales Records Import Job", "read"):
+			frappe.throw("No permission to read Sales Records Import Job", frappe.PermissionError)
+		sales_records_import_job = frappe.get_doc(doc)
+	else:
+		sales_records_import_job = frappe.get_doc("Sales Records Import Job", doc.name)
+		sales_records_import_job.check_permission("read")
 	
 	# Implement the logic directly here instead of calling the class method
 	if not sales_records_import_job.sales_records_file:
@@ -51,6 +56,7 @@ def get_preview_from_template(doc):
 		content = content.decode('utf-8')
 	
 	rows = read_csv_content(content)
+	rows = [r for r in rows if r and any(val is not None and str(val).strip() for val in r)]
 	
 	if not rows:
 		return
@@ -346,6 +352,7 @@ def import_sales_records(sales_records_import_job):
 			content = content.decode('utf-8')
 		
 		rows = read_csv_content(content)
+		rows = [r for r in rows if r and any(val is not None and str(val).strip() for val in r)]
 		
 		if not rows:
 			frappe.throw("No data found in the uploaded file")
@@ -706,6 +713,12 @@ def export_errored_rows(doc, file_type="Excel"):
 		content = content.decode('utf-8')
 
 	rows = read_csv_content(content)
+	rows = [r for r in rows if r and any(val is not None and str(val).strip() for val in r)]
+	
+	if not rows:
+		frappe.msgprint("No rows found in the imported file.")
+		return
+		
 	headers = rows[0]
 	data_rows = rows[1:]
 

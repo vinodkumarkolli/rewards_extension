@@ -109,7 +109,18 @@ frappe.ui.form.on("Sales Records Import Job", {
 				if (r.message) {
 					frm.events.show_import_preview(frm, r.message);
 					frm.events.show_import_warnings(frm, r.message);
+				} else {
+					frm.get_field("import_preview").$wrapper.empty();
+					$('<span class="text-danger">')
+						.html(__("Failed to load preview. Please ensure the CSV is valid and contains data."))
+						.appendTo(frm.get_field("import_preview").$wrapper);
 				}
+			},
+			error: function() {
+				frm.get_field("import_preview").$wrapper.empty();
+				$('<span class="text-danger">')
+					.html(__("An error occurred while loading the preview."))
+					.appendTo(frm.get_field("import_preview").$wrapper);
 			}
 		});
 	},
@@ -118,7 +129,10 @@ frappe.ui.form.on("Sales Records Import Job", {
 		// Create a preview table using DataTable component
 		let wrapper = frm.get_field("import_preview").$wrapper.empty();
 		
-		if (!preview_data || !preview_data.columns || !preview_data.data) {
+		if (!preview_data || !preview_data.columns || !preview_data.columns.length || !preview_data.data) {
+			$('<span class="text-warning">')
+				.html(__("No valid columns or data rows found in the CSV file."))
+				.appendTo(wrapper);
 			return;
 		}
 		
